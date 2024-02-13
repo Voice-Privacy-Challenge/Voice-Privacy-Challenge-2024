@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 source env.sh
 
 for data_set in libri_dev libri_test; do

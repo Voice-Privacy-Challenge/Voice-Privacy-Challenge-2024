@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 source env.sh
 
 #generate b2 anonymized audio (libri dev+test set - 25min & libri-360h)
