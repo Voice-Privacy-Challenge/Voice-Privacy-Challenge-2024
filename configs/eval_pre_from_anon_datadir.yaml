@@ -48,5 +48,5 @@ utility:
 
     evaluation:
       model_dir: !ref <exp_dir>/<utility[asr][model_name]>
-      eval_batchsize: 8 # eval_batchsize(32g)=3 ->9h eval_batchsize=2->12h eval_batchsize(12GB)=1->24h
+      eval_batchsize: 8 # Requires < 12Gib
       results_dir: !ref <exp_dir>/<utility[asr][model_name]>
