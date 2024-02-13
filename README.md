@@ -1,12 +1,13 @@
-# Evaluation tookilt for VoicePrivacy Challenge 2024
+# Recipe for VoicePrivacy Challenge 2024 
+(Under development)
 
-## (Required) Install
+## Install
 
 1. `git clone -b vpc  https://github.com/DigitalPhonetics/VoicePAT.git`
 2. `./00_install.sh`
 3. `source env.sh`
 
-## (Required) Download VPC data and pretrianed models
+## Download data and pretrianed models
 
 `./01_download_data_model.sh` Password required, please register to get password.
 
