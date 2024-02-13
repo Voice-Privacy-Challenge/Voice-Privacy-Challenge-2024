@@ -11,20 +11,33 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 from .speechbrain_asr import InferenceSpeechBrainASR
 from .speechbrain_asr.inference import ASRDataset
-from utils import read_kaldi_format
+from utils import read_kaldi_format, scan_checkpoint
 
 
-def evaluate_asr(eval_datasets, eval_data_dir, params, model_path, model_type, anon_data_suffix, device, backend):
+def evaluate_asr(backend, eval_datasets, eval_data_dir, params, anon_data_suffix):
     if backend == 'speechbrain':
         return asr_eval_speechbrain(eval_datasets=eval_datasets, eval_data_dir=eval_data_dir, params=params,
-                                    model_path=model_path, anon_data_suffix=anon_data_suffix, model_type=model_type, device=device)
+                                    anon_data_suffix=anon_data_suffix)
     else:
         raise ValueError(f'Unknown backend {backend} for ASR evaluation. Available backends: speechbrain.')
 
 
-def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, model_path, model_type, anon_data_suffix, device):
+def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, anon_data_suffix):
+    model_path = params["model_dir"]
+    model_type = params["model_type"]
+    device = params["device"]
+
+    asr_hparams = "hyperparams.yaml"
+    if "hparams_file" in params:
+        asr_hparams = params["hparams_file"]
+
+    model_path = scan_checkpoint(model_path, 'CKPT') or model_path
+
+    if not model_path.exists():
+        raise FileNotFoundError(f'ASR model {model_path} does not exist!')
+
     print(f'Use ASR model for evaluation: {model_path}')
-    model = InferenceSpeechBrainASR(model_path=model_path, model_type=model_type, device=device)
+    model = InferenceSpeechBrainASR(model_path=model_path, asr_hparams=asr_hparams, model_type=model_type, device=device)
     results_dir = params['results_dir']
     test_sets = eval_datasets + [f'{asr_dataset}_{anon_data_suffix}' for asr_dataset in eval_datasets]
     results = []

@@ -42,12 +42,12 @@ class ASRDataset(torch.utils.data.Dataset):
 
 class InferenceSpeechBrainASR:
 
-    def __init__(self, model_path, model_type, device):
+    def __init__(self, model_path, asr_hparams, model_type, device):
         self.device = device
         print(f'Use ASR model for evaluation: {model_path}')
         assert model_type in ["EncoderASR", "EncoderDecoderASR"]
         self.asr_model = getattr(sys.modules[__name__], model_type).from_hparams(source=model_path,
-                                                            hparams_file='hyperparams.yaml',
+                                                            hparams_file=asr_hparams,
                                                             savedir=model_path, run_opts={'device': self.device})
 
     def plain_text_key(self, path):
