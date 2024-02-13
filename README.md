@@ -3,7 +3,7 @@
 
 ## Install
 
-1. `git clone -b vpc  https://github.com/DigitalPhonetics/VoicePAT.git`
+1. `git clone https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024.git`
 2. `./00_install.sh`
 3. `source env.sh`
 
