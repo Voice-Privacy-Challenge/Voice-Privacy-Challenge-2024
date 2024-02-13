@@ -17,7 +17,7 @@ class DSPPipeline:
             if 'dataset_libri_360' in config else None
         self.modules_config = config['modules']
         return
-    
+
     def run_anonymization_pipeline(self, datasets):
         # anonymize each dataset
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
@@ -27,13 +27,16 @@ class DSPPipeline:
                          results_dir=self.config['results_dir'],
                          settings=self.modules_config)
             print('Done')
-            
+
         # anonymize libri360 if it exists
         if self.libri_360_data_dir:
-            process_data(dataset_path=self.libri_360_data_dir, 
-                    anon_level=self.modules_config['anon_level_libri_360'], 
+            print(f'Processing libri_train_360...')
+            process_data(dataset_path=self.libri_360_data_dir,
+                    anon_level=self.modules_config['anon_level_libri_360'],
                     results_dir=self.config['results_dir'],
                     settings=self.modules_config)
+
+            print('Done')
         return
 
 if __name__ == "__main__":

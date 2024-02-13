@@ -87,7 +87,11 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
         rng = np.random.default_rng(hash_textstring('VPC2024'))
         mcadams_coeffs = rng.uniform(settings['mc_coeff_min'], settings['mc_coeff_max'], N)
 
-    with multiprocessing.Pool(processes=(multiprocessing.cpu_count()+1)//2) as pool: # number of processes can be tuned
+    nj = multiprocessing.cpu_count()
+    if 'nj' in settings:
+        nj = settings['nj']
+
+    with multiprocessing.Pool(processes=nj) as pool:
         with ReadHelper(f'scp:{wav_scp}') as reader:
             fn = functools.partial(process_wav, settings=settings, output_path=str(results_dir))
             scp_entries = pool.starmap(fn, tqdm(zip(mcadams_coeffs, reader), total=N), chunksize=10)
