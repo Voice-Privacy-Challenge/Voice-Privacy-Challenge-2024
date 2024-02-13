@@ -45,11 +45,6 @@ class InferenceSpeechBrainASR:
     def __init__(self, model_path, model_type, device):
         self.device = device
         print(f'Use ASR model for evaluation: {model_path}')
-        # try:
-        #     self.asr_model = EncoderDecoderASR.from_hparams(source=model_path,
-        #                                                     hparams_file='hyperparams.yaml',
-        #                                                     savedir=model_path, run_opts={'device': self.device})
-        # except:
         assert model_type in ["EncoderASR", "EncoderDecoderASR"]
         self.asr_model = getattr(sys.modules[__name__], model_type).from_hparams(source=model_path,
                                                             hparams_file='hyperparams.yaml',
