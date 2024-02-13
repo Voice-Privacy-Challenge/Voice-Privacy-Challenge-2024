@@ -206,6 +206,7 @@ if __name__ == '__main__':
             if 'evaluation' in asr_params:
                 asr_eval_params = asr_params['evaluation']
                 model_path = asr_eval_params['model_dir']
+                model_type = asr_params['model_type']
                 asr_model_path = scan_checkpoint(model_path, 'CKPT') or model_path
 
                 if not model_path.exists():
@@ -215,7 +216,7 @@ if __name__ == '__main__':
                 print('Perform ASR evaluation')
                 asr_results = evaluate_asr(eval_datasets=eval_data_asr, eval_data_dir=eval_data_dir,
                                            params=asr_eval_params, model_path=asr_model_path,
-                                           anon_data_suffix=anon_suffix, device=device, backend=backend)
+                                           anon_data_suffix=anon_suffix, device=device, model_type=model_type, backend=backend)
                 results['asr'] = asr_results
                 print("--- ASR evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
 

@@ -43,9 +43,10 @@ privacy:
 utility:
   asr:
     backend: speechbrain
-    model_name: asr_pre_sb  # name for ASR model
-    
+    model_name: asr_pre_ctc_wav2vec2  # name for ASR model
+    model_type: EncoderASR # EncoderDecoderASR or EncoderASR (from speechbrain)
+
     evaluation:
       model_dir: !ref <exp_dir>/<utility[asr][model_name]>
-      eval_batchsize: 2 # eval_batchsize(32g)=3 ->9h eval_batchsize=2->12h eval_batchsize(12GB)=1->24h
+      eval_batchsize: 8 # eval_batchsize(32g)=3 ->9h eval_batchsize=2->12h eval_batchsize(12GB)=1->24h
       results_dir: !ref <exp_dir>/<utility[asr][model_name]>

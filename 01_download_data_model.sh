@@ -48,7 +48,6 @@ if [ ! -d $check ]; then
 fi
 
 check_data=data/libri_dev_enrolls
-check_model=exp/asv_pre_ecapa
 #Download kaldi format datadir and SpeechBrain pretrained ASV/ASR models
 if [ ! -d $check_data ]; then
     if  [ ! -f data.zip ]; then
@@ -59,13 +58,28 @@ if [ ! -d $check_data ]; then
     unzip data.zip
 fi
 
+check_model=exp/asv_pre_ecapa
 if [ ! -d $check_model ]; then
     if [ ! -f pre_model.zip ]; then
-        echo "Download pretrained ASV & ASR models trained using original train-clean-360..."
+        echo "Download pretrained evaluation models..."
         wget https://github.com/DigitalPhonetics/VoicePAT/releases/download/v2/pre_model.zip
     fi
     echo "Unpacking pretrained evaluation models"
     unzip pre_model.zip
+fi
+
+check_model=exp/asr_pre_ctc_wav2vec2
+if [ ! -d $check_model ]; then
+python3 - <<EOF
+import speechbrain as sb
+
+sb.pretrained.interfaces.Pretrained.from_hparams(
+    source="speechbrain/asr-wav2vec2-librispeech",
+    savedir="$check_model",
+    revision="a9fdfb4",
+    download_only=True
+)
+EOF
 fi
 
 #Download GAN pre-models only if perform GAN anonymization

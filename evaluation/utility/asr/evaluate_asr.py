@@ -14,17 +14,17 @@ from .speechbrain_asr.inference import ASRDataset
 from utils import read_kaldi_format
 
 
-def evaluate_asr(eval_datasets, eval_data_dir, params, model_path, anon_data_suffix, device, backend):
+def evaluate_asr(eval_datasets, eval_data_dir, params, model_path, model_type, anon_data_suffix, device, backend):
     if backend == 'speechbrain':
         return asr_eval_speechbrain(eval_datasets=eval_datasets, eval_data_dir=eval_data_dir, params=params,
-                                    model_path=model_path, anon_data_suffix=anon_data_suffix, device=device)
+                                    model_path=model_path, anon_data_suffix=anon_data_suffix, model_type=model_type, device=device)
     else:
         raise ValueError(f'Unknown backend {backend} for ASR evaluation. Available backends: speechbrain.')
 
 
-def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, model_path, anon_data_suffix, device):
+def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, model_path, model_type, anon_data_suffix, device):
     print(f'Use ASR model for evaluation: {model_path}')
-    model = InferenceSpeechBrainASR(model_path=model_path, device=device)
+    model = InferenceSpeechBrainASR(model_path=model_path, model_type=model_type, device=device)
     results_dir = params['results_dir']
     test_sets = eval_datasets + [f'{asr_dataset}_{anon_data_suffix}' for asr_dataset in eval_datasets]
     results = []
@@ -50,6 +50,7 @@ def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, model_path, anon_
             results.append({'dataset': test_set_info[0], 'split': test_set_info[1],
                             'asr': 'anon' if anon_data_suffix in test_set else 'original', 'WER': round(wer, 3)})
             print(f'{test_set} - WER: {wer}')
+            torch.cuda.empty_cache()
     results_df = pd.DataFrame(results)
     print(results_df)
     results_df.to_csv(results_dir / 'results.csv')
