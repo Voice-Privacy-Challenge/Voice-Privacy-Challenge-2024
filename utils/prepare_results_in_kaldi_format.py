@@ -18,6 +18,9 @@ def get_anon_wav_scps(input_folder):
         else:
             audio_dicts[wav_file.parent.name][utt_id] = str(wav_file.absolute())
 
+    if len(audio_dicts) == 0:
+        raise ValueError(f'No audio files found in {input_folder}.')
+
     return audio_dicts
 
 def prepare_evaluation_data(dataset_dict, output_path, anon_wav_scps, anon_vectors_path=None, anon_suffix='_anon'):
