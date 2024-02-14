@@ -35,14 +35,14 @@ def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, model_path, anon_
             data_path = eval_data_dir / test_set
             if (results_dir / test_set / 'wer').exists() and (results_dir / test_set / 'text').exists():
                 logger.info("No WER computation  necessary; print exsiting WER results")
-                hypotheses = read_kaldi_format(Path(data_path, 'text'), values_as_string=True)
-                references = read_kaldi_format(Path(results_dir, test_set, 'text'), values_as_string=True)
+                references = read_kaldi_format(Path(data_path, 'text'), values_as_string=True)
+                hypotheses = read_kaldi_format(Path(results_dir, test_set, 'text'), values_as_string=True)
                 scores = model.compute_wer(ref_texts=references, hyp_texts=hypotheses, out_file=Path(results_dir,test_set, 'wer'))
             else:
                 dataset = ASRDataset(wav_scp_file=Path(data_path, 'wav.scp'), asr_model=model.asr_model)
                 dataloader = DataLoader(dataset, batch_size=params['eval_batchsize'], shuffle=False, num_workers=1, collate_fn=dataset.collate_fn)
-                hypotheses = model.transcribe_audios(data=dataloader, out_file=Path(results_dir, test_set, 'text'))
                 references = read_kaldi_format(Path(data_path, 'text'), values_as_string=True)
+                hypotheses = model.transcribe_audios(data=dataloader, out_file=Path(results_dir, test_set, 'text'))
                 scores = model.compute_wer(ref_texts=references, hyp_texts=hypotheses, out_file=Path(results_dir,
                                                                                      test_set, 'wer'))
             wer = scores.summarize("error_rate")
