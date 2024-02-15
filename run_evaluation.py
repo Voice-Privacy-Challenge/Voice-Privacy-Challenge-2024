@@ -25,7 +25,7 @@ import itertools
 
 from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, train_asr_eval, evaluate_gvd
 from utils import (parse_yaml, scan_checkpoint, combine_asr_data, get_datasets,
-                   prepare_evaluation_data, get_anon_wav_scps, save_yaml)
+                   prepare_evaluation_data, get_anon_wav_scps, save_yaml, check_dependencies)
 
 def get_evaluation_steps(params):
     eval_steps = {}
@@ -125,6 +125,7 @@ def save_result_summary(out_dir, results_dict, config):
 
 
 if __name__ == '__main__':
+    check_dependencies('requirements.txt')
     multiprocessing.set_start_method("fork",force=True)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
 
