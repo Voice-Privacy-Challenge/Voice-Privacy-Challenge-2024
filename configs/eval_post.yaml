@@ -24,19 +24,19 @@ privacy:
     model_type: ecapa  # ecapa or xvector
     dataset_name: [libri_dev, libri_test]
 
-    # training:
-    #   model_dir: !ref <exp_dir>/asv_anon_<privacy[asv][model_type]><anon_data_suffix>_scratch  # path to existing ASV model or output for trained ASV model
-    #   train_data_dir: !ref <data_dir>/<train_data_name> # path to original or anonymized training data for ASV
-    #   train_config: evaluation/privacy/asv/asv_train/hparams/train_ecapa_tdnn_small.yaml
-    #   finetuning: false # true (ft) or false (scratch)
-    #   pretrained_model: null # path to pretrained model, only used for finetuning
-    #   lr: 0.01
-    #   epochs: 10
-    #   batch_size: 256
-    #   num_utt: ALL  # ALL or specific number, number of utterances per speaker
-    #   utt_selection: spk-diverse-sess  # select utterances per speaker and session (spk-sess), per speaker and randomly across all sessions (spk-random), per speaker and balanced across sessions (spk-diverse-sess)
-    #   num_spk: ALL  # ALL or specific number, number of speakers
-    #   retrain: true  # retrain in any case (true) or skip training if model exists (false)
+    training:
+      model_dir: !ref <exp_dir>/asv_anon_<privacy[asv][model_type]><anon_data_suffix>_scratch  # path to existing ASV model or output for trained ASV model
+      train_data_dir: !ref <data_dir>/<train_data_name> # path to original or anonymized training data for ASV
+      train_config: evaluation/privacy/asv/asv_train/hparams/train_ecapa_tdnn_small.yaml
+      finetuning: false # true (ft) or false (scratch)
+      pretrained_model: null # path to pretrained model, only used for finetuning
+      lr: 0.01
+      epochs: 10
+      batch_size: 256
+      num_utt: ALL  # ALL or specific number, number of utterances per speaker
+      utt_selection: spk-diverse-sess  # select utterances per speaker and session (spk-sess), per speaker and randomly across all sessions (spk-random), per speaker and balanced across sessions (spk-diverse-sess)
+      num_spk: ALL  # ALL or specific number, number of speakers
+      retrain: true  # retrain in any case (true) or skip training if model exists (false)
 
     evaluation:
       model_dir: !ref <exp_dir>/asv_anon_<privacy[asv][model_type]><anon_data_suffix>_scratch  # path to existing ASV model or output for trained ASV model

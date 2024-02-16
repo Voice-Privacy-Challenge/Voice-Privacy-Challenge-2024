@@ -104,7 +104,6 @@ if __name__ == '__main__':
             if 'evaluation' in asv_params:
                 logging.info('Perform ASV evaluation')
                 model_dir = params['privacy']['asv']['evaluation']['model_dir']
-                model_dir = scan_checkpoint(model_dir, 'CKPT')
                 start_time = time.time()
                 eval_data_name = params['privacy']['asv']['dataset_name']
                 eval_pairs = []
