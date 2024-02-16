@@ -25,7 +25,7 @@ import itertools
 
 from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, train_asr_eval, evaluate_ser
 from utils import (parse_yaml, scan_checkpoint, combine_asr_data, get_datasets,
-                   save_yaml)
+                   save_yaml, check_dependencies)
 
 def get_evaluation_steps(params):
     eval_steps = {}
@@ -71,6 +71,7 @@ def save_result_summary(out_dir, results_dict, config):
 
 
 if __name__ == '__main__':
+    check_dependencies('requirements.txt')
     multiprocessing.set_start_method("fork",force=True)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
 
@@ -173,7 +174,6 @@ if __name__ == '__main__':
 
                         if 'trials' not in d and 'enrolls' not in d:
                             eval_asr.append(d['data'])
-                            print("A", eval_asr)
                         else:
                             eval_asr.append(d['name']+"_asr")
 

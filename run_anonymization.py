@@ -3,9 +3,10 @@ from pathlib import Path
 from argparse import ArgumentParser
 import torch
 
-from utils import parse_yaml, get_datasets
+from utils import parse_yaml, get_datasets, check_dependencies
 
 if __name__ == '__main__':
+    check_dependencies('requirements.txt')
     parser = ArgumentParser()
     parser.add_argument('--config', default='anon_config.yaml')
     parser.add_argument('--gpu_ids', default='0')

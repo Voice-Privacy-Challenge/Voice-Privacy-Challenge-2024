@@ -58,6 +58,7 @@ echo "eval \"\$($mamba_bin shell hook --shell=bash)\"" >> env.sh
 echo "micromamba activate $venv_dir" >> env.sh
 echo "export LD_LIBRARY_PATH=$venv_dir/lib/:$LD_LIBRARY_PATH" >> env.sh
 echo "alias conda=micromamba" >> env.sh
+echo "export PIP_REQUIRE_VIRTUALENV=false" >> env.sh
 source ./env.sh
 
 
@@ -74,13 +75,13 @@ echo "export CUDAROOT=$CUDAROOT" >> env.sh
 source ./env.sh
 
 
-cuda_version_witout_dot=$(echo $CUDA_VERSION | xargs | sed 's/\.//')
+cuda_version_without_dot=$(echo $CUDA_VERSION | xargs | sed 's/\.//')
 mark=.done-pytorch
 if [ ! -f $mark ]; then
   echo " == Installing pytorch $TORCH_VERSION for cuda $CUDA_VERSION =="
-  version="==$TORCH_VERSION+cu$cuda_version_witout_dot"
-  echo -e "\npip3 install torch$version torchvision torchaudio --force-reinstall --index-url https://download.pytorch.org/whl/${nightly}cu$cuda_version_witout_dot\n"
-  pip3 install torch$version torchvision torchaudio --force-reinstall --index-url https://download.pytorch.org/whl/${nightly}cu$cuda_version_witout_dot \
+  version="==$TORCH_VERSION+cu$cuda_version_without_dot"
+  echo -e "\npip3 install torch$version torchvision torchaudio --force-reinstall --index-url https://download.pytorch.org/whl/${nightly}cu$cuda_version_without_dot\n"
+  pip3 install torch$version torchvision torchaudio --force-reinstall --index-url https://download.pytorch.org/whl/${nightly}cu$cuda_version_without_dot \
     || { echo "Failed to find pytorch $TORCH_VERSION for cuda '$CUDA_VERSION', use specify other torch/cuda version (with variables in install.sh script)"  ; exit 1; }
   python3 -c "import torch; print('Torch version:', torch.__version__)" || exit 1
   touch $mark
