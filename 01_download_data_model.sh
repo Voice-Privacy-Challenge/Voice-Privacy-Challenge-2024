@@ -50,15 +50,14 @@ if [ ! -d $check ]; then
 fi
 
 check_data=data/libri_dev_enrolls
-#Download kaldi format datadir and SpeechBrain pretrained ASV/ASR models
 if [ ! -d $check_data ]; then
     if  [ ! -f .data.zip ]; then
         echo "Download VPC kaldi format datadir..."
         wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data.zip
     fi
     echo "Unpacking data"
-    unzip data.zip
     mv data.zip .data.zip
+    unzip .data.zip
 fi
 
 for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
@@ -68,10 +67,10 @@ for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
             wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/pre_model_${model}.zip
         fi
         echo "Unpacking pretrained evaluation models"
-        unzip pre_model_${model}.zip
         mv pre_model_${model}.zip .pre_model_${model}.zip
+        unzip .pre_model_${model}.zip
     fi
-fi
+done
 
 #Download GAN pre-models only if perform GAN anonymization
 if [ ! -d models ]; then
