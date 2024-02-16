@@ -17,8 +17,6 @@ num_spk: ALL
 utt_selected_ways: spk-random
 pretrained_path: !PLACEHOLDER
 
-anon: !PLACEHOLDER #True or False
-
 # Data files
 data_folder: !PLACEHOLDER  # e.g. /path/to/Voxceleb
 train_annotation: !ref <save_folder>/train.csv

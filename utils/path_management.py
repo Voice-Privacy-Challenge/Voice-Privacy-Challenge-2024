@@ -2,13 +2,21 @@ from pathlib import Path
 import shutil
 import os
 import glob
+from multiprocessing import Manager
 
-
-def create_clean_dir(dir_name:Path):
-    if dir_name.exists():
+def create_clean_dir(dir_name:Path, force:bool = True):
+    if dir_name.exists() and force:
         remove_contents_in_dir(dir_name)
     else:
         dir_name.mkdir(exist_ok=True, parents=True)
+
+
+def copy_data_dir(dataset_path, output_path):
+    # Copy utt2spk wav.scp and so on, but not the directories inside (may contains clear or anonymzied *.wav)
+    os.makedirs(output_path, exist_ok=True)
+    for p in glob.glob(str(dataset_path / '*'), recursive=False):
+        if os.path.isfile(p):
+            shutil.copy(p, output_path)
 
 
 def remove_contents_in_dir(dir_name:Path):
@@ -47,17 +55,14 @@ def get_datasets(config):
     datasets = {}
     data_dir = config.get('data_dir', None).expanduser() # if '~' is given in path then manually expand
     for dataset in config['datasets']:
-        if data_dir:
-            if 'train-clean-360' in dataset['name']:
-                datasets[dataset['name']] = Path(data_dir, dataset['name'])
-            else:
-                for subset in dataset['enrolls'] + dataset['trials']:
-                    dataset_name = f'{dataset["data"]}_{dataset["set"]}_{subset}'
+        no_sub = True
+        for subset in ['trials', 'enrolls']:
+            if subset in dataset:
+                for subset in dataset[subset]:
+                    dataset_name = f'{dataset["data"]}{subset}'
                     datasets[dataset_name] = Path(data_dir, dataset_name)
-        else:
-            dataset_path = Path(dataset['name'])
-            for subset in dataset['enrolls'] + dataset['trials']:
-                dataset_name = f'{dataset_path.name}_{subset}'
-                datasets[dataset_name] = dataset_path
+                    no_sub = False
+        if no_sub:
+            dataset_name = f'{dataset["data"]}'
+            datasets[dataset_name] = Path(data_dir, dataset_name)
     return datasets
-

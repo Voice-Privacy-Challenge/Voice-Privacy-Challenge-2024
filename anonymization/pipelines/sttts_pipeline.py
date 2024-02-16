@@ -17,7 +17,7 @@ from utils import prepare_evaluation_data, save_yaml
 logger = logging.getLogger(__name__)
 
 class STTTSPipeline:
-    def __init__(self, config: dict, force_compute: bool, devices: list):
+    def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
         Instantiates a STTTSPipeline with the complete feature extraction,
         modification and resynthesis.

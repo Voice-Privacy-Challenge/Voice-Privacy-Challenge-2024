@@ -83,7 +83,7 @@ class ASV:
         save_kaldi_format(selected_wav_scp, out_dir / 'wav.scp')
         save_kaldi_format(selected_utt2spk, out_dir / 'utt2spk')
         save_kaldi_format(selected_spk2gender, out_dir / 'spk2gender')
-       
+
     def eer_compute(self, enrol_dir, test_dir, trial_runs_file):
         # Compute all enrol(spk level) and Test(utt level) embeddings
         # enroll vectors are the speaker-level average vectors
@@ -130,7 +130,7 @@ class ASV:
         # min_dcf, th = minDCF(torch.tensor(positive_scores), torch.tensor(negative_scores))
         with open(save_dir / 'EER', 'w') as f:
             f.write(str(eer))
-        
+
         return eer
 
     def compute_distances(self, enrol_vectors, enrol_ids, test_vectors, test_ids):

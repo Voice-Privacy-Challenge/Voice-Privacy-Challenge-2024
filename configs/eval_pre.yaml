@@ -1,0 +1,61 @@
+data_dir: data
+exp_dir: exp
+
+anon_data_suffix: _dsp # added to transform data/libri_dev/ to data/libri_dev_dsp/
+
+results_summary_dir: !ref <exp_dir>/results_summary/eval_pre<anon_data_suffix>
+
+datasets:
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+  - name: IEMOCAP_test
+    data: IEMOCAP_test
+  - name: libri_dev
+    data: libri_dev
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: libri_test
+    data: libri_test
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+
+
+eval_steps:  # all metrics in this list will be computed in the evaluation. Remove entry to skip
+  privacy:
+    - asv
+  utility:
+    - asr
+    - ser
+
+privacy:
+  asv:
+    dataset_name: [libri_dev, libri_test]
+    model_name: asv_pre_ecapa
+    model_type: ecapa
+
+    evaluation:
+      model_dir: !ref <exp_dir>/<privacy[asv][model_name]>  # path to existing ASV model or output for trained ASV model
+      results_dir: !ref <exp_dir>/<privacy[asv][model_name]>  # path to save evaluation results
+      distance: cosine  # cosine or plda
+      plda:   # ignored if distance is not plda
+        model_dir: null  # path to trained PLDA or output of PLDA training
+        train_data_dir: null # path to PLDA training data
+        anon: null # trained on anonymized (true) or original (false) data
+
+utility:
+  ser:
+    dataset_name: [IEMOCAP_dev, IEMOCAP_test]
+    model_name: ser_pre_sb  # name for ASR model
+
+    evaluation:
+      model_dir: !ref <exp_dir>/<utility[ser][model_name]>
+      results_dir: !ref <exp_dir>/<utility[ser][model_name]>
+
+  asr:
+    dataset_name: [libri_dev, libri_test, IEMOCAP_dev, IEMOCAP_test]
+    model_name: asr_pre_sb  # name for ASR model
+
+    evaluation:
+      model_dir: !ref <exp_dir>/<utility[asr][model_name]>
+      eval_batchsize: 2 # eval_batchsize(32g)=3 ->9h eval_batchsize=2->12h eval_batchsize(12GB)=1->24h
+      results_dir: !ref <exp_dir>/<utility[asr][model_name]>

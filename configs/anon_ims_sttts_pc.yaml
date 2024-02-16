@@ -42,7 +42,7 @@ modules:
     vec_type: style-embed
     emb_model_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
     emb_level: spk   # possible: spk, utt
-    anon_method: !include:anon/ims_gan.yaml    # possible: pool, random
+    anon_method: !include:anon_ims_sttts_pc/ims_gan.yaml    # possible: pool, random
       models_dir: !ref <models_dir>
       save_intermediate: !ref <save_intermediate>
       vec_type: !ref <modules[speaker_embeddings][vec_type]>

@@ -2,6 +2,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from speechbrain.pretrained import EncoderClassifier
+import logging
 
 
 class SpeechBrainVectors:
@@ -20,8 +21,9 @@ class SpeechBrainVectors:
                 savedir = model_path.parent
             else:
                 savedir = model_path
+            logging.info(f"Loading {savedir}")
             self.extractor = EncoderClassifier.from_hparams(
-                    source=str(model_path), 
+                    source=str(savedir),
                     savedir=str(savedir),
                     run_opts={'device': self.device}
                 )

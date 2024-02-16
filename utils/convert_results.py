@@ -143,7 +143,7 @@ def _convert_orig_results_deid_pitch(in_file):
         std = float(splitted_line[-1].replace('std=', ''))
         return tag, mean, std
 
-    results = defaultdict(lambda: {'dataset': None, 'split': None, 'gender': None, 'DeID': None, 'GVD': None,
+    results = defaultdict(lambda: {'dataset': None, 'split': None, 'gender': None, 'DeID': None,
                                    'Pitch corr mean': None, 'Pitch corr std': None})
 
     with open(in_file, 'r') as f:
@@ -175,14 +175,11 @@ def _convert_orig_results_deid_pitch(in_file):
                     split, gender = get_split_and_gender(line)
             elif line.startswith('De-Identification'):
                 deid = float(line.replace('De-Identification : ', ''))
-            elif line.startswith('Gain of voice distinctiveness'):
-                gvd = float(line.replace('Gain of voice distinctiveness : ', ''))
 
                 results[tag]['dataset'] = dataset
                 results[tag]['split'] = split
                 results[tag]['gender'] = gender
                 results[tag]['DeID'] = deid
-                results[tag]['GVD'] = gvd
 
                 tag = None
                 dataset = None

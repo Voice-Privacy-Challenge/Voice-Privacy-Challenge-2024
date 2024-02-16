@@ -3,12 +3,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 import torch
 
-from anonymization.pipelines.sttts_pipeline import STTTSPipeline
 from utils import parse_yaml, get_datasets
-
-PIPELINES = {
-    'sttts': STTTSPipeline
-}
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -19,7 +14,6 @@ if __name__ == '__main__':
 
     config = parse_yaml(Path('configs', args.config))
     datasets = get_datasets(config)
-    #datasets = {'train-clean-360': Path(config['data_dir'], 'train-clean-360')}
 
     gpus = args.gpu_ids.split(',')
 
@@ -32,6 +26,13 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
+        if config['pipeline'] == "dsp":
+            from anonymization.pipelines.dsp_pipeline import DSPPipeline as pipeline
+        elif config['pipeline'] == "sttts":
+            from anonymization.pipelines.sttts_pipeline import STTTSPipeline as pipeline
+        else:
+            raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")
+
         logging.info(f'Running pipeline: {config["pipeline"]}')
-        pipeline = PIPELINES[config['pipeline']](config=config, force_compute=args.force_compute, devices=devices)
-        pipeline.run_anonymization_pipeline(datasets)
+        p = pipeline(config=config, force_compute=args.force_compute, devices=devices)
+        p.run_anonymization_pipeline(datasets)

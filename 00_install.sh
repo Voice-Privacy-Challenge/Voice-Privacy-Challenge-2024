@@ -57,6 +57,7 @@ echo "#!/bin/bash" >> env.sh
 echo "eval \"\$($mamba_bin shell hook --shell=bash)\"" >> env.sh
 echo "micromamba activate $venv_dir" >> env.sh
 echo "export LD_LIBRARY_PATH=$venv_dir/lib/:$LD_LIBRARY_PATH" >> env.sh
+echo "alias conda=micromamba" >> env.sh
 source ./env.sh
 
 

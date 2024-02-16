@@ -20,7 +20,6 @@ valid_annotation: !ref <save_folder>/dev.csv
 num_utt: !PLACEHOLDER
 num_spk: !PLACEHOLDER
 utt_selected_ways: !PLACEHOLDER
-anon: !PLACEHOLDER #True or False
 skip_prep: False
 ckpt_interval_minutes: 15 # save checkpoint every N min
 

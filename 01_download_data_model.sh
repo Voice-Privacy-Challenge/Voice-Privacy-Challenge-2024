@@ -50,24 +50,27 @@ if [ ! -d $check ]; then
 fi
 
 check_data=data/libri_dev_enrolls
-check_model=exp/asv_pre_ecapa
 #Download kaldi format datadir and SpeechBrain pretrained ASV/ASR models
 if [ ! -d $check_data ]; then
-    if  [ ! -f data.zip ]; then
+    if  [ ! -f .data.zip ]; then
         echo "Download VPC kaldi format datadir..."
-        wget https://github.com/DigitalPhonetics/VoicePAT/releases/download/v2/data.zip
+        wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data.zip
     fi
     echo "Unpacking data"
     unzip data.zip
+    mv data.zip .data.zip
 fi
 
-if [ ! -d $check_model ]; then
-    if [ ! -f pre_model.zip ]; then
-        echo "Download pretrained ASV & ASR models trained using original train-clean-360..."
-        wget https://github.com/DigitalPhonetics/VoicePAT/releases/download/v2/pre_model.zip
+for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
+    if [ ! -d "exp/$model" ]; then
+        if [ ! -f .pre_model_${model}.zip ]; then
+            echo "Download pretrained $model models pre-trained..."
+            wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/pre_model_${model}.zip
+        fi
+        echo "Unpacking pretrained evaluation models"
+        unzip pre_model_${model}.zip
+        mv pre_model_${model}.zip .pre_model_${model}.zip
     fi
-    echo "Unpacking pretrained evaluation models"
-    unzip pre_model.zip
 fi
 
 #Download GAN pre-models only if perform GAN anonymization
@@ -84,5 +87,18 @@ if [ ! -d models ]; then
 fi
 
 
-
+# IEMOCAP_full_release
+if [ ! -d "data/IEMOCAP/wav/Session1" ]; then
+    mkdir -p ./data/IEMOCAP/
+    cat << EOF
+==============================================================================
+    Plase download or link the IEMOCAP corpus to './data/IEMOCAP/wav'
+      - Download IEMOCAP from its web-page (license agreement is required)
+          - https://sail.usc.edu/iemocap/
+      - Link
+          - ln -s YOUR_PATH data/IEMOCAP/wav/
+==============================================================================
+EOF
+exit 1
+fi
 

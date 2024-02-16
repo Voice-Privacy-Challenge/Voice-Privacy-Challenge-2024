@@ -22,7 +22,6 @@ utt_selected_ways: spk-random
 pretrained_path: !PLACEHOLDER
 
 
-anon: !PLACEHOLDER #True or False
 skip_prep: False
 ckpt_interval_minutes: 15 # save checkpoint every N min
 

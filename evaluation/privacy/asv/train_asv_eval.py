@@ -23,7 +23,6 @@ def asv_train_speechbrain(train_params, output_dir):
         'num_spk': train_params['num_spk'],
         'utt_selected_ways': train_params['utt_selection'],
         'number_of_epochs': train_params['epochs'],
-        'anon': train_params['anon'],
         'data_folder': str(train_params['train_data_dir']),
         'output_folder': str(output_dir)
     }

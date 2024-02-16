@@ -23,9 +23,9 @@ import time
 import shutil
 import itertools
 
-from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, train_asr_eval, evaluate_gvd
+from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, train_asr_eval, evaluate_ser
 from utils import (parse_yaml, scan_checkpoint, combine_asr_data, get_datasets,
-                   prepare_evaluation_data, get_anon_wav_scps, save_yaml)
+                   save_yaml)
 
 def get_evaluation_steps(params):
     eval_steps = {}
@@ -47,66 +47,17 @@ def get_evaluation_steps(params):
     return eval_steps
 
 
-def get_eval_trial_datasets(datasets_list):
-    eval_pairs = []
-
-    for dataset in datasets_list:
-        if 'train-clean-360' in dataset['name']:
-            continue
-        eval_pairs.extend([(f'{dataset["data"]}_{dataset["set"]}_{enroll}',
-                            f'{dataset["data"]}_{dataset["set"]}_{trial}')
-                           for enroll, trial in itertools.product(dataset['enrolls'], dataset['trials'])])
-    return eval_pairs
-
-
-
-def check_anon_dir(datasets_list, eval_data_dir, anon_suffix):
-    for dataset in datasets_list:
-        if not os.path.exists(f'{eval_data_dir}/{dataset["data"]}_{dataset["set"]}_enrolls_{anon_suffix}'):
-            print(f'Not exits:{eval_data_dir}/{dataset["data"]}_{dataset["set"]}_enrolls_{anon_suffix}, try to create')
-            return False
-        for trial in dataset["trials"]:
-            if not os.path.exists(f'{eval_data_dir}/{dataset["data"]}_{dataset["set"]}_{trial}_{anon_suffix}'):
-                return False
-
-    return True
-
-def get_eval_asr_datasets(datasets_list, eval_data_dir, anon_suffix):
-    # combines the trial subsets (trial_f, trial_m) of each dataset into one asr dataset
-    eval_data = set()
-
-    # in case one bigger dataset is divided into smaller parts we need to
-    # collect all parts together to create one asr dataset for the whole instead of for each subpart
-    collated_datasets = defaultdict(list)
-    for dataset in datasets_list:
-        if 'train-clean-360' in dataset['name']:
-            continue
-        asr_dataset_name = f'{dataset["data"]}_{dataset["set"]}_asr'
-        collated_datasets[asr_dataset_name].append(dataset)
-
-    for asr_dataset_name, datasets in collated_datasets.items():
-        for asr_dataset in (asr_dataset_name, f'{asr_dataset_name}_{anon_suffix}'): # for orig and anon
-            if not Path(eval_data_dir / asr_dataset).exists():
-                trial_dirs = []
-                for dataset in datasets:
-                    for trial in dataset['trials']:
-                        if anon_suffix in asr_dataset:
-                            trial_dirs.append(Path(eval_data_dir / f'{dataset["data"]}_{dataset["set"]}_{trial}_{anon_suffix}'))
-                        else:
-                            trial_dirs.append(Path(eval_data_dir / f'{dataset["data"]}_{dataset["set"]}_{trial}'))
-                output_dir = Path(eval_data_dir / asr_dataset)
-                combine_asr_data(input_dirs=trial_dirs, output_dir=output_dir)
-        eval_data.add(asr_dataset_name)
-
-    return list(eval_data)
-
-
 def save_result_summary(out_dir, results_dict, config):
     out_dir.mkdir(parents=True, exist_ok=True)
     save_yaml(config, out_dir / 'config.yaml')
 
     with open(out_dir / 'results.txt', 'w') as f:
         f.write(f'---- Time: {datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")} ----\n')
+        if 'ser' in results_dict:
+            f.write('\n')
+            f.write('---- SER results ----\n')
+            f.write(results_dict['ser'].sort_values(by=['dataset', 'split']).to_string())
+            f.write('\n')
         if 'asv' in results_dict:
             f.write('\n')
             f.write('---- ASV results ----\n')
@@ -117,11 +68,6 @@ def save_result_summary(out_dir, results_dict, config):
             f.write('---- ASR results ----\n')
             f.write(results_dict['asr'].sort_values(by=['dataset', 'split']).to_string())
             f.write('\n')
-        if 'gvd' in results_dict:
-            f.write('\n')
-            f.write('---- GVD results ----\n')
-            f.write(results_dict['gvd'].sort_values(by=['dataset', 'split']).to_string())
-            f.write('\n')
 
 
 if __name__ == '__main__':
@@ -131,26 +77,10 @@ if __name__ == '__main__':
     params = parse_yaml(Path('configs', args.config))
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    eval_data_dir = params['eval_data_dir']
+    eval_data_dir = params['data_dir']
     anon_suffix = params['anon_data_suffix']
     eval_steps = get_evaluation_steps(params)
 
-    if "anon_data_dir" in params:
-        logger.info("Preparing datadir according to the Kaldi format.")
-        now = datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")
-        datasets = get_datasets(params)
-        anon_wav_scps = get_anon_wav_scps(params['anon_data_dir'])
-        output_path = params['exp_dir'] / 'formatted_data' / now
-        prepare_evaluation_data(
-            dataset_dict=datasets,
-            anon_wav_scps=anon_wav_scps,
-            anon_suffix='_' + anon_suffix,
-            output_path=output_path,
-        )
-        eval_data_dir = output_path
-
-    eval_data_trials = get_eval_trial_datasets(params['datasets'])
-    eval_data_asr = get_eval_asr_datasets(params['datasets'], eval_data_dir=eval_data_dir, anon_suffix=anon_suffix)
     results = {}
 
     # make sure given paths exist
@@ -159,49 +89,62 @@ if __name__ == '__main__':
     if 'privacy' in eval_steps:
         if 'asv' in eval_steps['privacy']:
             asv_params = params['privacy']['asv']
-            model_dir = params['privacy']['asv']['model_dir']
             if 'training' in asv_params:
+                model_dir = params['privacy']['asv']['training']['model_dir']
                 asv_train_params = asv_params['training']
                 if not model_dir.exists() or asv_train_params.get('retrain', True) is True:
                     start_time = time.time()
                     logging.info('Perform ASV training')
-                    train_asv_eval(train_params=asv_train_params, output_dir=asv_params['model_dir'])
+                    train_asv_eval(train_params=asv_train_params, output_dir=model_dir)
                     logging.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
                     model_dir = scan_checkpoint(model_dir, 'CKPT')
-                    shutil.copy('evaluation/privacy/asv/asv_train/hparams/ecapa/hyperparams.yaml', model_dir)
+                    shutil.copy(asv_train_params['train_config'], model_dir)
 
             if 'evaluation' in asv_params:
                 logging.info('Perform ASV evaluation')
+                model_dir = params['privacy']['asv']['evaluation']['model_dir']
+                model_dir = scan_checkpoint(model_dir, 'CKPT')
                 start_time = time.time()
-                asv_results = evaluate_asv(eval_datasets=eval_data_trials, eval_data_dir=eval_data_dir,
+                eval_data_name = params['privacy']['asv']['dataset_name']
+                eval_pairs = []
+                for name in eval_data_name:
+                    for d in params['datasets']:
+                        if d['name'] != name:
+                            continue
+                        if 'enrolls' not in d or 'trials' not in d:
+                            raise ValueError(f"{name} is missing an ASV enrolls/trials split")
+                    eval_pairs.extend([(f'{d["data"]}{enroll}',
+                                        f'{d["data"]}{trial}')
+                                       for enroll, trial in itertools.product(d['enrolls'], d['trials'])])
+                asv_results = evaluate_asv(eval_datasets=eval_pairs, eval_data_dir=eval_data_dir,
                                            params=asv_params, device=device,  model_dir=model_dir,
                                            anon_data_suffix=anon_suffix)
                 results['asv'] = asv_results
                 logging.info("--- EER computation time: %f min ---" % (float(time.time() - start_time) / 60))
 
     if 'utility' in eval_steps:
+        if 'ser' in eval_steps['utility']:
+            print('Perform SER evaluation')
+            eval_data_name = params['utility']['ser']['dataset_name']
+            ser_eval_params = params['utility']['ser']['evaluation']
+            models_path = ser_eval_params['model_dir']
+
+            eval_ser = []
+            for name in eval_data_name:
+                for d in params['datasets']:
+                    if d['name'] != name:
+                        continue
+                    eval_ser.append(d['data'])
+            start_time = time.time()
+            ser_results = evaluate_ser(eval_ser, eval_data_dir, models_path, anon_data_suffix=anon_suffix, params=ser_eval_params, device=device)
+            results['ser'] = ser_results
+            print("--- SER evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
+
         if 'asr' in eval_steps['utility']:
             asr_params = params['utility']['asr']
-            
+
             model_name = asr_params['model_name']
-            backend = asr_params['backend'].lower()
-
-
-            if 'training' in asr_params:
-                asr_train_params = asr_params['training']
-                model_dir = asr_train_params['model_dir']
-                if "anon_libri_360" in params:
-                    asr_train_params['train_data_dir'] = output_path
-                if not model_dir.exists() or asr_train_params.get('retrain', True) is True:
-                    start_time = time.time()
-                    print('Perform SpeechBrain ASR training')
-                    train_asr_eval(params=asr_train_params)
-                    model_dir_old = model_dir
-                    model_dir = scan_checkpoint(model_dir, 'CKPT')
-                    shutil.copy('evaluation/utility/asr/speechbrain_asr/asr_train/hparams/transformer_inference.yaml', model_dir)
-                    shutil.copy(model_dir_old / 'lm.ckpt', model_dir)
-                    shutil.copy(model_dir_old / 'tokenizer.ckpt', model_dir)
-                    print("--- ASR training time: %f min ---" % (float(time.time() - start_time) / 60))
+            backend = asr_params.get('backend', 'speechbrain').lower()
 
             if 'evaluation' in asr_params:
                 asr_eval_params = asr_params['evaluation']
@@ -213,21 +156,32 @@ if __name__ == '__main__':
 
                 start_time = time.time()
                 print('Perform ASR evaluation')
-                asr_results = evaluate_asr(eval_datasets=eval_data_asr, eval_data_dir=eval_data_dir,
+                eval_data_name = params['utility']['asr']['dataset_name']
+                eval_asr = []
+                for name in eval_data_name:
+                    for d in params['datasets']:
+                        if d['name'] != name:
+                            continue
+                        for suff in  ["", anon_suffix]:
+                            splits_to_combine = []
+                            if 'enrolls' in d:
+                                splits_to_combine += list(map(lambda x: str(params['data_dir'])+"/"+d['data']+x+suff, d['enrolls']))
+                                combine_asr_data(splits_to_combine, str(params['data_dir'])+"/"+d['name']+"_asr"+suff)
+                            if 'trials' in d:
+                                splits_to_combine += list(map(lambda x: str(params['data_dir'])+"/"+d['data']+x+suff, d['trials']))
+                                combine_asr_data(splits_to_combine, str(params['data_dir'])+"/"+d['name']+"_asr"+suff)
+
+                        if 'trials' not in d and 'enrolls' not in d:
+                            eval_asr.append(d['data'])
+                            print("A", eval_asr)
+                        else:
+                            eval_asr.append(d['name']+"_asr")
+
+                asr_results = evaluate_asr(eval_datasets=eval_asr, eval_data_dir=eval_data_dir,
                                            params=asr_eval_params, model_path=asr_model_path,
                                            anon_data_suffix=anon_suffix, device=device, backend=backend)
                 results['asr'] = asr_results
                 print("--- ASR evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
-
-
-        if 'gvd' in eval_steps['utility']:
-            gvd_params = params['utility']['gvd']
-            start_time = time.time()
-            logging.info('Perform GVD evaluation')
-            gvd_results = evaluate_gvd(eval_datasets=eval_data_trials, eval_data_dir=eval_data_dir, params=gvd_params,
-                                       device=device, anon_data_suffix=anon_suffix)
-            results['gvd'] = gvd_results
-            logging.info("--- GVD  computation time: %f min ---" % (float(time.time() - start_time) / 60))
 
     if results:
         now = datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")
