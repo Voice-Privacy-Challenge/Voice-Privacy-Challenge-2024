@@ -4,6 +4,9 @@ set -e
 
 source env.sh
 
+# librispeech_corpus=PATH_TO_Librispeech
+# iemocap_corpus=PATH_TO_IEMOCAP
+
 for data_set in libri_dev libri_test; do
     dir=data/$data_set
     if [ ! -f $dir/wav.scp ] ; then
@@ -34,8 +37,23 @@ fi
 
 done
 
-#Download LibriSpeech-360
+
 check=corpora/LibriSpeech/train-clean-360
+if [ ! -d $check ]; then
+    if [ ! -z $librispeech_corpus ]; then
+        if [ -d $librispeech_corpus/train-clean-360 ]; then
+            [ -d corpora/LibriSpeech ] && rm corpora/LibriSpeech
+            echo "Linking '$librispeech_corpus' to 'corpora'"
+            mkdir -p corpora
+            ln -s $librispeech_corpus corpora
+        else
+          echo "librispeech_corpus is defined to '$librispeech_corpus', but '$librispeech_corpus/train-clean-360' does not exists."
+          echo "Either remove the librispeech_corpus variable from the $0 script to download the dataset or modify it to the correct target."
+          exit 1
+        fi
+    fi
+fi
+#Download LibriSpeech-360
 if [ ! -d $check ]; then
     echo "Download train-clean-360..."
     mkdir -p corpora
@@ -45,7 +63,7 @@ if [ ! -d $check ]; then
         wget --no-check-certificate https://www.openslr.org/resources/12/train-clean-360.tar.gz
     fi
     echo "Unpacking train-clean-360"
-    tar -xvzf train-clean-360.tar.gz
+    tar -xzf train-clean-360.tar.gz
     cd ../
 fi
 
@@ -85,6 +103,19 @@ if [ ! -d models ]; then
     rm models/*.zip
 fi
 
+
+if [ ! -d "data/IEMOCAP/wav/Session1" ]; then
+    if [ ! -z $iemocap_corpus ]; then
+        if [ -d $iemocap_corpus/Session1 ]; then
+            echo "Linking '$iemocap_corpus' to 'data/IEMOCAP/wav'"
+            ln -s $iemocap_corpus data/IEMOCAP/wav
+        else
+          echo "iemocap_corpus is defined to '$iemocap_corpus', but '$iemocap_corpus/Session1' does not exists."
+          echo "Please fix your path to iemocap_corpus in the $0 script."
+          exit 1
+        fi
+    fi
+fi
 
 # IEMOCAP_full_release
 if [ ! -d "data/IEMOCAP/wav/Session1" ]; then

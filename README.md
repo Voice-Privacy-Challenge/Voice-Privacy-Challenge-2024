@@ -9,7 +9,9 @@
 
 ## Download data and pretrianed models
 
-`./01_download_data_model.sh` Password required, please register to get password.
+`./01_download_data_model.sh` Password required, please register to get password.  
+You can modify the `librispeech_corpus` variable to avoid downloading LibriSpeech 360.  
+You should modify the `iemocap_corpus` variable to where it is located on your server.
 
 ### B2 Anonymization + Evaluation 
 If you would like to generate B2 audio and evaluate it without modifying, or submit Python scripts separately, simply run
