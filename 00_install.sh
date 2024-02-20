@@ -22,7 +22,7 @@ MAMBA_VERSION=1.5.1-0
 CUDA_VERSION=11.7
 TORCH_VERSION=2.0.1
 
-MAMBA_PACKAGES_TO_INSTALL="sshpass sox libflac inotify-tools git-lfs ffmpeg wget make cmake ncurses ninja python=3.10 nvtop automake libtool gxx=12.3.0 gcc=12.3.0 python-sounddevice"
+MAMBA_PACKAGES_TO_INSTALL="sshpass sox libflac inotify-tools git-lfs ffmpeg wget make cmake ncurses ninja python=3.10 nvtop automake libtool gxx=12.3.0 gcc=12.3.0 python-sounddevice tar libacl"
 
 ESPAK_VERSION=1.51.1
 
@@ -99,7 +99,6 @@ fi
 mark=.done-espeak
 if [ ! -f $mark ]; then
   echo " == Installing G2P espeak-ng =="
-  micromamba install tar libacl --channel conda-forge
   wget https://github.com/espeak-ng/espeak-ng/archive/$ESPAK_VERSION/espeak-ng-$ESPAK_VERSION.tar.gz
   \rm espeak-ng-$ESPAK_VERSION -rf || true
   tar -xvzf ./espeak-ng-$ESPAK_VERSION.tar.gz
