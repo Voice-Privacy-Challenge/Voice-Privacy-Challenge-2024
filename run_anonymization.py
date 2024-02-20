@@ -29,7 +29,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
         if config['pipeline'] == "dsp":
             from anonymization.pipelines.dsp_pipeline import DSPPipeline as pipeline
-        elif config['pipeline'] == "sttts":
+        elif config['pipeline'] == "ims_sttts_pc":
             from anonymization.pipelines.sttts_pipeline import STTTSPipeline as pipeline
         else:
             raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")

@@ -1,16 +1,7 @@
-from shutil import copy
 from pathlib import Path
-import torchaudio
-import os
 from collections import defaultdict
 
 from utils import save_kaldi_format, create_clean_dir, read_kaldi_format
-
-
-def transform_spk2gender(session_spk2gender, session_utt2spk, global_utt2spk):
-    utt2gender = {utt: session_spk2gender[spk] for utt, spk in session_utt2spk.items()}
-    global_spk2gender = {spk: utt2gender[utt] for utt, spk in global_utt2spk.items()}
-    return global_spk2gender
 
 
 def combine_asr_data(input_dirs, output_dir):

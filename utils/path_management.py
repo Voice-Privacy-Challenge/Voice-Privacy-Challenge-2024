@@ -28,14 +28,6 @@ def remove_contents_in_dir(dir_name:Path):
             shutil.rmtree(path)
 
 
-def transform_path(file_path, parent_dir=None):
-    if not file_path:
-        return None
-    file_path = Path(file_path)
-    if parent_dir and not file_path.is_absolute():
-        file_path = parent_dir / file_path
-    return file_path
-
 
 def scan_checkpoint(cp_dir, prefix):
     pattern = os.path.join(cp_dir, prefix + '*****')

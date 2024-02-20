@@ -14,7 +14,6 @@ from .base_anon import BaseAnonymizer
 from .utils.plda_model import PLDAModel
 from ..speaker_extraction import SpeakerExtraction
 from ..speaker_embeddings import SpeakerEmbeddings
-from utils import transform_path
 
 logger = logging.getLogger(__name__)
 

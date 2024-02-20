@@ -44,11 +44,8 @@ class SpeakerExtraction:
         if not model_dir.exists():
             raise FileNotFoundError(f'ASV model {model_dir} does not exist!')
 
-        if not model_dir.exists():
-            raise FileNotFoundError(f'ASV model {model_dir} does not exist!')
-
-        if not (model_dir / "hyperparams.yaml").exists():
-            raise FileNotFoundError(f'ASV model {model_dir} does not exist!')
+        # if not (model_dir / "hyperparams.yaml").exists():
+        #     raise FileNotFoundError(f'ASV model {model_dir / "hyperparams.yaml"} does not exist!')
 
         self.model_hparams = {
             'vec_type': self.vec_type,

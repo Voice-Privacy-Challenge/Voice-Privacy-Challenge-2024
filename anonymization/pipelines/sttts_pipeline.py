@@ -3,6 +3,8 @@ from datetime import datetime
 import logging
 import time
 
+from utils import read_kaldi_format, copy_data_dir, save_kaldi_format
+
 from anonymization.modules import (
     SpeechRecognition,
     SpeechSynthesis,
@@ -12,7 +14,6 @@ from anonymization.modules import (
     SpeakerAnonymization,
 )
 import typing
-from utils import prepare_evaluation_data, save_yaml
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,9 @@ class STTTSPipeline:
         model_dir = Path(config.get("models_dir", "models"))
         vectors_dir = Path(config.get("vectors_dir", "original_speaker_embeddings"))
         self.results_dir = Path(config.get("results_dir", "results"))
+        self.intermediate_dir = Path(config.get("intermediate_dir", "exp/intermediate_dir_stts"))
         self.data_dir = Path(config["data_dir"]) if "data_dir" in config else None
+        self.anon_suffix = config.get("anon_suffix", "ims_sttts")
         save_intermediate = config.get("save_intermediate", True)
 
         modules_config = config["modules"]
@@ -165,17 +168,17 @@ class STTTSPipeline:
                 anon_vectors_path = self.speaker_anonymization.results_dir
             else:
                 anon_vectors_path = self.speaker_extraction.results_dir
-            now = datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")
-            prepare_evaluation_data(
-                dataset_dict=datasets,
-                anon_wav_scps=anon_wav_scps,
-                anon_vectors_path=anon_vectors_path,
-                anon_suffix=self.speaker_anonymization.suffix,
-                output_path=self.results_dir / "formatted_data" / now,
-            )
-            save_yaml(
-                self.config, self.results_dir / "formatted_data" / now / "config.yaml"
-            )
+
+            for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
+                logger.info(f"{i + 1}/{len(datasets)}: Preparing kaldi {dataset_name}...")
+
+                output_path = Path(str(dataset_path) + self.anon_suffix)
+                copy_data_dir(dataset_path, output_path)
+                # Overwrite spk2gender if it has been modify
+                spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
+                save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
+                # Overwrite wav.scp with the paths to the anonymized wavs
+                save_kaldi_format(anon_wav_scps[dataset_name], output_path / 'wav.scp')
 
             logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
 

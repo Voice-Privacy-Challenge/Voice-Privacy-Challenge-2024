@@ -1,44 +1,39 @@
-root_dir : ..
-data_dir: data #TODO adjust path, absolute path
-save_intermediate: true
-save_output: true
+data_dir: data
+results_dir: anon_wav # output example ./data/IEMOCAP_ims_sttts_pc/anon_wav
 
-results_dir: exp/gan_anon/ # TODO adjust path, e.g. <root_dir>/results
-models_dir:  models  # TODO adjust path, e.g. <root_dir>/models
-vectors_dir: !ref <root_dir>/results/original_speaker_embeddings
-
-force_compute_all: false
-#datasets: !include:datasets_vpc2022_official_anon.yaml
+pipeline: ims_sttts_pc
+anon_suffix: !ref _<pipeline>
 
 datasets:
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+  - name: IEMOCAP_test
+    data: IEMOCAP_test
   - name: libri_dev
-    data: libri
-    set: dev
-    enrolls: [enrolls]
-    trials: [trials_f, trials_m]
+    data: libri_dev
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
   - name: libri_test
-    data: libri
-    set: test
-    enrolls: [enrolls]
-    trials: [trials_f, trials_m]
+    data: libri_test
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: train-clean-360
+    data: train-clean-360
 
-
-pipeline: sttts
-
+models_dir:  exp/sttts_models
+save_intermediate: true
+intermediate_dir: !ref exp/anon_pipiline_<pipeline>
 modules:
   asr:
     recognizer: ims
-    force_compute_recognition: false
     model_path: !ref <models_dir>/asr/asr_branchformer_tts-phn_en.zip
     ctc_weight: 0.2
     utt_start_token: "~"
     utt_end_token: "~#"
-    results_path: !ref <results_dir>/transcription/asr_branchformer_tts-phn_en
+    results_path: !ref <intermediate_dir>/transcription/asr_branchformer_tts-phn_en
 
   speaker_embeddings:
     anonymizer: ims
-    force_compute_extraction: false
-    force_compute_anonymization: false
     vec_type: style-embed
     emb_model_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
     emb_level: spk   # possible: spk, utt
@@ -46,13 +41,13 @@ modules:
       models_dir: !ref <models_dir>
       save_intermediate: !ref <save_intermediate>
       vec_type: !ref <modules[speaker_embeddings][vec_type]>
-    extraction_results_path: !ref <results_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
-    anon_results_path: !ref <results_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
+    extraction_results_path: !ref <intermediate_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
+    anon_results_path: !ref <intermediate_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
 
     # pool_anon_settings are only used if anon_method == pool
     pool_anon_settings:
       pool_data_dir: !ref <data_dir>/libritts_train_other_500
-      pool_vec_path: !ref <vectors_dir>/style-embed_spk-level/pool_embeddings
+      pool_vec_path: !ref <intermediate_dir>/original_speaker_embeddings/style-embed_spk-level/pool_embeddings
       N: 200
       N_star: 100
       distance: plda    # possible: plda, cosine
@@ -77,7 +72,7 @@ modules:
   prosody:
     extractor_type: ims
     aligner_model_path: !ref <models_dir>/tts/Aligner/aligner.pt
-    extraction_results_path: !ref <results_dir>/original_prosody/ims_extractor
+    extraction_results_path: !ref <intermediate_dir>/original_prosody/ims_extractor
     #anonymizer_type: ims  # uncomment following lines to use random offset modification
     #random_offset_lower: null
     #random_offset_higher: null
@@ -85,9 +80,8 @@ modules:
 
   tts:
     synthesizer: ims
-    force_compute_synthesis: false
     fastspeech_path: !ref <models_dir>/tts/FastSpeech2_Multi/prosody_cloning.pt
     hifigan_path: !ref <models_dir>/tts/HiFiGAN_combined/best.pt
     embeddings_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
     output_sr: 16000
-    results_path: !ref <results_dir>/anon_speech/ims_sttts_pc
+    results_path: !ref <intermediate_dir>/anon_speech/ims_sttts_pc
