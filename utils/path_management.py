@@ -42,14 +42,13 @@ def scan_checkpoint(cp_dir, prefix):
     cp_list = glob.glob(pattern)
     if len(cp_list) == 0:
         return None
-    cp_list_by_name = sorted([(int(ckpt.split(prefix)[-1]), ckpt) for ckpt in cp_list])
-    return Path(cp_list_by_name[-1][1])
 
-
-def find_asv_model_checkpoint(model_dir):
-    if list(model_dir.glob('CKPT+*')):  # select latest checkpoint
-        model_dir = scan_checkpoint(model_dir, 'CKPT')
-    return model_dir
+    try:
+        cp_list_by_name = sorted([(int(ckpt.split(prefix)[-1]), ckpt) for ckpt in cp_list])
+        return Path(cp_list_by_name[-1][1])
+    except ValueError:
+        # Handle the case where conversion to int fails
+        return None
 
 
 def get_datasets(config):

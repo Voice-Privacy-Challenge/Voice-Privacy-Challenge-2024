@@ -100,10 +100,12 @@ if __name__ == '__main__':
                     logging.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
                     model_dir = scan_checkpoint(model_dir, 'CKPT')
                     shutil.copy(asv_train_params['train_config'], model_dir)
+                    shutil.copy(asv_train_params['infer_config'], model_dir)
 
             if 'evaluation' in asv_params:
                 logging.info('Perform ASV evaluation')
                 model_dir = params['privacy']['asv']['evaluation']['model_dir']
+                model_dir = scan_checkpoint(model_dir, 'CKPT+') or model_dir
                 start_time = time.time()
                 eval_data_name = params['privacy']['asv']['dataset_name']
                 eval_pairs = []

@@ -1,7 +1,6 @@
 import pandas as pd
 
 from .asv import ASV
-from utils import find_asv_model_checkpoint
 
 
 def evaluate_asv(eval_datasets, eval_data_dir, params, device, anon_data_suffix, model_dir=None):
@@ -14,7 +13,6 @@ def evaluate_asv(eval_datasets, eval_data_dir, params, device, anon_data_suffix,
 
 
 def asv_eval_speechbrain(eval_datasets, eval_data_dir, params, device, anon_data_suffix, model_dir=None):
-    model_dir = model_dir or find_asv_model_checkpoint(params['model_dir'])
     print(f'Use ASV model for evaluation: {model_dir}')
 
     save_dir = params['evaluation']['results_dir'] / f'{params["evaluation"]["distance"]}_out'

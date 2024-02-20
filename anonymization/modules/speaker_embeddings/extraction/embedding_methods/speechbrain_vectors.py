@@ -23,7 +23,7 @@ class SpeechBrainVectors:
                 savedir = model_path
             logging.info(f"Loading {savedir}")
             self.extractor = EncoderClassifier.from_hparams(
-                    source=str(savedir),
+                    source=str(model_path),
                     savedir=str(savedir),
                     run_opts={'device': self.device}
                 )

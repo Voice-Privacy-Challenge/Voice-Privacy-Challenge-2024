@@ -40,8 +40,14 @@ class SpeakerExtraction:
             if self.save_intermediate:
                 raise ValueError('Results dir must be specified in parameters or settings!')
 
-        model_dir = model_dir or self.emb_model_path
+        model_dir = Path(model_dir or self.emb_model_path)
         if not model_dir.exists():
+            raise FileNotFoundError(f'ASV model {model_dir} does not exist!')
+
+        if not model_dir.exists():
+            raise FileNotFoundError(f'ASV model {model_dir} does not exist!')
+
+        if not (model_dir / "hyperparams.yaml").exists():
             raise FileNotFoundError(f'ASV model {model_dir} does not exist!')
 
         self.model_hparams = {
