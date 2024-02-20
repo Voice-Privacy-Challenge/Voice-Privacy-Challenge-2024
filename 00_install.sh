@@ -99,7 +99,7 @@ fi
 mark=.done-espeak
 if [ ! -f $mark ]; then
   echo " == Installing G2P espeak-ng =="
-
+  micromamba install tar libacl --channel conda-forge
   wget https://github.com/espeak-ng/espeak-ng/archive/$ESPAK_VERSION/espeak-ng-$ESPAK_VERSION.tar.gz
   \rm espeak-ng-$ESPAK_VERSION -rf || true
   tar -xvzf ./espeak-ng-$ESPAK_VERSION.tar.gz
