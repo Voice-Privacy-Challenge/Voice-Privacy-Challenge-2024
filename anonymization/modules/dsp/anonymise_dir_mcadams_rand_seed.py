@@ -7,32 +7,25 @@ modified version (N.T.)
 """
 import functools
 import hashlib
-import itertools
 import librosa
 import librosa.core.spectrum
 import logging
 import multiprocessing
-import numba
 import numpy as np
 import os
-import random
 import scipy
 import scipy.signal
 import shutil
-import soundfile
-import time
 import wave
 
-from copy import deepcopy
-from itertools import repeat
 from kaldiio import ReadHelper
 from pathlib import Path
 from tqdm import tqdm
-from utils.data_io import read_kaldi_format
+from utils import read_kaldi_format, setup_logger
 
 multiprocessing.set_start_method('spawn', force=True)
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 def load_utt2spk(path):
     assert os.path.isfile(path), f'File does not exist {path}'

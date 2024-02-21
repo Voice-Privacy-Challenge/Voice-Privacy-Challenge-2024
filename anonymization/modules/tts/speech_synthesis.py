@@ -1,15 +1,14 @@
 from tqdm import tqdm
 import soundfile
 import time
-import logging
 from torch.multiprocessing import Pool, set_start_method
 from itertools import repeat
 
 from .ims_tts import ImsTTS
-from utils import create_clean_dir
+from utils import create_clean_dir, setup_logger
 
 set_start_method('spawn', force=True)
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class SpeechSynthesis:
 

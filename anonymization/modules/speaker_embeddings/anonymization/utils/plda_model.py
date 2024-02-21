@@ -1,11 +1,14 @@
 # This code is based on the descriptions in https://github.com/speechbrain/speechbrain/blob/develop/speechbrain/processing/PLDA_LDA.py
-import logging
 from pathlib import Path
 from speechbrain.processing.PLDA_LDA import PLDA, StatObject_SB, Ndx, fast_PLDA_scoring
 import numpy as np
 import torch
 
-logger = logging.getLogger(__name__)
+from utils import setup_logger
+
+logger = setup_logger(__name__)
+
+
 class PLDAModel:
 
     def __init__(self, train_embeddings, results_path: Path=None, save_plda=True):

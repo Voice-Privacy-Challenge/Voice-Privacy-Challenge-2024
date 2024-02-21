@@ -1,10 +1,10 @@
-import logging
-from pathlib import Path
-
-from .anonymization.base_anon import BaseAnonymizer
+from .anonymization.random_anon import RandomAnonymizer
+from .anonymization.pool_anon import PoolAnonymizer
+from .anonymization.gan_anon import GANAnonymizer
 from .speaker_embeddings import SpeakerEmbeddings
+from utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class SpeakerAnonymization:
 
@@ -54,11 +54,30 @@ class SpeakerAnonymization:
                 anon_embeddings.save_vectors(dataset_results_dir)
             return anon_embeddings
 
-    def _load_anonymizer(self, settings: dict):
-        anon_method = settings['anon_method'] #HyperPyYAML already does the loading
-        assert isinstance(anon_method, BaseAnonymizer), \
-            'The anonymizer must be an instance of BaseAnonymizer, or a ' \
-            f'subclass of it, but received an instance of {type(anon_method)}'
-            
-        logger.info(f'Model type of anonymizer: {type(anon_method).__name__}')
-        return anon_method
+    def _load_anonymizer(self, settings):
+        anon_settings = settings['anon_settings']
+        anon_method = anon_settings.get('anon_method', 'gan')
+        anon_settings['save_intermediate'] = self.save_intermediate or anon_settings['save_intermediate']
+
+        if anon_method == 'random':
+            model = RandomAnonymizer(device=self.device, **anon_settings)
+
+        elif anon_method == 'pool':
+            model = PoolAnonymizer(device=self.device, **anon_settings)
+
+        elif anon_method == 'gan':
+            model = GANAnonymizer(device=self.device, **anon_settings)
+        else:
+            raise ValueError(f'Unknown anonymization method {anon_method}')
+
+        logger.info(f'Model type of anonymizer: {type(model).__name__}')
+        return model
+
+    # def _load_anonymizer(self, settings: dict):
+    #     anon_method = settings['anon_method'] #HyperPyYAML already does the loading
+    #     assert isinstance(anon_method, BaseAnonymizer), \
+    #         'The anonymizer must be an instance of BaseAnonymizer, or a ' \
+    #         f'subclass of it, but received an instance of {type(anon_method)}'
+    #
+    #     logger.info(f'Model type of anonymizer: {type(anon_method).__name__}')
+    #     return anon_method

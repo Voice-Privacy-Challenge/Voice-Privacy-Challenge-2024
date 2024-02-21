@@ -4,3 +4,4 @@ from .path_management import (create_clean_dir, remove_contents_in_dir, transfor
 from .prepare_results_in_kaldi_format import (prepare_evaluation_data, combine_asr_data,
                                               split_vctk_into_common_and_diverse, get_anon_wav_scps)
 from .dependencies import check_dependencies
+from .logger import setup_logger

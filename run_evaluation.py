@@ -1,31 +1,30 @@
 # We need to set CUDA_VISIBLE_DEVICES before we import Pytorch, so we will read all arguments directly on startup
-import logging
 import os
 from argparse import ArgumentParser
 from collections import defaultdict
 from pathlib import Path
-import pandas as pd
-from typing import List
 import multiprocessing
+import time
+import shutil
+import itertools
+from datetime import datetime
+
 parser = ArgumentParser()
 parser.add_argument('--config', default='config_eval.yaml')
 parser.add_argument('--gpu_ids', default='0')
 args = parser.parse_args()
-logger = logging.getLogger(__name__)
-from datetime import datetime
 
 if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set devices
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
 
 import torch
-import time
-import shutil
-import itertools
 
 from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, train_asr_eval, evaluate_gvd
 from utils import (parse_yaml, scan_checkpoint, combine_asr_data, get_datasets,
-                   prepare_evaluation_data, get_anon_wav_scps, save_yaml, check_dependencies)
+                   prepare_evaluation_data, get_anon_wav_scps, save_yaml, check_dependencies, setup_logger)
+
+logger = setup_logger(__name__)
 
 def get_evaluation_steps(params):
     eval_steps = {}
@@ -127,7 +126,6 @@ def save_result_summary(out_dir, results_dict, config):
 if __name__ == '__main__':
     check_dependencies('requirements.txt')
     multiprocessing.set_start_method("fork",force=True)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
 
     params = parse_yaml(Path('configs', args.config))
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -165,20 +163,20 @@ if __name__ == '__main__':
                 asv_train_params = asv_params['training']
                 if not model_dir.exists() or asv_train_params.get('retrain', True) is True:
                     start_time = time.time()
-                    logging.info('Perform ASV training')
+                    logger.info('Perform ASV training')
                     train_asv_eval(train_params=asv_train_params, output_dir=asv_params['model_dir'])
-                    logging.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
+                    logger.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
                     model_dir = scan_checkpoint(model_dir, 'CKPT')
                     shutil.copy('evaluation/privacy/asv/asv_train/hparams/ecapa/hyperparams.yaml', model_dir)
 
             if 'evaluation' in asv_params:
-                logging.info('Perform ASV evaluation')
+                logger.info('Perform ASV evaluation')
                 start_time = time.time()
                 asv_results = evaluate_asv(eval_datasets=eval_data_trials, eval_data_dir=eval_data_dir,
                                            params=asv_params, device=device,  model_dir=model_dir,
                                            anon_data_suffix=anon_suffix)
                 results['asv'] = asv_results
-                logging.info("--- EER computation time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info("--- EER computation time: %f min ---" % (float(time.time() - start_time) / 60))
 
     if 'utility' in eval_steps:
         if 'asr' in eval_steps['utility']:
@@ -224,11 +222,11 @@ if __name__ == '__main__':
         if 'gvd' in eval_steps['utility']:
             gvd_params = params['utility']['gvd']
             start_time = time.time()
-            logging.info('Perform GVD evaluation')
+            logger.info('Perform GVD evaluation')
             gvd_results = evaluate_gvd(eval_datasets=eval_data_trials, eval_data_dir=eval_data_dir, params=gvd_params,
                                        device=device, anon_data_suffix=anon_suffix)
             results['gvd'] = gvd_results
-            logging.info("--- GVD  computation time: %f min ---" % (float(time.time() - start_time) / 60))
+            logger.info("--- GVD  computation time: %f min ---" % (float(time.time() - start_time) / 60))
 
     if results:
         now = datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")

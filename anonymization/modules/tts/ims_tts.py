@@ -1,10 +1,10 @@
 import torch
 import resampy
-import logging
 
 from .IMSToucan.InferenceInterfaces.AnonFastSpeech2 import AnonFastSpeech2
+from utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class ImsTTS:
 
@@ -19,7 +19,8 @@ class ImsTTS:
     def read_text(self, text, speaker_embedding, text_is_phones=True, duration=None, pitch=None, energy=None,
                   start_silence=None, end_silence=None):
 
-        self.model.default_utterance_embedding = speaker_embedding.to(self.device)
+        speaker_embedding = speaker_embedding.to(self.device)
+        self.model.default_utterance_embedding = speaker_embedding
         wav = self.model(text=text, text_is_phonemes=text_is_phones, durations=duration, pitch=pitch, energy=energy)
 
         # TODO: this is not an ideal solution, but must work for now
