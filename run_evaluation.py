@@ -1,6 +1,7 @@
 # We need to set CUDA_VISIBLE_DEVICES before we import Pytorch, so we will read all arguments directly on startup
 import logging
 import os
+import json
 from argparse import ArgumentParser
 from collections import defaultdict
 from pathlib import Path
@@ -9,6 +10,7 @@ from typing import List
 import multiprocessing
 parser = ArgumentParser()
 parser.add_argument('--config', default='config_eval.yaml')
+parser.add_argument('--overwrite', type=str, default='{}')
 parser.add_argument('--gpu_ids', default='0')
 args = parser.parse_args()
 logger = logging.getLogger(__name__)
@@ -76,6 +78,9 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
 
     params = parse_yaml(Path('configs', args.config))
+    print(json.loads(args.overwrite))
+    for k, v in json.loads(args.overwrite).items():
+        params[k] = v
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     eval_data_dir = params['data_dir']
