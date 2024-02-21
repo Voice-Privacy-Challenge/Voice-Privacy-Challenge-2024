@@ -17,7 +17,6 @@ def asr_train_speechbrain(train_params):
         'batch_size': train_params['batch_size'],
         'lr_adam': train_params['lr'],
         'number_of_epochs': train_params['epochs'],
-        'anon': train_params['anon'],
         'data_folder': str(train_params['train_data_dir']),
         'output_folder': str(train_params['model_dir']),
         'pretrained_path': str(train_params['pretrained_model']),

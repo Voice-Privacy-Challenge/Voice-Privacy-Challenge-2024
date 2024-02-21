@@ -12,3 +12,4 @@ speechbrain==0.5.16
 pyloudnorm>=0.1.1
 kaldiio>=2.18.0
 noisereduce==3.0.0
+transformers>=4.37.2

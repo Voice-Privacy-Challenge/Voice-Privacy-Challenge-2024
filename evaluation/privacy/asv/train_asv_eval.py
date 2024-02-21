@@ -2,7 +2,24 @@ from copy import deepcopy
 import torch
 
 from .asv_train.train_speaker_embeddings import train_asv_speaker_embeddings
-from .asv_train.speechbrain_defaults import run_opts
+
+# For more information, see parse_arguments() in
+# https://github.com/speechbrain/blob/develop/ speechbrain/speechbrain/core.py
+run_opts = {
+    'debug': False,
+    'debug_batches': 2,
+    'debug_epochs': 2,
+    'debug_persistently': False,
+    'device': 'cuda:0',
+    'data_parallel_backend': False,
+    'distributed_launch': False,
+    'distributed_backend': 'nccl',
+    'find_unused_parameters': False,
+    'tqdm_colored_bar': False
+}
+
+from utils import setup_logger
+logger = setup_logger(__name__)
 
 
 def train_asv_eval(train_params, output_dir):
@@ -14,7 +31,7 @@ def train_asv_eval(train_params, output_dir):
 
 
 def asv_train_speechbrain(train_params, output_dir):
-    print(f'Train ASV model: {output_dir}')
+    logger.info(f'Train ASV model: {output_dir}')
     hparams = {
         'pretrained_path': str(train_params['pretrained_model']),
         'batch_size': train_params['batch_size'],
@@ -23,7 +40,6 @@ def asv_train_speechbrain(train_params, output_dir):
         'num_spk': train_params['num_spk'],
         'utt_selected_ways': train_params['utt_selection'],
         'number_of_epochs': train_params['epochs'],
-        'anon': train_params['anon'],
         'data_folder': str(train_params['train_data_dir']),
         'output_folder': str(output_dir)
     }

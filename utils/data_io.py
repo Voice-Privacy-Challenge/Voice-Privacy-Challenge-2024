@@ -12,6 +12,9 @@ def read_kaldi_format(filename, return_as_dict=True, values_as_string=False):
     with open(filename, 'r') as f:
         for line in f:
             splitted_line = line.split()
+            if len(splitted_line) == 1:
+                key_list.append(splitted_line[0].strip())
+                value_list.append("")
             if len(splitted_line) == 2:
                 key_list.append(splitted_line[0].strip())
                 value_list.append(splitted_line[1].strip())

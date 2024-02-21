@@ -4,6 +4,9 @@ set -e
 
 source env.sh
 
+# librispeech_corpus=PATH_TO_Librispeech
+# iemocap_corpus=PATH_TO_IEMOCAP
+
 for data_set in libri_dev libri_test; do
     dir=data/$data_set
     if [ ! -f $dir/wav.scp ] ; then
@@ -34,8 +37,23 @@ fi
 
 done
 
-#Download LibriSpeech-360
+
 check=corpora/LibriSpeech/train-clean-360
+if [ ! -d $check ]; then
+    if [ ! -z $librispeech_corpus ]; then
+        if [ -d $librispeech_corpus/train-clean-360 ]; then
+            [ -d corpora/LibriSpeech ] && rm corpora/LibriSpeech
+            echo "Linking '$librispeech_corpus' to 'corpora'"
+            mkdir -p corpora
+            ln -s $librispeech_corpus corpora
+        else
+          echo "librispeech_corpus is defined to '$librispeech_corpus', but '$librispeech_corpus/train-clean-360' does not exists."
+          echo "Either remove the librispeech_corpus variable from the $0 script to download the dataset or modify it to the correct target."
+          exit 1
+        fi
+    fi
+fi
+#Download LibriSpeech-360
 if [ ! -d $check ]; then
     echo "Download train-clean-360..."
     mkdir -p corpora
@@ -45,30 +63,32 @@ if [ ! -d $check ]; then
         wget --no-check-certificate https://www.openslr.org/resources/12/train-clean-360.tar.gz
     fi
     echo "Unpacking train-clean-360"
-    tar -xvzf train-clean-360.tar.gz
+    tar -xzf train-clean-360.tar.gz
     cd ../
 fi
 
 check_data=data/libri_dev_enrolls
-#Download kaldi format datadir and SpeechBrain pretrained ASV/ASR models
 if [ ! -d $check_data ]; then
-    if  [ ! -f data.zip ]; then
+    if  [ ! -f .data.zip ]; then
         echo "Download VPC kaldi format datadir..."
-        wget https://github.com/DigitalPhonetics/VoicePAT/releases/download/v2/data.zip
+        wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data.zip
     fi
     echo "Unpacking data"
-    unzip data.zip
+    mv data.zip .data.zip
+    unzip .data.zip
 fi
 
-check_model=exp/asv_pre_ecapa
-if [ ! -d $check_model ]; then
-    if [ ! -f pre_model.zip ]; then
-        echo "Download pretrained evaluation models..."
-        wget https://github.com/DigitalPhonetics/VoicePAT/releases/download/v2/pre_model.zip
+for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
+    if [ ! -d "exp/$model" ]; then
+        if [ ! -f .pre_model_${model}.zip ]; then
+            echo "Download pretrained $model models pre-trained..."
+            wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/pre_model_${model}.zip
+        fi
+        echo "Unpacking pretrained evaluation models"
+        mv pre_model_${model}.zip .pre_model_${model}.zip
+        unzip .pre_model_${model}.zip
     fi
-    echo "Unpacking pretrained evaluation models"
-    unzip pre_model.zip
-fi
+done
 
 check_model=exp/asr_pre_ctc_wav2vec2
 if [ ! -d $check_model ]; then
@@ -84,19 +104,30 @@ sb.pretrained.interfaces.Pretrained.from_hparams(
 EOF
 fi
 
-#Download GAN pre-models only if perform GAN anonymization
-if [ ! -d models ]; then
-    echo "Download pretrained models of GAN-basd speaker anonymization system, only if you use this method to anonymize data.."
-    mkdir -p models
-    wget -q -O models/anonymization.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/anonymization.zip
-    wget -q -O models/asr.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/asr.zip
-    wget -q -O models/tts.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/tts.zip
-    unzip -oq models/asr.zip -d models
-    unzip -oq models/tts.zip -d models
-    unzip -oq models/anonymization.zip -d models
-    rm models/*.zip
+if [ ! -d "data/IEMOCAP/wav/Session1" ]; then
+    if [ ! -z $iemocap_corpus ]; then
+        if [ -d $iemocap_corpus/Session1 ]; then
+            echo "Linking '$iemocap_corpus' to 'data/IEMOCAP/wav'"
+            ln -s $iemocap_corpus data/IEMOCAP/wav
+        else
+          echo "iemocap_corpus is defined to '$iemocap_corpus', but '$iemocap_corpus/Session1' does not exists."
+          echo "Please fix your path to iemocap_corpus in the $0 script."
+          exit 1
+        fi
+    fi
 fi
 
-
-
-
+# IEMOCAP_full_release
+if [ ! -d "data/IEMOCAP/wav/Session1" ]; then
+    mkdir -p ./data/IEMOCAP/
+    cat << EOF
+==============================================================================
+    Plase download or link the IEMOCAP corpus to './data/IEMOCAP/wav'
+      - Download IEMOCAP from its web-page (license agreement is required)
+          - https://sail.usc.edu/iemocap/
+      - Link
+          - ln -s YOUR_PATH data/IEMOCAP/wav/
+==============================================================================
+EOF
+exit 1
+fi

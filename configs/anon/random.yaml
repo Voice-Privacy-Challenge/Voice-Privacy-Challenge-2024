@@ -1,6 +1,0 @@
-!new:anonymization.modules.speaker_embeddings.anonymization.random_anon.RandomAnonymizer
-  models_dir: null #will be overridden by main .yaml
-  vec_type: null   #will be overridden by main .yaml
-  model_name: null #will be overridden by constructor
-  in_scale: false
-  stats_per_dim_path: !ref <models_dir>/anonymization/random_in-scale_<vec_type>/stats_per_dim.json

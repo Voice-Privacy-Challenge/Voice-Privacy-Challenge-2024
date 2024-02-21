@@ -102,10 +102,10 @@ def train_asv_speaker_embeddings(config_file, hparams_file, run_opts):
 
     # Initialize ddp (useful only for multi-GPU DDP training)
     sb.utils.distributed.ddp_init_group(run_opts)
-    
+
     # Convert dict to yaml for overrides"""
     overrides = _convert_to_yaml(hparams_file)
-    
+
     with open(config_file) as f:
         hparams = load_hyperpyyaml(f, overrides)
 
@@ -120,7 +120,6 @@ def train_asv_speaker_embeddings(config_file, hparams_file, run_opts):
             "num_spk": hparams["num_spk"],
             "seg_dur": hparams["sentence_len"],
             "skip_prep": hparams["skip_prep"],
-            "anon": hparams["anon"],
             "utt_selected_ways": hparams["utt_selected_ways"]
         },
     )
@@ -128,8 +127,8 @@ def train_asv_speaker_embeddings(config_file, hparams_file, run_opts):
     # Dataset IO prep: creating Dataset objects and proper encodings for phones
     asv_dataset_gen = ASVDatasetGenerator(hparams)
     train_data, valid_data = asv_dataset_gen.dataio_prep()
-    
-   
+
+
     # Create experiment directory
     sb.core.create_experiment_directory(
         experiment_directory=hparams["output_folder"],

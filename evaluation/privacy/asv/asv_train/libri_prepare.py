@@ -4,7 +4,6 @@ import csv
 import logging
 import random
 from pathlib import Path
-import sys  # noqa F401
 import numpy as np
 import torch
 import torchaudio
@@ -14,6 +13,8 @@ from speechbrain.dataio.dataio import (
     load_pkl,
     save_pkl,
 )
+
+from utils import read_kaldi_format
 
 logger = logging.getLogger(__name__)
 OPT_FILE = "opt_libri_prepare.pkl"
@@ -33,7 +34,6 @@ def prepare_libri(
     num_spk=None,
     random_segment=False,
     skip_prep=False,
-    anon = False,
     utt_selected_ways="spk-random",
 ):
     """
@@ -74,21 +74,11 @@ def prepare_libri(
     >>> save_folder = 'libri/'
     >>> splits = ['train', 'dev']
     >>> split_ratio = [90, 10]
-    >>> prepare_voxceleb(data_folder, save_folder, splits, split_ratio)
+    >>> prepare_libri(data_folder, save_folder, splits, split_ratio)
     """
 
     if skip_prep:
         return
-    # Create configuration for easily skipping data_preparation stage
-    conf = {
-        "data_folder": data_folder,
-        "splits": splits,
-        "split_ratio": split_ratio,
-        "save_folder": save_folder,
-        "seg_dur": seg_dur,
-        "num_utt": num_utt,
-        "num_spk": num_spk,
-    }
 
     save_folder = Path(save_folder)
     save_folder.mkdir(exist_ok=True, parents=True)
@@ -98,9 +88,8 @@ def prepare_libri(
     save_csv_train = save_folder / TRAIN_CSV
     save_csv_dev = save_folder / DEV_CSV
 
-
     # Check if this phase is already done (if so, skip it)
-    if skip(splits, save_folder, conf):
+    if skip(splits, save_folder, locals()):
         logger.info("Skipping preparation, completed in previous run.")
         return
 
@@ -110,68 +99,30 @@ def prepare_libri(
     else:
         data_folder = [Path(data_folder)]
 
-    # _check_voxceleb1_folders(data_folder, splits)
-
-    msg = "\tCreating csv file for the Libri Dataset.."
-    logger.info(msg)
+    logger.info("Creating csv file for the Libri Dataset...")
 
     # Split data into 90% train and 10% validation (verification split)
-    wav_lst_train, wav_lst_dev = _get_utt_split_lists(
-        data_folder, split_ratio, num_utt, num_spk, anon, utt_selected_ways
+    wav_lst_train, wav_lst_dev, utt2spk = _get_utt_split_lists(
+        data_folder, split_ratio, num_utt, num_spk, utt_selected_ways
     )
 
     # Creating csv file for training data
     if "train" in splits:
         prepare_csv(
-            seg_dur, wav_lst_train, save_csv_train, random_segment, amp_th
+            seg_dur, wav_lst_train, utt2spk, save_csv_train, random_segment, amp_th
         )
 
     if "dev" in splits:
-        prepare_csv(seg_dur, wav_lst_dev, save_csv_dev, random_segment, amp_th)
+        prepare_csv(seg_dur, wav_lst_dev, utt2spk, save_csv_dev, random_segment, amp_th)
 
 
     # Saving options (useful to skip this phase when already done)
-    save_pkl(conf, str(save_opt))
+    save_pkl(locals(), str(save_opt))
 
-
-def skip(splits, save_folder, conf):
-    """
-    Detects if the voxceleb data_preparation has been already done.
-    If the preparation has been done, we can skip it.
-
-    Returns
-    -------
-    bool
-        if True, the preparation phase can be skipped.
-        if False, it must be done.
-    """
-    # Checking csv files
-    skip = True
-
-    split_files = {
-        "train": TRAIN_CSV,
-        "dev": DEV_CSV,
-    }
-    for split in splits:
-        if not Path(save_folder, split_files[split]).is_file():
-            skip = False
-    #  Checking saved options
-    save_opt = save_folder / OPT_FILE
-    if skip is True:
-        if save_opt.is_file():
-            opts_old = load_pkl(str(save_opt))
-            if opts_old == conf:
-                skip = True
-            else:
-                skip = False
-        else:
-            skip = False
-
-    return skip
 
 # Used for verification split
 def _get_utt_split_lists(
-    data_folders, split_ratio, num_utt='ALL', num_spk='ALL', anon=False, utt_selected_ways="spk-random"
+    data_folders, split_ratio, num_utt='ALL', num_spk='ALL', utt_selected_ways="spk-random"
 ):
     """
     Tot. number of speakers libri-360=921
@@ -181,88 +132,64 @@ def _get_utt_split_lists(
     dev_lst = []
 
     logger.debug("Getting file list...")
+
+    out_utt2spk = []
     for data_folder in data_folders:
-        if anon:
-            suffix = 'wav'
-        else:
-            suffix = 'flac'
-        # if anon:
-        #     path = os.path.join(data_folder, "*.wav")
-        # else:
-        #     path = os.path.join(data_folder, "LibriSpeech/train-clean-360""**", "**", "*.flac")
-            # avoid test speakers for train and dev splits
-        spk_files = {}
-        spks_pure = []
-        full_utt = 0
-        for f in data_folder.glob(f'**/*.{suffix}'):
-            # temp = f.split("/")[-1].split(".")[0]
-            temp = f.stem
-            used_id = "-".join(temp.split('-')[-3:-1])
-            spk_id = temp.split('-')[0]
-            if spk_id not in spks_pure:
-                spks_pure.append(spk_id)
-                
-            if used_id not in spk_files:
-                spk_files[used_id] = []
-            if f not in spk_files[used_id]:
-                full_utt += 1
-                spk_files[used_id].append(str(f.absolute()))
-        
+        spk2utt = read_kaldi_format(data_folder / 'spk2utt')
+        utt2spk = read_kaldi_format(data_folder / 'utt2spk')
+        spk_files = read_kaldi_format(data_folder / 'wav.scp')
+        out_utt2spk += utt2spk
+        spks_pure = spk2utt.keys()
+        full_utt = len(spks_pure)
+
         selected_list = []
         selected_spk = {}
         #select the number of speakers
         if num_spk != 'ALL':
-            logger.debug("selected %s speakers for training"%num_spk)
-            selected_spks_pure = random.sample(spks_pure,int(num_spk))
+            logger.info(f"selected {num_spk} speakers for training")
+            selected_spks_pure = random.sample(spks_pure, int(num_spk))
             for k,v in spk_files.items():
-                if k.split('-')[0] in selected_spks_pure:
+                if utt2spk[k] in selected_spks_pure:
                     selected_spk[k] = v
-            #selected_spk = dict(random.sample(spk_files.items(), int(num_spk)))
         elif num_spk == 'ALL':
-            logger.debug("selected all speakers for training")
+            logger.info(f"selected {len(utt2spk)} (all) speakers speakers for training")
             selected_spk = spk_files
         else:
-            sys.exit("invalid $utt_spk value")
+            raise ValueError(f"invalid {num_spk} value")
 
             # select the number of utterances for each speaker-sess-id
         if num_utt != 'ALL':
             # select the number of utterances for each speaker-sess-id
             if utt_selected_ways == 'spk-sess':
-                logger.info("selected %s utterances for each selected speaker-sess-id" % num_utt)
+                logger.info(f"selected {num_utt} utterances for each selected speaker-sess-id")
                 for spk in selected_spk:
                     if len(selected_spk[spk]) >= int(num_utt):
                         selected_list.extend(random.sample(selected_spk[spk], int(num_utt)))
                     else:
                         selected_list.extend(selected_spk[spk])
-
             elif utt_selected_ways == 'spk-random':
-                logger.info("randomly selected %s utterances for each selected speaker-id" % num_utt)
+                logger.info(f"randomly selected {num_utt} utterances for each selected speaker-id")
                 selected_spks_pure = {}
                 for k, v in selected_spk.items():
-                    spk_pure = k.split('-')[0]
+                    spk_pure = utt2spk[k]
                     if spk_pure not in selected_spks_pure:
                         selected_spks_pure[spk_pure] = []
                     selected_spks_pure[spk_pure].extend(v)
-
                 selected_spk = selected_spks_pure
-
                 for spk in selected_spk:
                     if len(selected_spk[spk]) >= int(num_utt):
                         selected_list.extend(random.sample(selected_spk[spk], int(num_utt)))
                     else:
                         selected_list.extend(selected_spk[spk])
-
             elif utt_selected_ways == 'spk-diverse-sess':
-                logger.info("diversely selected %s utterances for each selected speaker-id" % num_utt)
+                logger.info(f"diversely selected {num_utt} utterances for each selected speaker-id" % num_utt)
                 selected_spks_pure = {}
                 for k, v in selected_spk.items():
-                    spk_pure = k.split('-')[0]
+                    spk_pure = utt2spk[k]
                     if spk_pure not in selected_spks_pure:
                         selected_spks_pure[spk_pure] = []
                     selected_spks_pure[spk_pure].append(v)
-
                 selected_spk = selected_spks_pure
-
                 for spk in selected_spk:
                     num_each_sess = round(num_utt / len(selected_spk[spk]))  # rounded up
                     for utts in selected_spk[spk]:
@@ -270,23 +197,22 @@ def _get_utt_split_lists(
                             selected_list.extend(random.sample(utts, int(num_each_sess)))
                         else:
                             selected_list.extend(selected_spk[spk])
-
-
         elif num_utt == 'ALL':
             logger.info("selected all utterances for each selected speaker")
-
             for value in selected_spk.values():
-                for v in value:
-                    selected_list.append(v)
-
+                if 'list' in str(type(value)):
+                    for v in value:
+                        selected_list.append(v)
+                else:
+                    selected_list.append(value)
         else:
-            sys.exit("invalid $utt_num value")
+            raise ValueError(f"invalid {num_utt} value")
 
         flat = []
         for row in selected_list:
             if 'list' in str(type(row)):
                 for x in row:
-                    if x not in flat:
+                    if x not in flat and x not in ["flac", "-c", "-d", "-s", "|"]: # uniq and remove kaldi command line `flac -c wav.flac |`
                         flat.append(x)
             else:
                 if row not in flat:
@@ -294,11 +220,9 @@ def _get_utt_split_lists(
 
         selected_list = flat
         random.shuffle(selected_list)
-        
-        full = f'Full training set:{full_utt}'
-        used = f'Used for training:{len(selected_list)}'
-        logger.debug(full)
-        logger.debug(used)
+
+        logger.info(f'Full training set:{full_utt}')
+        logger.debug(f'Used for training:{len(selected_list)}')
 
         split = int(0.01 * split_ratio[0] * len(selected_list))
         train_snts = selected_list[:split]
@@ -307,7 +231,7 @@ def _get_utt_split_lists(
         train_lst.extend(train_snts)
         dev_lst.extend(dev_snts)
 
-    return train_lst, dev_lst
+    return train_lst, dev_lst, out_utt2spk
 
 
 def _get_chunks(seg_dur, audio_id, audio_duration):
@@ -315,16 +239,14 @@ def _get_chunks(seg_dur, audio_id, audio_duration):
     Returns list of chunks
     """
     num_chunks = int(audio_duration / seg_dur)  # all in milliseconds
-
     chunk_lst = [
         audio_id + "_" + str(i * seg_dur) + "_" + str(i * seg_dur + seg_dur)
         for i in range(num_chunks)
     ]
-
     return chunk_lst
 
 
-def prepare_csv(seg_dur, wav_lst, csv_file, random_segment=False, amp_th=0):
+def prepare_csv(seg_dur, wav_lst, utt2spk, csv_file, random_segment=False, amp_th=0):
     """
     Creates the csv file given a list of wav files.
 
@@ -345,8 +267,7 @@ def prepare_csv(seg_dur, wav_lst, csv_file, random_segment=False, amp_th=0):
     None
     """
 
-    msg = f'\t"Creating csv lists in  {csv_file}..."'
-    logger.info(msg)
+    logger.info(f"Creating csv lists in {csv_file}...")
 
     csv_output = [["ID", "duration", "wav", "start", "stop", "spk_id"]]
 
@@ -357,6 +278,7 @@ def prepare_csv(seg_dur, wav_lst, csv_file, random_segment=False, amp_th=0):
     # Processing all the wav files in the list
     for wav_file in tqdm(wav_lst, dynamic_ncols=True):
         # Getting sentence and speaker ids
+        # TODO use utt2spk (but with the current impl, wav_file loses it's uniq id)
         try:
             temp = wav_file.split("/")[-1].split(".")[0]
             [spk_id, sess_id, utt_id] = temp.split('-')[-3:]
@@ -428,5 +350,37 @@ def prepare_csv(seg_dur, wav_lst, csv_file, random_segment=False, amp_th=0):
         for line in csv_output:
             csv_writer.writerow(line)
 
-    # Final prints
-    msg = f"\t{csv_file} successfully created!"
+def skip(splits, save_folder, conf):
+    """
+    Detects if the voxceleb data_preparation has been already done.
+    If the preparation has been done, we can skip it.
+
+    Returns
+    -------
+    bool
+        if True, the preparation phase can be skipped.
+        if False, it must be done.
+    """
+    # Checking csv files
+    skip = True
+
+    split_files = {
+        "train": TRAIN_CSV,
+        "dev": DEV_CSV,
+    }
+    for split in splits:
+        if not Path(save_folder, split_files[split]).is_file():
+            skip = False
+    #  Checking saved options
+    save_opt = save_folder / OPT_FILE
+    if skip is True:
+        if save_opt.is_file():
+            opts_old = load_pkl(str(save_opt))
+            if opts_old == conf:
+                skip = True
+            else:
+                skip = False
+        else:
+            skip = False
+
+    return skip

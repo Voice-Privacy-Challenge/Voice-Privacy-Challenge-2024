@@ -10,15 +10,10 @@ if __name__ == '__main__':
     parser.add_argument('--config', default='anon_config.yaml')
     parser.add_argument('--gpu_ids', default='0')
     parser.add_argument('--force_compute', default=False, type=bool)
-    parser.add_argument('--anonymize_train_data', default=False, type=bool)
     args = parser.parse_args()
 
     config = parse_yaml(Path('configs', args.config))
-    if args.anonymize_train_data:
-        datasets = {'train-clean-360': Path(config['data_dir'], 'train-clean-360')}
-        config['modules']['speaker_embeddings']['emb_level'] = 'utt'  # train data for eval models is anonymized on utt level
-    else:
-        datasets = get_datasets(config)
+    datasets = get_datasets(config)
 
     gpus = args.gpu_ids.split(',')
 
@@ -29,14 +24,16 @@ if __name__ == '__main__':
     else:
         devices.append(torch.device('cpu'))
 
-    with torch.no_grad():
-        #logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s- %(levelname)s - %(message)s')
-        logger = setup_logger(__name__)
-        logger.info(f'Running pipeline: {config["pipeline"]}')
+    logger = setup_logger(__name__)
+    if config['pipeline'] == "mcadams":
+        from anonymization.pipelines.mcadams import McAdamsPipeline as pipeline
+    elif config['pipeline'] == "sttts":
+        subprocess.run(['bash', 'anonymization/pipelines/sttts/sttts_install.sh'])
+        check_dependencies('anonymization/pipelines//sttts/sttts_requirements.txt')
+        from anonymization.pipelines.sttts import STTTSPipeline as pipeline
+    else:
+        raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")
 
-        if config['pipeline'] == 'sttts':
-            subprocess.run(['sh', 'anonymization/pipelines/sttts_install.sh'])
-            check_dependencies('ims_gan_requirements.txt')
-            from anonymization.pipelines.sttts_pipeline import STTTSPipeline
-            pipeline = STTTSPipeline(config=config, force_compute=args.force_compute, devices=devices)
-            pipeline.run_anonymization_pipeline(datasets)
+    logger.info(f'Running pipeline: {config["pipeline"]}')
+    p = pipeline(config=config, force_compute=args.force_compute, devices=devices)
+    p.run_anonymization_pipeline(datasets)
