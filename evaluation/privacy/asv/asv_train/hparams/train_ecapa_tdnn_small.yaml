@@ -52,7 +52,7 @@ out_n_neurons: 921 ##921 for libri-train-clean-360
 dataloader_options:
     batch_size: !ref <batch_size>
     shuffle: !ref <shuffle>
-    num_workers: 0
+    num_workers: 2
 
 # Functions
 compute_features: !new:speechbrain.lobes.features.Fbank

@@ -1,13 +1,14 @@
 from pathlib import Path
 from argparse import ArgumentParser
 from anonymization.pipelines.dsp_pipeline import DSPPipeline
-from utils import parse_yaml, get_datasets
+from utils import parse_yaml, get_datasets, check_dependencies
 
 PIPELINES = {
     'dsp': DSPPipeline
 }
 
 if __name__ == '__main__':
+    check_dependencies('requirements.txt')
     parser = ArgumentParser()
     parser.add_argument('--config', default='anon_config.yaml')
     args = parser.parse_args()

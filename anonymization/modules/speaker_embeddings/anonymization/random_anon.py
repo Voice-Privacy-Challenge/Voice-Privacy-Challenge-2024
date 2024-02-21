@@ -1,5 +1,4 @@
 import json
-import logging
 from pathlib import Path
 import torch
 from os import PathLike
@@ -8,8 +7,9 @@ import numpy as np
 
 from .base_anon import BaseAnonymizer
 from ..speaker_embeddings import SpeakerEmbeddings
+from utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class RandomAnonymizer(BaseAnonymizer):
     """

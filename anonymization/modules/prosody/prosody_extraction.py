@@ -1,4 +1,3 @@
-import logging
 import torch
 torch.set_num_threads(1)
 
@@ -7,9 +6,9 @@ from pathlib import Path
 
 from .prosody import Prosody
 from .extraction import *
-from utils import read_kaldi_format
+from utils import read_kaldi_format, setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class ProsodyExtraction:
 

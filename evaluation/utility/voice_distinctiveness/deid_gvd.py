@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -7,12 +6,12 @@ from itertools import combinations_with_replacement
 from collections import defaultdict
 import random
 
-from anonymization.modules import SpeakerExtraction
-from utils.data_io import read_kaldi_format, write_table
+from anonymization.modules.speaker_embeddings.speaker_extraction import SpeakerExtraction
+from utils import read_kaldi_format, write_table, setup_logger
 from evaluation.privacy.asv.asv import ASV
 from evaluation.privacy.asv.metrics.helpers import optimal_llr
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class VoiceDistinctiveness:
 

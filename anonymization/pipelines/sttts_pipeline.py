@@ -1,20 +1,17 @@
 from pathlib import Path
 from datetime import datetime
-import logging
 import time
 
-from anonymization.modules import (
-    SpeechRecognition,
-    SpeechSynthesis,
-    ProsodyExtraction,
-    ProsodyAnonymization,
-    SpeakerExtraction,
-    SpeakerAnonymization,
-)
-import typing
-from utils import prepare_evaluation_data, save_yaml
+from anonymization.modules.tts import SpeechSynthesis
+from anonymization.modules.text import SpeechRecognition
+from anonymization.modules.prosody import ProsodyExtraction, ProsodyAnonymization
+from anonymization.modules.speaker_embeddings.speaker_extraction import SpeakerExtraction
+from anonymization.modules.speaker_embeddings.speaker_anonymization import SpeakerAnonymization
 
-logger = logging.getLogger(__name__)
+import typing
+from utils import prepare_evaluation_data, save_yaml, check_dependencies, setup_logger
+
+logger = setup_logger(__name__)
 
 class STTTSPipeline:
     def __init__(self, config: dict, force_compute: bool, devices: list):
@@ -118,18 +115,18 @@ class STTTSPipeline:
             # Step 1: Recognize speech, extract speaker embeddings, extract prosody
             start_time = time.time()
             texts = self.speech_recognition.recognize_speech(dataset_path=dataset_path, dataset_name=dataset_name)
-            logging.info("--- Speech recognition time: %f min ---" % (float(time.time() - start_time) / 60))
+            logger.info("--- Speech recognition time: %f min ---" % (float(time.time() - start_time) / 60))
 
             start_time = time.time()
             spk_embeddings = self.speaker_extraction.extract_speakers(dataset_path=dataset_path,
                                                                       dataset_name=dataset_name)
-            logging.info("--- Speaker extraction time: %f min ---" % (float(time.time() - start_time) / 60))
+            logger.info("--- Speaker extraction time: %f min ---" % (float(time.time() - start_time) / 60))
 
             if self.prosody_extraction:
                 start_time = time.time()
                 prosody = self.prosody_extraction.extract_prosody(dataset_path=dataset_path, dataset_name=dataset_name,
                                                                   texts=texts)
-                logging.info("--- Prosody extraction time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info("--- Prosody extraction time: %f min ---" % (float(time.time() - start_time) / 60))
             else:
                 prosody = None
 
@@ -138,14 +135,14 @@ class STTTSPipeline:
                 start_time = time.time()
                 anon_embeddings = self.speaker_anonymization.anonymize_embeddings(speaker_embeddings=spk_embeddings,
                                                                                   dataset_name=dataset_name)
-                logging.info("--- Speaker anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info("--- Speaker anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
             else:
                 anon_embeddings = spk_embeddings
 
             if self.prosody_anonymization:
                 start_time = time.time()
                 anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody)
-                logging.info("--- Prosody anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info("--- Prosody anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
             else:
                 anon_prosody = prosody
 
@@ -154,7 +151,7 @@ class STTTSPipeline:
             wav_scp = self.speech_synthesis.synthesize_speech(dataset_name=dataset_name, texts=texts,
                                                               speaker_embeddings=anon_embeddings,
                                                               prosody=anon_prosody, emb_level=anon_embeddings.emb_level)
-            logging.info("--- Synthesis time: %f min ---" % (float(time.time() - start_time) / 60))
+            logger.info("--- Synthesis time: %f min ---" % (float(time.time() - start_time) / 60))
 
             anon_wav_scps[dataset_name] = wav_scp
             logger.info("Anonymization pipeline completed.")

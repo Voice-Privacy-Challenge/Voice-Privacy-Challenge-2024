@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 import torch
 import numpy as np
@@ -10,8 +9,9 @@ from typing import Union
 from .base_anon import BaseAnonymizer
 from ..speaker_embeddings import SpeakerEmbeddings
 from .utils.WGAN import EmbeddingsGenerator
+from utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class GANAnonymizer(BaseAnonymizer):
     """
@@ -133,6 +133,8 @@ class GANAnonymizer(BaseAnonymizer):
         i = 0
         limit = 20
         while i < limit:
+            if len(self.unused_indices) == 0:
+                self._reset_unused_indices()
             idx = np.random.choice(self.unused_indices)
             anon_vec = self.gan_vectors[idx]
             sim = 1 - cosine(spk_vec.cpu().numpy(), anon_vec.cpu().numpy())
@@ -141,3 +143,6 @@ class GANAnonymizer(BaseAnonymizer):
             i += 1
         self.unused_indices = self.unused_indices[self.unused_indices != idx]
         return anon_vec
+
+    def _reset_unused_indices(self):
+        self.unused_indices = np.arange(len(self.gan_vectors))

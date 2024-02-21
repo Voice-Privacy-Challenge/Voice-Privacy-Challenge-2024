@@ -34,7 +34,8 @@ def scan_checkpoint(cp_dir, prefix):
     cp_list = glob.glob(pattern)
     if len(cp_list) == 0:
         return None
-    return Path(sorted(cp_list)[-1])
+    cp_list_by_name = sorted([(int(ckpt.split(prefix)[-1]), ckpt) for ckpt in cp_list])
+    return Path(cp_list_by_name[-1][1])
 
 
 def find_asv_model_checkpoint(model_dir):

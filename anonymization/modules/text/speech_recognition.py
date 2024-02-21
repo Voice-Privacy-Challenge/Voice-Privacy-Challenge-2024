@@ -1,7 +1,6 @@
 from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 import time
-import logging
 from torch.multiprocessing import set_start_method
 from itertools import cycle, repeat
 import numpy as np
@@ -9,10 +8,10 @@ from pathlib import Path
 
 from .text import Text
 from .recognition.ims_asr import ImsASR
-from utils import read_kaldi_format
+from utils import read_kaldi_format, setup_logger
 
 set_start_method('spawn', force=True)
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class SpeechRecognition:
 

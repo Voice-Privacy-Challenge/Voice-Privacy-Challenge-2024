@@ -1,4 +1,3 @@
-import logging
 import torch
 torch.set_num_threads(1)
 
@@ -11,8 +10,9 @@ from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.
 from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.DurationCalculator import DurationCalculator
 from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.EnergyCalculator import EnergyCalculator
 from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.PitchCalculator import Parselmouth
+from utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class ImsProsodyExtractor:
 
@@ -26,6 +26,9 @@ class ImsProsodyExtractor:
         self.tf = ArticulatoryCombinedTextFrontend(language="en")
         self.device = device
         self.aligner_weights = torch.load(aligner_path, map_location='cpu')["asr_model"]
+        self.acoustic_model = Aligner()
+        self.acoustic_model.load_state_dict(self.aligner_weights)
+        self.acoustic_model = self.acoustic_model.to(self.device)
         torch.hub._validate_not_a_forked_repo = lambda a, b, c: True  # torch 1.9 has a bug in the hub loading, this is a workaround
         # careful: assumes 16kHz or 8kHz audio
         self.silero_model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
@@ -42,9 +45,8 @@ class ImsProsodyExtractor:
                         ref_audio_path,
                         lang="en",
                         input_is_phones=False):
-        acoustic_model = Aligner()
-        acoustic_model.load_state_dict(self.aligner_weights)
-        acoustic_model = acoustic_model.to(self.device)
+        if self.on_line_fine_tune:
+            self.acoustic_model.load_state_dict(self.aligner_weights)
         parsel = Parselmouth(reduction_factor=1, fs=16000)
         energy_calc = EnergyCalculator(reduction_factor=1, fs=16000)
         dc = DurationCalculator(reduction_factor=1)
@@ -89,16 +91,16 @@ class ImsProsodyExtractor:
             mel.requires_grad = True
             mel_len = torch.LongTensor([len(mel[0])]).to(self.device)
             # actual fine-tuning starts here
-            optim_asr = SGD(acoustic_model.parameters(), lr=0.1)
-            acoustic_model.train()
+            optim_asr = SGD(self.acoustic_model.parameters(), lr=0.1)
+            self.acoustic_model.train()
             for _ in list(range(steps)):
-                pred = acoustic_model(mel)
-                loss = acoustic_model.ctc_loss(pred.transpose(0, 1).log_softmax(2), tokens, mel_len, tokens_len)
+                pred = self.acoustic_model(mel)
+                loss = self.acoustic_model.ctc_loss(pred.transpose(0, 1).log_softmax(2), tokens, mel_len, tokens_len)
                 optim_asr.zero_grad()
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(acoustic_model.parameters(), 1.0)
+                torch.nn.utils.clip_grad_norm_(self.acoustic_model.parameters(), 1.0)
                 optim_asr.step()
-            acoustic_model.eval()
+            self.acoustic_model.eval()
 
         # We deal with the word boundaries by having 2 versions of text: with and without word boundaries.
         # We note the index of word boundaries and insert durations of 0 afterwards
@@ -111,7 +113,7 @@ class ImsProsodyExtractor:
                 indexes_of_word_boundaries.append(phoneme_index)
         matrix_without_word_boundaries = torch.Tensor(text_without_word_boundaries)
 
-        alignment_path = acoustic_model.inference(mel=melspec.to(self.device),
+        alignment_path = self.acoustic_model.inference(mel=melspec.to(self.device),
                                                   tokens=matrix_without_word_boundaries.to(self.device),
                                                   return_ctc=False)
 

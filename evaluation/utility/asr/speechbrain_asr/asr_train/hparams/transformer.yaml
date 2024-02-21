@@ -56,7 +56,7 @@ grad_accumulation_factor: 1
 max_grad_norm: 5.0
 loss_reduction: 'batchmean'
 sorting: random
-num_workers: 0
+num_workers: 2
 
 # index
 pad_index: 0

@@ -2,16 +2,15 @@ from pathlib import Path
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-
-import logging
-logger = logging.getLogger(__name__)
-
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
 
 from .speechbrain_asr import InferenceSpeechBrainASR
 from .speechbrain_asr.inference import ASRDataset
-from utils import read_kaldi_format, scan_checkpoint
+
+from utils import read_kaldi_format, setup_logger, scan_checkpoint
+
+logger = setup_logger(__name__)
 
 
 def evaluate_asr(backend, eval_datasets, eval_data_dir, params, anon_data_suffix):
@@ -48,14 +47,14 @@ def asr_eval_speechbrain(eval_datasets, eval_data_dir, params, anon_data_suffix)
             data_path = eval_data_dir / test_set
             if (results_dir / test_set / 'wer').exists() and (results_dir / test_set / 'text').exists():
                 logger.info("No WER computation  necessary; print exsiting WER results")
-                hypotheses = read_kaldi_format(Path(data_path, 'text'), values_as_string=True)
-                references = read_kaldi_format(Path(results_dir, test_set, 'text'), values_as_string=True)
+                references = read_kaldi_format(Path(data_path, 'text'), values_as_string=True)
+                hypotheses = read_kaldi_format(Path(results_dir, test_set, 'text'), values_as_string=True)
                 scores = model.compute_wer(ref_texts=references, hyp_texts=hypotheses, out_file=Path(results_dir,test_set, 'wer'))
             else:
                 dataset = ASRDataset(wav_scp_file=Path(data_path, 'wav.scp'), asr_model=model.asr_model)
                 dataloader = DataLoader(dataset, batch_size=params['eval_batchsize'], shuffle=False, num_workers=1, collate_fn=dataset.collate_fn)
-                hypotheses = model.transcribe_audios(data=dataloader, out_file=Path(results_dir, test_set, 'text'))
                 references = read_kaldi_format(Path(data_path, 'text'), values_as_string=True)
+                hypotheses = model.transcribe_audios(data=dataloader, out_file=Path(results_dir, test_set, 'text'))
                 scores = model.compute_wer(ref_texts=references, hyp_texts=hypotheses, out_file=Path(results_dir,
                                                                                      test_set, 'wer'))
             wer = scores.summarize("error_rate")
