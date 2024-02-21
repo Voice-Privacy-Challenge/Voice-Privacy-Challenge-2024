@@ -90,19 +90,19 @@ for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
     fi
 done
 
-#Download GAN pre-models only if perform GAN anonymization
-if [ ! -d exp/sttts_models ]; then
-    echo "Download pretrained models of GAN-basd speaker anonymization system, only if you use this method to anonymize data.."
-    mkdir -p exp/sttts_models
-    wget -q -O exp/sttts_models/anonymization.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/anonymization.zip
-    wget -q -O exp/sttts_models/asr.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/asr.zip
-    wget -q -O exp/sttts_models/tts.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/tts.zip
-    unzip -oq exp/sttts_models/asr.zip -d exp/sttts_models
-    unzip -oq exp/sttts_models/tts.zip -d exp/sttts_models
-    unzip -oq exp/sttts_models/anonymization.zip -d exp/sttts_models
-    rm exp/sttts_models/*.zip
-fi
+check_model=exp/asr_pre_ctc_wav2vec2
+if [ ! -d $check_model ]; then
+python3 - <<EOF
+import speechbrain as sb
 
+sb.pretrained.interfaces.Pretrained.from_hparams(
+    source="speechbrain/asr-wav2vec2-librispeech",
+    savedir="$check_model",
+    revision="a9fdfb4",
+    download_only=True
+)
+EOF
+fi
 
 if [ ! -d "data/IEMOCAP/wav/Session1" ]; then
     if [ ! -z $iemocap_corpus ]; then

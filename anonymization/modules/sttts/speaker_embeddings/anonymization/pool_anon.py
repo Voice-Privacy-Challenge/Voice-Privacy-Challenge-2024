@@ -10,7 +10,7 @@ from sklearn.metrics.pairwise import cosine_distances
 from sklearn.preprocessing import minmax_scale, StandardScaler
 
 from .base_anon import BaseAnonymizer
-from .utils.plda_model import PLDAModel
+from ..utils import PLDAModel
 from ..speaker_extraction import SpeakerExtraction
 from ..speaker_embeddings import SpeakerEmbeddings
 from utils import setup_logger

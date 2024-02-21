@@ -7,8 +7,8 @@ source env.sh
 ### Variables
 
 # Anonymization pipeline
-anon_config=anon_dsp.yaml
-anon_config=anon_sttts.yaml
+anon_config=anon_mcadams.yaml
+# anon_config=anon_sttts.yaml
 
 force_compute=
 # force_compute='--force_compute True'

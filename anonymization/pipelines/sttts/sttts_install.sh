@@ -14,6 +14,19 @@ export MAMBA_ROOT_PREFIX=".micromamba"  # Local install of micromamba (where the
 
 source ./env.sh
 
+# Download GAN pre-models only if perform GAN anonymization
+if [ ! -d exp/sttts_models ]; then
+    echo "Download pretrained models of GAN-basd speaker anonymization system..."
+    mkdir -p exp/sttts_models
+    wget -q -O exp/sttts_models/anonymization.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/anonymization.zip
+    wget -q -O exp/sttts_models/asr.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/asr.zip
+    wget -q -O exp/sttts_models/tts.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/v2.0/tts.zip
+    unzip -oq exp/sttts_models/asr.zip -d exp/sttts_models
+    unzip -oq exp/sttts_models/tts.zip -d exp/sttts_models
+    unzip -oq exp/sttts_models/anonymization.zip -d exp/sttts_models
+    rm exp/sttts_models/*.zip
+fi
+
 
 mark=.done-sttts-requirements
 if [ ! -f $mark ]; then

@@ -76,10 +76,9 @@ if __name__ == '__main__':
     multiprocessing.set_start_method("fork",force=True)
 
     params = parse_yaml(Path('configs', args.config))
-    print(json.loads(args.overwrite))
     for k, v in json.loads(args.overwrite).items():
         params[k] = v
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
     eval_data_dir = params['data_dir']
     anon_suffix = params['anon_data_suffix']
@@ -129,7 +128,7 @@ if __name__ == '__main__':
 
     if 'utility' in eval_steps:
         if 'ser' in eval_steps['utility']:
-            print('Perform SER evaluation')
+            logger.info('Perform SER evaluation')
             eval_data_name = params['utility']['ser']['dataset_name']
             ser_eval_params = params['utility']['ser']['evaluation']
             models_path = ser_eval_params['model_dir']
@@ -143,24 +142,17 @@ if __name__ == '__main__':
             start_time = time.time()
             ser_results = evaluate_ser(eval_ser, eval_data_dir, models_path, anon_data_suffix=anon_suffix, params=ser_eval_params, device=device)
             results['ser'] = ser_results
-            print("--- SER evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
+            logger.info("--- SER evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
 
         if 'asr' in eval_steps['utility']:
             asr_params = params['utility']['asr']
-
-            model_name = asr_params['model_name']
             backend = asr_params.get('backend', 'speechbrain').lower()
-
             if 'evaluation' in asr_params:
                 asr_eval_params = asr_params['evaluation']
-                model_path = asr_eval_params['model_dir']
-                asr_model_path = scan_checkpoint(model_path, 'CKPT') or model_path
-
-                if not model_path.exists():
-                    raise FileNotFoundError(f'ASR model {model_path} does not exist!')
+                asr_eval_params["device"] = device
 
                 start_time = time.time()
-                print('Perform ASR evaluation')
+                logger.info('Perform ASR evaluation')
                 eval_data_name = params['utility']['asr']['dataset_name']
                 eval_asr = []
                 for name in eval_data_name:
@@ -182,10 +174,10 @@ if __name__ == '__main__':
                             eval_asr.append(d['name']+"_asr")
 
                 asr_results = evaluate_asr(eval_datasets=eval_asr, eval_data_dir=eval_data_dir,
-                                           params=asr_eval_params, model_path=asr_model_path,
+                                           params=asr_eval_params,
                                            anon_data_suffix=anon_suffix, device=device, backend=backend)
                 results['asr'] = asr_results
-                print("--- ASR evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info("--- ASR evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
 
     if results:
         now = datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")

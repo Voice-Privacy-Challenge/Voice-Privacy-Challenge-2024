@@ -37,15 +37,16 @@ modules:
     force_compute_anonymization: false
     vec_type: style-embed
     emb_model_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
-    emb_level: spk   # possible: spk, utt
     anon_settings:
       method: gan
       vectors_file: !ref <models_dir>/anonymization/<modules[speaker_embeddings][vec_type]>_wgan.pt
       gan_model_path: !ref <models_dir>/anonymization/gan_<modules[speaker_embeddings][vec_type]>/<modules[speaker_embeddings][vec_type]>_wgan.pt
       num_sampled: 5000
       sim_threshold: 0.7
-    extraction_results_path: !ref <intermediate_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
-    anon_results_path: !ref <intermediate_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
+    extraction_results_path: !ref <intermediate_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
+    anon_results_path: !ref <intermediate_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
+    anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
+    anon_level_utt: [train-clean-360]
 
   prosody:
     extractor_type: ims

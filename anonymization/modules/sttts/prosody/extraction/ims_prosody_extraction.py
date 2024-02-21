@@ -4,12 +4,12 @@ torch.set_num_threads(1)
 from torch.optim import SGD
 import soundfile as sf
 
-from anonymization.modules.tts.IMSToucan.Preprocessing.AudioPreprocessor import AudioPreprocessor
-from anonymization.modules.tts.IMSToucan.Preprocessing.TextFrontend import ArticulatoryCombinedTextFrontend
-from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.AutoAligner.Aligner import Aligner
-from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.DurationCalculator import DurationCalculator
-from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.EnergyCalculator import EnergyCalculator
-from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.PitchCalculator import Parselmouth
+from ...tts.IMSToucan.Preprocessing.AudioPreprocessor import AudioPreprocessor
+from ...tts.IMSToucan.Preprocessing.TextFrontend import ArticulatoryCombinedTextFrontend
+from ...tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.AutoAligner.Aligner import Aligner
+from ...tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.DurationCalculator import DurationCalculator
+from ...tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.EnergyCalculator import EnergyCalculator
+from ...tts.IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.PitchCalculator import Parselmouth
 from utils import setup_logger
 
 logger = setup_logger(__name__)

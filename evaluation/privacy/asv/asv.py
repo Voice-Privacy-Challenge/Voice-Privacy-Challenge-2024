@@ -6,8 +6,8 @@ from speechbrain.utils.metric_stats import EER
 from sklearn.metrics.pairwise import cosine_distances
 import pandas as pd
 
-#from anonymization.modules.speaker_embeddings.anonymization.utils.plda_model import PLDAModel
-from anonymization.modules.speaker_embeddings.speaker_extraction import SpeakerExtraction
+from .utils import PLDAModel
+from .speaker_extraction import SpeakerExtraction
 from utils import write_table, read_kaldi_format, save_kaldi_format, setup_logger
 
 logger = setup_logger(__name__)

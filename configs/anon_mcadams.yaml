@@ -1,8 +1,8 @@
 data_dir: data
-results_dir: anon_wav # output example ./data/IEMOCAP_dsp/anon_wav
+results_dir: anon_wav # output example ./data/IEMOCAP_mcadams/anon_wav
 
-pipeline: dsp
-anon_suffix: !ref _<pipeline>2
+pipeline: mcadams
+anon_suffix: !ref _<pipeline>
 
 datasets:
   - name: IEMOCAP_dev

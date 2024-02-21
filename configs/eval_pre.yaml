@@ -1,7 +1,7 @@
 data_dir: data
 exp_dir: exp
 
-anon_data_suffix: _dsp # added to transform data/libri_dev/ to data/libri_dev_dsp/
+anon_data_suffix: _mcadams # added to transform data/libri_dev/ to data/libri_dev_mcadams/
 
 results_summary_dir: !ref <exp_dir>/results_summary/eval_pre<anon_data_suffix>
 
@@ -53,9 +53,11 @@ utility:
 
   asr:
     dataset_name: [libri_dev, libri_test, IEMOCAP_dev, IEMOCAP_test]
-    model_name: asr_pre_sb  # name for ASR model
+    model_name: asr_pre_ctc_wav2vec2 # name for ASR model, check 'exp/' dir
 
     evaluation:
+      model_type: EncoderASR # EncoderDecoderASR or EncoderASR (from speechbrain)
+      # hparams_file: transformer_inference.yaml # Check 'model_dir' config yaml file, default to 'hyperparams.yaml'
       model_dir: !ref <exp_dir>/<utility[asr][model_name]>
-      eval_batchsize: 2 # eval_batchsize(32g)=3 ->9h eval_batchsize=2->12h eval_batchsize(12GB)=1->24h
+      eval_batchsize: 8 # Requires < 12Gib for the 'asr_pre_ctc_wav2vec2' model
       results_dir: !ref <exp_dir>/<utility[asr][model_name]>

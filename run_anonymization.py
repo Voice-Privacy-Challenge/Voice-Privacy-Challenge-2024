@@ -25,12 +25,12 @@ if __name__ == '__main__':
         devices.append(torch.device('cpu'))
 
     logger = setup_logger(__name__)
-    if config['pipeline'] == "dsp":
-        from anonymization.pipelines.dsp_pipeline import DSPPipeline as pipeline
+    if config['pipeline'] == "mcadams":
+        from anonymization.pipelines.mcadams import McAdamsPipeline as pipeline
     elif config['pipeline'] == "sttts":
-        subprocess.run(['bash', 'anonymization/pipelines/sttts_install.sh'])
-        check_dependencies('anonymization/pipelines/sttts_requirements.txt')
-        from anonymization.pipelines.sttts_pipeline import STTTSPipeline as pipeline
+        subprocess.run(['bash', 'anonymization/pipelines/sttts/sttts_install.sh'])
+        check_dependencies('anonymization/pipelines//sttts/sttts_requirements.txt')
+        from anonymization.pipelines.sttts import STTTSPipeline as pipeline
     else:
         raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")
 

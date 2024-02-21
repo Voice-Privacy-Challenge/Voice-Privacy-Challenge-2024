@@ -2,11 +2,14 @@ import torch
 import torchaudio
 import tqdm
 import pandas as pd
+import warnings
 
 from pathlib import Path
 from sklearn.metrics import recall_score, accuracy_score
 from speechbrain.pretrained.interfaces import foreign_class
-from utils import read_kaldi_format, scan_checkpoint
+from utils import read_kaldi_format, scan_checkpoint, setup_logger
+
+logger = setup_logger(__name__)
 
 
 class FoldSERDataset(torch.utils.data.Dataset):
@@ -35,7 +38,7 @@ def evaluate_ser(eval_datasets, eval_data_dir, models_path, anon_data_suffix, pa
     test_sets = eval_datasets + [f'{dataset}{anon_data_suffix}' for dataset in eval_datasets]
     results = []
     classifiers = {}
-    print(f"Emotion recognition on {','.join(test_sets)}")
+    logger.info(f"Emotion recognition on {','.join(test_sets)}")
     for test_set in tqdm.tqdm(test_sets):
         data_path = eval_data_dir / test_set
         dataset = FoldSERDataset(data_path)
@@ -45,13 +48,16 @@ def evaluate_ser(eval_datasets, eval_data_dir, models_path, anon_data_suffix, pa
             if fold not in classifiers:
                 model_dir = models_path/ f"fold_{fold}"
                 model_dir = scan_checkpoint(model_dir, 'CKPT')
-                classifiers[fold] = foreign_class(
-                    source=model_dir,
-                    savedir=model_dir,
-                    run_opts={'device': device},
-                    classname="CustomEncoderWav2vec2Classifier",
-                    pymodule_file="custom_interface.py",
-                )
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    classifiers[fold] = foreign_class(
+                        source=model_dir,
+                        savedir=model_dir,
+                        run_opts={'device': device},
+                        classname="CustomEncoderWav2vec2Classifier",
+                        pymodule_file="custom_interface.py",
+                    )
+                classifiers[fold].hparams.label_encoder.ignore_len()
 
             hyp = []
             ref = []

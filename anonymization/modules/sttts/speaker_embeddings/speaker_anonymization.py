@@ -28,7 +28,7 @@ class SpeakerAnonymization:
                 raise ValueError('Results dir must be specified in parameters or settings!')
 
         self.anonymizer = self._load_anonymizer(settings)
-    
+
     @property
     def suffix(self):
         return self.anonymizer.suffix

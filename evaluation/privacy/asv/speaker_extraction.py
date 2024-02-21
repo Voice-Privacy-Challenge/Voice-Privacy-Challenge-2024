@@ -9,8 +9,8 @@ import time
 from torch.multiprocessing import set_start_method
 from itertools import repeat
 
-from .extraction.embedding_methods.speechbrain_vectors import SpeechBrainVectors
-from .extraction.ims_speaker_extraction_methods import normalize_wave
+from .speechbrain_vectors import SpeechBrainVectors
+from .utils import normalize_wave
 from .speaker_embeddings import SpeakerEmbeddings
 from utils import read_kaldi_format, remove_contents_in_dir, setup_logger
 
@@ -249,3 +249,4 @@ class SpeakerExtraction:
         for temp_dir in out_dir.glob('temp*'):
             remove_contents_in_dir(temp_dir)
             shutil.rmtree(temp_dir)
+

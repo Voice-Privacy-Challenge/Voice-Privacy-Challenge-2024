@@ -71,7 +71,9 @@ class SpeakerEmbeddings:
         if isinstance(vectors, list):
             vectors = torch.stack(vectors, dim=0).to(self.device)
         if self.vectors is None:
-            self.vectors = torch.tensor(torch.index_select(vectors.clone().detach(), 0, torch.LongTensor(indices).clone().detach().to(self.device)))
+            self.vectors = torch.index_select(vectors.clone().detach(),
+                                   0,
+                                   torch.LongTensor(indices).clone().detach().to(self.device)).clone().detach()
         else:
             self.vectors = torch.cat((self.vectors, torch.index_select(vectors, 0, torch.LongTensor(indices).to(self.device))), dim=0)
         self.genders.extend([genders[idx] for idx in indices])

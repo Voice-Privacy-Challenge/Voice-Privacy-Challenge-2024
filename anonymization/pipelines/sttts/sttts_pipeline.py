@@ -4,11 +4,11 @@ import time
 
 from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger
 
-from anonymization.modules.tts import SpeechSynthesis
-from anonymization.modules.text import SpeechRecognition
-from anonymization.modules.prosody import ProsodyExtraction, ProsodyAnonymization
-from anonymization.modules.speaker_embeddings.speaker_extraction import SpeakerExtraction
-from anonymization.modules.speaker_embeddings.speaker_anonymization import SpeakerAnonymization
+from ...modules.sttts.tts import SpeechSynthesis
+from ...modules.sttts.text import SpeechRecognition
+from ...modules.sttts.prosody import ProsodyExtraction, ProsodyAnonymization
+from ...modules.sttts.speaker_embeddings.speaker_extraction import SpeakerExtraction
+from ...modules.sttts.speaker_embeddings.speaker_anonymization import SpeakerAnonymization
 import typing
 
 logger = setup_logger(__name__)
@@ -41,6 +41,7 @@ class STTTSPipeline:
         save_intermediate = config.get("save_intermediate", True)
 
         modules_config = config["modules"]
+        self.modules_config = config["modules"]
 
         # ASR component
         self.speech_recognition = SpeechRecognition(
@@ -51,19 +52,23 @@ class STTTSPipeline:
         )
 
         # Speaker component
-        self.speaker_extraction = SpeakerExtraction(
-            devices=devices,
-            save_intermediate=save_intermediate,
-            settings=modules_config["speaker_embeddings"],
-            force_compute=force_compute,
-        )
-        self.speaker_anonymization = SpeakerAnonymization(
-            vectors_dir=vectors_dir,
-            device=devices[0],
-            save_intermediate=save_intermediate,
-            settings=modules_config["speaker_embeddings"],
-            force_compute=force_compute,
-        )
+        self.speaker_extraction = {}
+        self.speaker_anonymization = {}
+        for level in ["utt", "spk"]:
+            modules_config["speaker_embeddings"]['emb_level'] = level
+            self.speaker_extraction[level] = SpeakerExtraction(
+                devices=devices,
+                save_intermediate=save_intermediate,
+                settings=modules_config["speaker_embeddings"],
+                force_compute=force_compute,
+            )
+            self.speaker_anonymization[level] = SpeakerAnonymization(
+                vectors_dir=vectors_dir,
+                device=devices[0],
+                save_intermediate=save_intermediate,
+                settings=modules_config["speaker_embeddings"],
+                force_compute=force_compute,
+            )
 
         # Prosody component
         if "prosody" in modules_config:
@@ -96,7 +101,6 @@ class STTTSPipeline:
     def run_anonymization_pipeline(
         self,
         datasets: typing.Dict[str, Path],
-        prepare_results: bool = True,
     ):
         """
             Runs the anonymization algorithm on the given datasets. Optionally
@@ -107,8 +111,6 @@ class STTTSPipeline:
                 datasets (dict of str -> Path): The datasets on which the
                     anonymization pipeline should be runned on. These dataset
                     will be processed sequentially.
-                prepare_results (bool): if True, the resulting anonymization
-                    .wavs are prepared for evaluation
         """
         anon_wav_scps = {}
 
@@ -120,24 +122,28 @@ class STTTSPipeline:
             logger.info("--- Speech recognition time: %f min ---" % (float(time.time() - start_time) / 60))
 
             start_time = time.time()
-            spk_embeddings = self.speaker_extraction.extract_speakers(dataset_path=dataset_path,
+            if dataset_name in self.modules_config["speaker_embeddings"]['anon_level_spk']:
+                anon_level = "spk"
+            if dataset_name in self.modules_config["speaker_embeddings"]['anon_level_utt']:
+                anon_level = "utt"
+            spk_embeddings = self.speaker_extraction[anon_level].extract_speakers(dataset_path=dataset_path,
                                                                       dataset_name=dataset_name)
-            logger.info("--- Speaker extraction time: %f min ---" % (float(time.time() - start_time) / 60))
+            logger.info(f"--- Speaker extraction anon_level ({anon_level}) time: {(float(time.time() - start_time) / 60)} min ---")
 
             if self.prosody_extraction:
                 start_time = time.time()
                 prosody = self.prosody_extraction.extract_prosody(dataset_path=dataset_path, dataset_name=dataset_name,
                                                                   texts=texts)
-                logger.info("--- Prosody extraction time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info(f"--- Prosody extraction time: {(float(time.time() - start_time) / 60)} min ---")
             else:
                 prosody = None
 
             # Step 2: Anonymize speaker, change prosody
-            if self.speaker_anonymization:
+            if self.speaker_anonymization and anon_level in self.speaker_anonymization:
                 start_time = time.time()
-                anon_embeddings = self.speaker_anonymization.anonymize_embeddings(speaker_embeddings=spk_embeddings,
+                anon_embeddings = self.speaker_anonymization[anon_level].anonymize_embeddings(speaker_embeddings=spk_embeddings,
                                                                                   dataset_name=dataset_name)
-                logger.info("--- Speaker anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
+                logger.info(f"--- Speaker anonymization at anon_level ({anon_level}) time: {(float(time.time() - start_time) / 60)} min ---")
             else:
                 anon_embeddings = spk_embeddings
 
@@ -158,24 +164,21 @@ class STTTSPipeline:
             anon_wav_scps[dataset_name] = wav_scp
             logger.info("Anonymization pipeline completed.")
 
-        if prepare_results:
-            logger.info("Preparing results according to the Kaldi format.")
             if self.speaker_anonymization:
-                anon_vectors_path = self.speaker_anonymization.results_dir
+                anon_vectors_path = self.speaker_anonymization[anon_level].results_dir
             else:
-                anon_vectors_path = self.speaker_extraction.results_dir
+                anon_vectors_path = self.speaker_extraction[anon_level].results_dir
 
-            for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
-                logger.info(f"{i + 1}/{len(datasets)}: Preparing kaldi {dataset_name}...")
+            logger.info(f"{i + 1}/{len(datasets)}: Preparing kaldi {dataset_name}...")
 
-                output_path = Path(str(dataset_path) + self.anon_suffix)
-                copy_data_dir(dataset_path, output_path)
-                # Overwrite spk2gender if it has been modify
-                spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
-                save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
-                # Overwrite wav.scp with the paths to the anonymized wavs
-                save_kaldi_format(anon_wav_scps[dataset_name], output_path / 'wav.scp')
+            output_path = Path(str(dataset_path) + self.anon_suffix)
+            copy_data_dir(dataset_path, output_path)
+            # Overwrite spk2gender if it has been modify
+            spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
+            save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
+            # Overwrite wav.scp with the paths to the anonymized wavs
+            save_kaldi_format(anon_wav_scps[dataset_name], output_path / 'wav.scp')
 
-            logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
+        logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
 
         return anon_wav_scps

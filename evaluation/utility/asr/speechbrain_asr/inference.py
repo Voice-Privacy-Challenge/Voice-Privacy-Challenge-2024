@@ -1,3 +1,4 @@
+import sys
 from utils import save_kaldi_format
 from copy import deepcopy
 
@@ -41,12 +42,13 @@ class ASRDataset(torch.utils.data.Dataset):
 
 class InferenceSpeechBrainASR:
 
-    def __init__(self, model_path, device):
+    def __init__(self, model_path, asr_hparams, model_type, device):
         self.device = device
         print(f'Use ASR model for evaluation: {model_path}')
-        self.asr_model = EncoderDecoderASR.from_hparams(source=model_path,
-                                                        hparams_file='transformer_inference.yaml',
-                                                        savedir=model_path, run_opts={'device': self.device})
+        assert model_type in ["EncoderASR", "EncoderDecoderASR"]
+        self.asr_model = getattr(sys.modules[__name__], model_type).from_hparams(source=model_path,
+                                                            hparams_file=asr_hparams,
+                                                            savedir=model_path, run_opts={'device': self.device})
 
     def plain_text_key(self, path):
         tokens = []  # key: token_list

@@ -2,6 +2,9 @@ import pandas as pd
 
 from .asv import ASV
 
+from utils import setup_logger
+logger = setup_logger(__name__)
+
 
 def evaluate_asv(eval_datasets, eval_data_dir, params, device, anon_data_suffix, model_dir=None):
     backend = params.get('backend', 'speechbrain').lower()
@@ -13,7 +16,7 @@ def evaluate_asv(eval_datasets, eval_data_dir, params, device, anon_data_suffix,
 
 
 def asv_eval_speechbrain(eval_datasets, eval_data_dir, params, device, anon_data_suffix, model_dir=None):
-    print(f'Use ASV model for evaluation: {model_dir}')
+    logger.info(f'Use ASV model for evaluation: {model_dir}')
 
     save_dir = params['evaluation']['results_dir'] / f'{params["evaluation"]["distance"]}_out'
     asv = ASV(model_dir=model_dir, device=device, score_save_dir=save_dir, distance=params['evaluation']['distance'],

@@ -1,7 +1,7 @@
 import warnings
 import torch
-from anonymization.modules.tts.IMSToucan.TrainingInterfaces.Spectrogram_to_Embedding.StyleEmbedding import StyleEmbedding
-from anonymization.modules.tts.IMSToucan.Preprocessing.AudioPreprocessor import AudioPreprocessor
+from ....tts.IMSToucan.TrainingInterfaces.Spectrogram_to_Embedding.StyleEmbedding import StyleEmbedding
+from ....tts.IMSToucan.Preprocessing.AudioPreprocessor import AudioPreprocessor
 
 
 class StyleEmbeddings:
