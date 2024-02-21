@@ -1,6 +1,5 @@
 # This code is partly based on
 # https://github.com/speechbrain/speechbrain/blob/develop/recipes/VoxCeleb/SpeakerRec/speaker_verification_plda.py
-import logging
 from pathlib import Path
 import torch
 from speechbrain.utils.metric_stats import EER
@@ -8,10 +7,10 @@ from sklearn.metrics.pairwise import cosine_distances
 import pandas as pd
 
 #from anonymization.modules.speaker_embeddings.anonymization.utils.plda_model import PLDAModel
-from anonymization.modules.speaker_embeddings import SpeakerExtraction
-from utils import write_table, read_kaldi_format, save_kaldi_format
+from anonymization.modules.speaker_embeddings.speaker_extraction import SpeakerExtraction
+from utils import write_table, read_kaldi_format, save_kaldi_format, setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 class ASV:
 

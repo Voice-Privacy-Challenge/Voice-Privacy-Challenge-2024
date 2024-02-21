@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 import numpy as np
 import torch
@@ -14,8 +13,9 @@ from .base_anon import BaseAnonymizer
 from .utils.plda_model import PLDAModel
 from ..speaker_extraction import SpeakerExtraction
 from ..speaker_embeddings import SpeakerEmbeddings
+from utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 REVERSED_GENDERS = {
     "m": "f",
@@ -173,7 +173,7 @@ class PoolAnonymizer(BaseAnonymizer):
             vectors_a=self.pool_embeddings.vectors, vectors_b=speaker_embeddings.vectors
         )
 
-        logging.info(f"Anonymize embeddings of {len(speaker_embeddings)} speakers...")
+        logger.info(f"Anonymize embeddings of {len(speaker_embeddings)} speakers...")
         identifiers = []
         speakers = []
         anon_vectors = []

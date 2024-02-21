@@ -1,7 +1,6 @@
 from .base_anon import BaseAnonymizer
 import torch
 from typing import Union
-import ruamel.yaml as yaml
 
 
 class Passthrough(BaseAnonymizer):

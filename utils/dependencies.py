@@ -23,7 +23,7 @@ def check_dependencies(requirements_file):
 
     error_msg = ''
     if missing_dependencies:
-        error_msg += f'Missing dependencies: {" ".join(missing_dependencies)}.\n'
+        error_msg += f'Missing dependencies: {", ".join(missing_dependencies)}.\n'
     if nonmatching_versions:
         error_msg += f'The following packages are installed with a version that does not match the requirement:\n'
         for req, installed_version in nonmatching_versions:

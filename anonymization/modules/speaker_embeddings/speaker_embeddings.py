@@ -68,10 +68,12 @@ class SpeakerEmbeddings:
         new_iden_dict = {iden: last_known_index + i for i, iden in enumerate(new_identifiers)}
         self.identifiers2idx.update(new_iden_dict)
         self.idx2identifiers.update({idx: iden for iden, idx in new_iden_dict.items()})
-        if not self.vectors:
-            self.vectors = torch.tensor(vectors[indices])
+        if isinstance(vectors, list):
+            vectors = torch.stack(vectors, dim=0).to(self.device)
+        if self.vectors is None:
+            self.vectors = torch.tensor(torch.index_select(vectors.clone().detach(), 0, torch.LongTensor(indices).clone().detach().to(self.device)))
         else:
-            self.vectors = torch.cat((self.vectors, vectors[indices]), dim=0)
+            self.vectors = torch.cat((self.vectors, torch.index_select(vectors, 0, torch.LongTensor(indices).to(self.device))), dim=0)
         self.genders.extend([genders[idx] for idx in indices])
         self.original_speakers.extend([speakers[idx] for idx in indices])
 

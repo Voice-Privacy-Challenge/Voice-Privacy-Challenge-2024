@@ -2,16 +2,14 @@ from pathlib import Path
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-
-import logging
-logger = logging.getLogger(__name__)
-
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
 
 from .speechbrain_asr import InferenceSpeechBrainASR
 from .speechbrain_asr.inference import ASRDataset
-from utils import read_kaldi_format
+from utils import read_kaldi_format, setup_logger
+
+logger = setup_logger(__name__)
 
 
 def evaluate_asr(eval_datasets, eval_data_dir, params, model_path, anon_data_suffix, device, backend):
