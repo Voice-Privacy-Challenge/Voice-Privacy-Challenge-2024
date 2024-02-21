@@ -5,7 +5,7 @@ save_output: true
 
 results_dir: exp/gan_anon/ # TODO adjust path, e.g. <root_dir>/results
 models_dir:  models  # TODO adjust path, e.g. <root_dir>/models
-vectors_dir: !ref <root_dir>/results/original_speaker_embeddings
+vectors_dir: !ref <results_dir>/original_speaker_embeddings
 
 force_compute_all: false
 #datasets: !include:datasets_vpc2022_official_anon.yaml
@@ -42,37 +42,17 @@ modules:
     vec_type: style-embed
     emb_model_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
     emb_level: spk   # possible: spk, utt
-    anon_method: !include:anon/ims_gan.yaml    # possible: pool, random
+    anon_settings:
+      method: gan
       models_dir: !ref <models_dir>
       save_intermediate: !ref <save_intermediate>
       vec_type: !ref <modules[speaker_embeddings][vec_type]>
-    extraction_results_path: !ref <results_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
-    anon_results_path: !ref <results_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
-
-    # pool_anon_settings are only used if anon_method == pool
-    pool_anon_settings:
-      pool_data_dir: !ref <data_dir>/libritts_train_other_500
-      pool_vec_path: !ref <vectors_dir>/style-embed_spk-level/pool_embeddings
-      N: 200
-      N_star: 100
-      distance: plda    # possible: plda, cosine
-      plda_dir: !ref <models_dir>/distances/plda/libritts_train_other_500_xvector
-      cross_gender: false
-      proximity: farthest    # possible: farthest, nearest, center
-      scaling: maxmin    # possible: none, maxmin, mean
-      stats_per_dim_path: !ref <models_dir>/anonymization/stats_per_dim.json
-
-    # random_anon_settings are only used if anon_method == random
-    random_anon_settings:
-      in_scale: true
-      stats_per_dim_path: !ref <models_dir>/anonymization/stats_per_dim.json
-
-    # gan_anon_settings are only used if anon_method == gan
-    gan_anon_settings:
-      vectors_file: !ref <models_dir>/anonymization/style-embed_wgan_generated_vectors.pt
-      gan_model_path: !ref <models_dir>/anonymization/style-embed_wgan.pt
+      vectors_file: !ref <models_dir>/anonymization/<modules[speaker_embeddings][vec_type]>_wgan.pt
+      gan_model_path: !ref <models_dir>/anonymization/gan_<modules[speaker_embeddings][vec_type]>/<modules[speaker_embeddings][vec_type]>_wgan.pt
       num_sampled: 5000
       sim_threshold: 0.7
+    extraction_results_path: !ref <results_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
+    anon_results_path: !ref <results_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>_<modules[speaker_embeddings][emb_level]>-level
 
   prosody:
     extractor_type: ims
