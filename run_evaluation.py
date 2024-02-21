@@ -128,7 +128,7 @@ if __name__ == '__main__':
     multiprocessing.set_start_method("fork",force=True)
 
     params = parse_yaml(Path('configs', args.config))
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
     eval_data_dir = params['eval_data_dir']
     anon_suffix = params['anon_data_suffix']
@@ -183,8 +183,6 @@ if __name__ == '__main__':
             asr_params = params['utility']['asr']
             
             model_name = asr_params['model_name']
-            backend = asr_params['backend'].lower()
-
 
             if 'training' in asr_params:
                 asr_train_params = asr_params['training']
@@ -204,17 +202,15 @@ if __name__ == '__main__':
 
             if 'evaluation' in asr_params:
                 asr_eval_params = asr_params['evaluation']
-                model_path = asr_eval_params['model_dir']
-                asr_model_path = scan_checkpoint(model_path, 'CKPT') or model_path
-
-                if not model_path.exists():
-                    raise FileNotFoundError(f'ASR model {model_path} does not exist!')
+                asr_eval_params["device"] = device
 
                 start_time = time.time()
                 print('Perform ASR evaluation')
-                asr_results = evaluate_asr(eval_datasets=eval_data_asr, eval_data_dir=eval_data_dir,
-                                           params=asr_eval_params, model_path=asr_model_path,
-                                           anon_data_suffix=anon_suffix, device=device, backend=backend)
+                asr_results = evaluate_asr(asr_params['backend'].lower(),
+                                           eval_datasets=eval_data_asr,
+                                           eval_data_dir=eval_data_dir,
+                                           params=asr_eval_params,
+                                           anon_data_suffix=anon_suffix)
                 results['asr'] = asr_results
                 print("--- ASR evaluation time: %f min ---" % (float(time.time() - start_time) / 60))
 
