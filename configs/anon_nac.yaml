@@ -1,6 +1,8 @@
 pipeline: nac
 
 data_dir: data
+results_dir: exp/nac_anon
+scp_name: wav.scp
 
 model:
   checkpoint_dir: ~/.local/share/tts/tts_models--multilingual--multi-dataset--bark
@@ -17,3 +19,5 @@ datasets:
     trials: [_trials_f, _trials_m]
   - name: train-clean-360
     data: train-clean-360
+
+speaker_mappings_root: anonymization/modules/nac/speaker_mappings
