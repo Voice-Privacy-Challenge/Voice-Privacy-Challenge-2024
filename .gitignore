@@ -142,3 +142,6 @@ data
 exp
 pre_model.zip
 /model*/*
+
+# PyCharm
+.idea

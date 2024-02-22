@@ -31,6 +31,9 @@ if __name__ == '__main__':
         subprocess.run(['bash', 'anonymization/pipelines/sttts/sttts_install.sh'])
         check_dependencies('anonymization/pipelines//sttts/sttts_requirements.txt')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
+    elif config['pipeline'] == "nac":
+        subprocess.run(['bash', 'anonymization/modules/nac/install_nac.sh'])
+        from anonymization.pipelines.nac.nac_pipeline import NACPipeline as pipeline
     else:
         raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")
 
