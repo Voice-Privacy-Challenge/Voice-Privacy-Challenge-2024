@@ -32,7 +32,7 @@ mark=.done-sttts-requirements
 if [ ! -f $mark ]; then
   echo " == Installing python libraries =="
 
-  pip3 install -r anonymization/pipelines/sttts_requirements.txt  || exit 1
+  pip3 install -r anonymization/pipelines/sttts/sttts_requirements.txt  || exit 1
   touch $mark
 fi
 
