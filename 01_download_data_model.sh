@@ -78,7 +78,7 @@ if [ ! -d $check_data ]; then
     unzip .data.zip
 fi
 
-for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
+for model in asv_pre_ecapa asr_pre_transformer_transformerlm ser_pre_sb; do
     if [ ! -d "exp/$model" ]; then
         if [ ! -f .pre_model_${model}.zip ]; then
             echo "Download pretrained $model models pre-trained..."
