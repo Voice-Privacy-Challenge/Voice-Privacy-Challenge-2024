@@ -28,8 +28,8 @@ if __name__ == '__main__':
     if config['pipeline'] == "mcadams":
         from anonymization.pipelines.mcadams import McAdamsPipeline as pipeline
     elif config['pipeline'] == "sttts":
-        subprocess.run(['bash', 'anonymization/pipelines/sttts/sttts_install.sh'])
-        check_dependencies('anonymization/pipelines/sttts/sttts_requirements.txt')
+        subprocess.run(['bash', 'anonymization/pipelines/sttts/install.sh'])
+        check_dependencies('anonymization/pipelines/sttts/requirements.txt')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
     else:
         raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")

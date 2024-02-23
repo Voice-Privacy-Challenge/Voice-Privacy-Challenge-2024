@@ -75,9 +75,7 @@ if __name__ == '__main__':
     check_dependencies('requirements.txt')
     multiprocessing.set_start_method("fork",force=True)
 
-    params = parse_yaml(Path('configs', args.config))
-    for k, v in json.loads(args.overwrite).items():
-        params[k] = v
+    params = parse_yaml(Path('configs', args.config), overrides=json.loads(args.overwrite))
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
     eval_data_dir = params['data_dir']

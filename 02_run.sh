@@ -13,15 +13,15 @@ anon_config=anon_mcadams.yaml
 force_compute=
 # force_compute='--force_compute True'
 
-# Modify run_evaluation(s) configs, see below
-eval_overwrite=
+# JSON to modify run_evaluation(s) configs, see below
+eval_overwrite="{"
 
 ### Anonymization + Evaluation:
 
 # find the $anon_suffix (data/dataset_$anon_suffix) = to where the anonymization produces the data files
 anon_suffix=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('./configs/${anon_config}'); print(load_hyperpyyaml(f, None).get('anon_suffix', ''))")
 if [[ $anon_suffix ]]; then
-  eval_overwrite="{\"anon_data_suffix\": \"$anon_suffix\"}"
+  eval_overwrite="$eval_overwrite \"anon_data_suffix\": \"$anon_suffix\"}"
 fi
 
 # Generate anonymized audio (libri dev+test set & libri-360h)
