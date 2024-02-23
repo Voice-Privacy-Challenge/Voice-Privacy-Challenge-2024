@@ -31,7 +31,7 @@ This is the same baseline as the secondary baseline for the VoicePrivacy-2022. I
 ```
 python run_anonymization_dsp.py --config anon_dsp.yaml
 ```
-The anonymized audios will be saved to `$data_dir=data`, and the `$anon_data_suffix=_mcadams`, including 9 folders:
+The anonymized audios will be saved to `$data_dir=data`,  and the `$anon_data_suffix=_mcadams`, takes ~10 hours, including 9 folders:
 
 ```
   data/libri_dev_enrolls_mcadams/anon_wav/*wav
