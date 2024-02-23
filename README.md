@@ -90,9 +90,22 @@ anon_data_suffix: !PLACEHOLDER  # suffix for dataset to signal that it is anonym
   python run_evaluation.py --config eval_post.yaml
   ```
 
+### Some potential questions you may have and how to solve:
+> 1. $ASV_{eval}^{anon}$ training is too slow!!
 
+If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes <3h, but if the drive is old and slow, in a worse case,  $ASV_{eval}^{anon}$ takes ~10h Increase $num_workers in config/eval_post.yaml may help to speed up the processing.
 
+> 2. OOM problem when decoding by $ASR_{eval}$
 
+Reduce the $eval_bachsize in config/eval_pre.yaml
 
+> 3. The default $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech) if you want to use a pretrained transformer+tramsformerLM trained on LibriSpeech-360h,
 
+Modify entries in configs/eval_pre.yaml: 
+```
+asr:
+  model_name: asr_pre_transformer_transformerlm
+evaluation:
+  model_type: EncoderDecoderASR
+```
 
