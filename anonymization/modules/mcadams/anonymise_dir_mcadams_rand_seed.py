@@ -21,7 +21,7 @@ import wave
 import kaldiio
 from pathlib import Path
 from tqdm import tqdm
-from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger
+from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger, load_wav_from_scp
 
 multiprocessing.set_start_method('spawn', force=True)
 

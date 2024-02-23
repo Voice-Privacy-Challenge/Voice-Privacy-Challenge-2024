@@ -12,10 +12,9 @@ import wave
 from tqdm import tqdm
 
 import torch
-import torchaudio
 import kaldiio
 
-from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger
+from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger, load_wav_from_scp
 from .utils import float2pcm
 
 logger = setup_logger(__name__)
@@ -34,7 +33,7 @@ class Dataset(torch.utils.data.Dataset):
         return len(self.all_wavs)
 
     def __getitem__(self, index):
-        audio, freq = torchaudio.load(self.all_wavs[index])
+        audio, freq = load_wav_from_scp(self.all_wavs[index])
         f0 = self.get_f0_func(Wav(audio))
         return {"utid": self.all_keys[index],
                 "audio": audio,

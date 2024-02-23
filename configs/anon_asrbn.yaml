@@ -2,7 +2,7 @@ data_dir: data
 results_dir: anon_wav # output example ./data/IEMOCAP_asrbn-vq/anon_wav
 
 pipeline: asrbn
-anon_suffix: !ref _<pipeline>_<modules[model_tag_version]>
+anon_suffix: !ref _<pipeline>
 
 datasets:
   - name: IEMOCAP_dev
