@@ -35,7 +35,8 @@ privacy:
       pretrained_model: null # path to pretrained model, only used for finetuning
       lr: 0.01
       epochs: 10
-      batch_size: 256
+      batch_size: 256 
+      num_workers: 10 #increse this can speed up the training process
       num_utt: ALL  # ALL or specific number, number of utterances per speaker
       utt_selection: spk-diverse-sess  # select utterances per speaker and session (spk-sess), per speaker and randomly across all sessions (spk-random), per speaker and balanced across sessions (spk-diverse-sess)
       num_spk: ALL  # ALL or specific number, number of speakers
