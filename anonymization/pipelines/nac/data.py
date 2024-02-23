@@ -46,7 +46,13 @@ class SCPPathDataset(Dataset):
 
         self.data = []
         for line in scp_lines:
-            utt_id, path = line.strip().split()
+            # utt_id, path = line.strip().split()
+            parsed_line = line.strip().split()
+            if len(parsed_line) == 2:
+                utt_id, path = parsed_line
+            else:
+                #this is the case of train-360
+                utt_id, _, _, _, _, path, _ = parsed_line
             basename = os.path.basename(path)
             if root:
                 path = os.path.join(root, path)
