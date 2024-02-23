@@ -71,7 +71,7 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     device = settings.get("device", "cpu")
     batch_size = settings.get("batch_size", 4)
     single_spkid = settings.get("single_spkid", "6081")
-    tag_version = settings.get("model_tag_version", "6081") 
+    tag_version = settings.get("model_tag_version", "hifigan_bn_tdnnf_wav2vec2_vq_48_v1") 
 
     copy_data_dir(dataset_path, output_path)
     results_dir = output_path / results_dir
