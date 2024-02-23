@@ -1,0 +1,30 @@
+data_dir: data
+results_dir: anon_wav # output example ./data/IEMOCAP_asrbn-vq/anon_wav
+
+pipeline: asrbn
+anon_suffix: !ref _<pipeline>
+
+datasets:
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+  - name: IEMOCAP_test
+    data: IEMOCAP_test
+  - name: libri_dev
+    data: libri_dev
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: libri_test
+    data: libri_test
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: train-clean-360
+    data: train-clean-360
+
+modules:
+  anon_suffix: !ref <anon_suffix>
+  anon_level_single: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test, train-clean-360]
+  single_spkid: "6081"
+  # Other models can be found here: https://github.com/deep-privacy/SA-toolkit/releases
+  model_tag_version: "hifigan_bn_tdnnf_wav2vec2_vq_48_v1"
+  device: "cuda"
+  batch_size: 8 # works with GPU < 12Gib
