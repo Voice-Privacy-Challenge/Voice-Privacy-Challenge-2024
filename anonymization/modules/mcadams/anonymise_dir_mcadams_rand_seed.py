@@ -88,7 +88,7 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     fn = functools.partial(process_wav, settings=settings, reader=reader, output_path=str(results_dir))
     # the minimum utterances is 393 libri-dev-enroll, make sure chunksize=393//nj*10 > 0, otherwise scp_entries=Null
     with multiprocessing.Pool(processes=nj) as pool:
-        scp_entries = pool.starmap(fn, tqdm(zip(mcadams_coeffs, reader.keys()), total=N), chunksize=(math.ceil(len(reader)) // nj * 5))
+        scp_entries = pool.starmap(fn, tqdm(zip(mcadams_coeffs, reader.keys()), total=N), chunksize=(math.ceil(len(reader) // nj) * 5))
     
     with open(path_wav_scp_out, 'wt', encoding='utf-8') as writer:
         writer.writelines(scp_entries)
