@@ -75,9 +75,7 @@ if __name__ == '__main__':
     check_dependencies('requirements.txt')
     multiprocessing.set_start_method("fork",force=True)
 
-    params = parse_yaml(Path('configs', args.config))
-    for k, v in json.loads(args.overwrite).items():
-        params[k] = v
+    params = parse_yaml(Path('configs', args.config), overrides=json.loads(args.overwrite))
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
     eval_data_dir = params['data_dir']
@@ -117,9 +115,8 @@ if __name__ == '__main__':
                             continue
                         if 'enrolls' not in d or 'trials' not in d:
                             raise ValueError(f"{name} is missing an ASV enrolls/trials split")
-                    eval_pairs.extend([(f'{d["data"]}{enroll}',
-                                        f'{d["data"]}{trial}')
-                                       for enroll, trial in itertools.product(d['enrolls'], d['trials'])])
+                        eval_pairs.extend([(f'{d["data"]}{enroll}', f'{d["data"]}{trial}')
+                                          for enroll, trial in itertools.product(d['enrolls'], d['trials'])])
                 asv_results = evaluate_asv(eval_datasets=eval_pairs, eval_data_dir=eval_data_dir,
                                            params=asv_params, device=device,  model_dir=model_dir,
                                            anon_data_suffix=anon_suffix)

@@ -9,23 +9,26 @@
 
 ## Download data and pretrianed models
 
-`./01_download_data_model.sh` Password required, please register to get password.  
+`./01_download_data_model.sh` 
+Password required, please register to get password.  
+
 You can modify the `librispeech_corpus` variable to avoid downloading LibriSpeech 360.  
+[IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus is required to download separetely by submitting request: https://sail.usc.edu/iemocap/iemocap_release.htm.
 You should modify the `iemocap_corpus` variable to where it is located on your server.
 
-### B2 Anonymization + Evaluation 
-If you would like to generate B2 audio and evaluate it without modifying, or submit Python scripts separately, simply run
+## Anonymization and Evaluation 
 
 `./02_run.sh`
 
-then you can get the results for B2.
+Baselines: 
+- Anonymization using McAdams coefficient
 
 ## Using Anonymization and Evaluation Flexibly 
 The recipe uses [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) toolkit, consists of **two separate procedures for anonymization and evaluation**. This means that the generation of anonymized speech is independent of the evaluation of anonymization systems. Both processes do not need to be executed in the same run or with the same settings. 
 
 ### Anonymization: 
 The recipe supports B2 and [GAN-based](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10096607) speaker anonymization systems.
-#### B2: Anonymization using McAdams coefficient (randomized version)
+#### B2: Anonymization using McAdams coefficient 
 This is the same baseline as the secondary baseline for the VoicePrivacy-2022. It does not require any training data and is based upon simple signal processing techniques using the McAdams coefficient.
 
 ```
@@ -60,9 +63,11 @@ The anonymized audios will be saved to `$data_dir`
 
 ### Evaluation
 Evaluation metrics includes:
-- Privacy: Equal error rate (EER) for Ignorant, lazy-informed, and semi-informed attackers
+- Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers
 - Utility:
-  - Word Error Rate (WER) by an pretrained ASR model trained on original 360h LibriSpeech dataset
+  - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech-train-clean-360 or ...)
+  - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
+
 
 The tookit supports the evaluation for any anonymized data:
 1. prepare 9 anonymized folders each containing the anonymized wav files:

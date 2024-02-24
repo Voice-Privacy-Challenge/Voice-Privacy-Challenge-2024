@@ -1,11 +1,5 @@
 #!/usr/bin/env python3.0
 # -*- coding: utf-8 -*-
-"""
-This pipeline consists of:
-                         -> non-real poles -> McAdam coef -> modified poles
-    input -> LP analysis -> real poles     ---------------->                -> LP synthesis -> output
-                         -> residual       ---------------->
-"""
 
 from pathlib import Path
 
@@ -25,7 +19,7 @@ class McAdamsPipeline:
                                  -> residual       ---------------->
 
         Args:
-            config (dict): a configuration dictionary, e.g., see anon_ims_sttts_pc.yaml
+            config (dict): a configuration dictionary, e.g., see anon_*.yaml
             force_compute (bool): if True, forces re-computation of
                 all steps. otherwise uses saved results.
             devices (list): a list of torch-interpretable devices
@@ -33,7 +27,6 @@ class McAdamsPipeline:
         self.config = config
         self.force_compute = force_compute
         self.modules_config = config['modules']
-        return
 
     def run_anonymization_pipeline(self, datasets):
         # anonymize each dataset
@@ -49,6 +42,3 @@ class McAdamsPipeline:
                          settings=self.modules_config,
                          force_compute=self.force_compute,
                          )
-
-if __name__ == "__main__":
-    print(__doc__)
