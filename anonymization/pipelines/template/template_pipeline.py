@@ -31,10 +31,8 @@ class TemplatePipeline:
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
             anon_level = None
             if 'anon_level_spk' in self.modules_config and dataset_name in self.modules_config['anon_level_spk']:
-                raise ValueError("spk not implemented")
                 anon_level = "spk"
             if 'anon_level_utt' in self.modules_config and dataset_name in self.modules_config['anon_level_utt']:
-                raise ValueError("utt not implemented")
                 anon_level = "utt"
             if 'anon_level_single' in self.modules_config and dataset_name in self.modules_config['anon_level_single']:
                 anon_level = "single"
