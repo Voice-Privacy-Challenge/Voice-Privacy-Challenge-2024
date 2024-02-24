@@ -11,4 +11,4 @@ datasets:
 
 modules:
   anon_suffix: !ref <anon_suffix> # YAML ref to the value of line 5
-  wav_shape: 42 # Configure the anonymization function
+  anon_wav_shape: 42 # Configure the anonymization function

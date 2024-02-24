@@ -19,7 +19,7 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     output_path = Path(str(dataset_path) + settings['anon_suffix'])
 
     # Get some information from the configs/
-    random_shape = settings.get("wav_shape", 42)
+    random_shape = settings.get("anon_wav_shape", 42)
 
     ## From the source data-dir (./data/IEMOCAP_dev)
     ## Create the anonymized data-dir (./data/IEMOCAP_dev_template/)
