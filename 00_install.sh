@@ -24,8 +24,6 @@ TORCH_VERSION=2.0.1
 
 MAMBA_PACKAGES_TO_INSTALL="sshpass OpenSSH sox libflac tar libacl inotify-tools git-lfs ffmpeg wget make cmake ncurses ninja python=3.10 nvtop automake libtool gxx=12.3.0 gcc=12.3.0 python-sounddevice"
 
-ESPAK_VERSION=1.51.1
-
 mark=.done-venv
 if [ ! -f $mark ]; then
   echo " == Making virtual environment =="
