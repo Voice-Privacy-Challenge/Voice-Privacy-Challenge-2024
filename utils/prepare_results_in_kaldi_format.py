@@ -94,9 +94,8 @@ def check_kaldi_formart_data(config):
         # in conf/eval_post.yaml, train_data_name = train-clean-360$suffix, ori_train_data_name=train-clean-360
         ori_train_data_name = config['train_data_name'].split(suffix)[0]
         dataset_dict[ori_train_data_name] = Path(config['data_dir'], ori_train_data_name)
-        
-
-    anon_folders = [folder for folder in os.listdir(output_path) if os.path.isdir(os.path.join(output_path, folder)) and folder.endswith(suffix)]
+    
+    anon_folders = [folder for folder in os.listdir(output_path) if os.path.isdir(os.path.join(output_path, folder)) and folder.endswith(suffix) and 'asr' not in folder]
     for dataset, orig_dataset_path in dataset_dict.items():
         out_data_split = output_path / f'{dataset}{suffix}'
         if not os.path.exists(out_data_split):
