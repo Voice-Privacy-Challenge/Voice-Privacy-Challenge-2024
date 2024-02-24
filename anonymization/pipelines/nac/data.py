@@ -30,12 +30,12 @@ class SCPPathDataset(Dataset):
         @param mapping_file: path to a json file that contains speaker mappings. If given, voice_folder and
             speaker_level are ignored.
         """
-        assert ds_type in ["libri", "vctk"], f"ds_type '{ds_type}' not allowed, must be either 'libri' or 'vctk'."
+        assert ds_type in ["libri", "vctk", "iemocap"], f"ds_type '{ds_type}' not allowed, must be either 'libri' or 'vctk' or 'iemocap'."
 
         self.ds_type = ds_type
         if self.ds_type == 'libri':
             self.spk_from_utt_id = lambda utt_id: utt_id.split('-')[0]
-        else:  # this is for vctk
+        else:  # this is for vctk (and now iemocap)
             self.spk_from_utt_id = lambda utt_id: utt_id.split('_')[0]
         self.voice_folder = voice_folder
         self.root = root
