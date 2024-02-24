@@ -2,7 +2,11 @@ from pathlib import Path
 from collections import defaultdict
 from shutil import copy
 from utils import save_kaldi_format, create_clean_dir, read_kaldi_format, get_datasets
-import os
+from .logger import setup_logger
+import os,sys
+
+logger = setup_logger(__name__)
+
 
 def combine_asr_data(input_dirs, output_dir):
     output_dir = Path(output_dir)
@@ -25,71 +29,88 @@ def combine_asr_data(input_dirs, output_dir):
     spk2utt = {spk: sorted(utt_list) for spk, utt_list in spk2utt.items()}
     save_kaldi_format(spk2utt, output_dir / 'spk2utt')
 
-def check_file(ori_file, anon_file):
+
+def list_wav_files_recursively(folder_path):
+    wav_files = []
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith('.wav'):
+                wav_files.append(os.path.join(root, file))
+    return wav_files
+
+
+def check_files(ori_folder, anon_folder, required_files):
     skip=True
-    if 'wav.scp' in str(anon_file):
-        for line in open(anon_file):
-            if 'anon_wav' in line.strip():
-                skip += os.path.exists(line.strip().split(' ')[-1])
-            else:
+    for required_file in required_files:
+        if not os.path.exists(anon_folder / required_file):
+            return False   
+            
+        if 'wav.scp' in str(required_file):
+            wav_files = list_wav_files_recursively(anon_folder)
+            if len(wav_files) == 0:
+                    logger.error(f"Directory {anon_folder} doen't have any audios.")
+                    exit()
+            
+            lines = open(anon_folder / required_file).readlines()
+            if len(lines) == 0:
                 return False
-    else:
-        with open(ori_file, 'rb') as f1, open(anon_file, 'rb') as f2:
-            content1 = f1.read()
-            content2 = f2.read()
-            if content1 == content2:
-                skip=True
+            for line in lines:
+                    skip = line.strip().split(' ')[-1] in wav_files
+                    if not skip:
+                        return False
+        else:
+            with open(ori_folder / required_file, 'rb') as f1, open(anon_folder / required_file, 'rb') as f2:
+                content1 = f1.read()
+                content2 = f2.read()
+                if content1 == content2:
+                    skip=True
     return skip
 
 
+def create_kaldi_formart_data(ori_folder, anon_folder, required_files):
+    logger.info(f"Create Kaldi format files for {anon_folder}")
+    for file in required_files:
+        ori_file = ori_folder / file
+        anon_file = anon_folder / file
+        copy(ori_file, anon_file)
+        if file == 'wav.scp':
+            with open(anon_file, 'w') as fp:
+                wav_files = list_wav_files_recursively(anon_folder)
+                dirname = Path(wav_files[0]).parent
+                for line in open(ori_file):
+                    temp = line.strip().split(' ')
+                    token = temp[0]
+                    audio_path = dirname / token
+                    fp.write(f"{token} {audio_path}.wav\n")
+
 def check_kaldi_formart_data(config): 
+    logger.info('Check Kaldi format files')
+    # 1) check datastes exist: anonymized dev$suffix test$suffix and anonymized train-clean-360$suffix
     dataset_dict = get_datasets(config)
     output_path = config['data_dir']
     suffix = config['anon_data_suffix']
+    
+    if 'train_data_name' in config:
+        # in conf/eval_post.yaml, train_data_name = train-clean-360$suffix, ori_train_data_name=train-clean-360
+        ori_train_data_name = config['train_data_name'].split(suffix)[0]
+        dataset_dict[ori_train_data_name] = Path(config['data_dir'], ori_train_data_name)
+        
 
+    anon_folders = [folder for folder in os.listdir(output_path) if os.path.isdir(os.path.join(output_path, folder)) and folder.endswith(suffix)]
     for dataset, orig_dataset_path in dataset_dict.items():
-        # do the transformation for original and anonymized versions of each dataset
-        # if it is the original data, the information is simply copied from an external source of the data
-        # if it is the anonymized data, some information (e.g. the wav.scp) is generated to match the information of the anonymized data
-        
         out_data_split = output_path / f'{dataset}{suffix}'
-        #out_data_split.mkdir(exist_ok=True, parents=True)
         if not os.path.exists(out_data_split):
-            print(f"Directory {out_data_split} does not exist. Please prepare your anoymized audio in a correct formart.")
+            logger.error(f"Directory {out_data_split} does not exist. Please prepare your anonymized audio in a correct format.")
             exit()
-        
-        # these files are never changed during anonymization and always copied from the original
-        copy_files = ['spk2utt', 'text', 'utt2spk','spk2gender','utt2dur', "wav.scp"]
-
-        if 'trials' in dataset:
-            # the trials file only exists for the trials subsets
-            copy_files += ['trials']
-        elif 'enrolls' in dataset:
-            # the enrolls file only exists for the enrolls subsets
-            copy_files += ['enrolls']
-
-        em_copy_files = ['spk2fold', 'spk2gender','spk2utt',  'text', 'text_no_norm','utt2emo','utt2spk', "wav.scp"]
-
-        if "IEMOCAP" in dataset:
-            copy_files = em_copy_files
-
-        for file in copy_files:
-            ori_file = orig_dataset_path / file
-            anon_file = out_data_split / file
-            skip = False
-            
-            # Check if  anonymized file already exists and check
-            if os.path.exists(anon_file):
-                skip = check_file(ori_file, anon_file)
-            
-            # Create anonymized file if not exits or not correct
-            if not skip:
-                copy(ori_file, anon_file)
-                if file=='wav.scp':
-                    fp = open(anon_file,'w')
-                    for line in open(ori_file):
-                        temp = line.strip().split(' ')
-                        token = temp[0]
-                        audio_path = out_data_split / 'anon_wav' / token
-                        fp.write("%s %s.wav\n"%(token, audio_path))
-                    fp.close()
+    # 2) check files in datasets exits and correct            
+    for anon_folder in anon_folders:
+        anon_folder = output_path / anon_folder
+        ori_folder =  output_path / os.path.basename(anon_folder).split(suffix)[0]
+        required_files = [file for file in os.listdir(ori_folder) if os.path.isfile(os.path.join(ori_folder, file))]
+        skip = check_files(ori_folder, anon_folder,required_files)
+    
+        # 3) create kaldi format data
+        if not skip:
+            create_kaldi_formart_data(ori_folder, anon_folder, required_files)
+        else:
+            logger.info(f'Kaldi format files in {anon_folder} are correct.')

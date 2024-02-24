@@ -72,9 +72,9 @@ if [ ! -d $check_data ]; then
     if  [ ! -f .data.zip ]; then
         echo "Download VPC kaldi format datadir..."
         wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data.zip
+        mv data.zip .data.zip
     fi
     echo "Unpacking data"
-    mv data.zip .data.zip
     unzip .data.zip
 fi
 

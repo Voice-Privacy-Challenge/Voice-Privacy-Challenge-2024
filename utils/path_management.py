@@ -57,6 +57,4 @@ def get_datasets(config):
         if no_sub:
             dataset_name = f'{dataset["data"]}'
             datasets[dataset_name] = Path(data_dir, dataset_name)
-        if 'train_data_name' in config:
-            datasets['train-clean-360'] = Path(data_dir, 'train-clean-360')
     return datasets
