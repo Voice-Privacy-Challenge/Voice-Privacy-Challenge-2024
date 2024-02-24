@@ -80,5 +80,5 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
 
     # Use logger for displaying informations
     logger.info('Done')
-    ### For more advanced (batch/multiprocess anon function, checkout other implantations)
+    ### For more advanced (batch/multiprocess anonymization functions, checkout other implantations)
     ### Good luck!
