@@ -43,14 +43,14 @@ def check_files(ori_folder, anon_folder, required_files):
     skip=True
     for required_file in required_files:
         if not os.path.exists(anon_folder / required_file):
-            return False   
-            
+            return False
+
         if 'wav.scp' in str(required_file):
             wav_files = list_wav_files_recursively(anon_folder)
             if len(wav_files) == 0:
                     logger.error(f"Directory {anon_folder} doen't have any audios.")
                     exit()
-            
+
             lines = open(anon_folder / required_file).readlines()
             if len(lines) == 0:
                 return False
@@ -83,31 +83,31 @@ def create_kaldi_formart_data(ori_folder, anon_folder, required_files):
                     audio_path = dirname / token
                     fp.write(f"{token} {audio_path}.wav\n")
 
-def check_kaldi_formart_data(config): 
+def check_kaldi_formart_data(config):
     logger.info('Check Kaldi format files')
     # 1) check datastes exist: anonymized dev$suffix test$suffix and anonymized train-clean-360$suffix
     dataset_dict = get_datasets(config)
     output_path = config['data_dir']
     suffix = config['anon_data_suffix']
-    
+
     if 'train_data_name' in config:
         # in conf/eval_post.yaml, train_data_name = train-clean-360$suffix, ori_train_data_name=train-clean-360
         ori_train_data_name = config['train_data_name'].split(suffix)[0]
         dataset_dict[ori_train_data_name] = Path(config['data_dir'], ori_train_data_name)
-    
+
     anon_folders = [folder for folder in os.listdir(output_path) if os.path.isdir(os.path.join(output_path, folder)) and folder.endswith(suffix) and 'asr' not in folder]
     for dataset, orig_dataset_path in dataset_dict.items():
         out_data_split = output_path / f'{dataset}{suffix}'
         if not os.path.exists(out_data_split):
             logger.error(f"Directory {out_data_split} does not exist. Please prepare your anonymized audio in a correct format.")
             exit()
-    # 2) check files in datasets exits and correct            
+    # 2) check files in datasets exits and correct
     for anon_folder in anon_folders:
         anon_folder = output_path / anon_folder
         ori_folder =  output_path / os.path.basename(anon_folder).split(suffix)[0]
         required_files = [file for file in os.listdir(ori_folder) if os.path.isfile(os.path.join(ori_folder, file))]
         skip = check_files(ori_folder, anon_folder,required_files)
-    
+
         # 3) create kaldi format data
         if not skip:
             create_kaldi_formart_data(ori_folder, anon_folder, required_files)
