@@ -1,5 +1,5 @@
 data_dir: data
-results_dir: anon_wav # output example ./data/IEMOCAP_ims_sttts_pc/anon_wav
+results_dir: wav # output example ./data/IEMOCAP_ims_sttts_pc/wav
 
 pipeline: sttts
 anon_suffix: !ref _<pipeline>
