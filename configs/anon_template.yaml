@@ -1,3 +1,5 @@
+# Also checkout utils/test_tools.sh for faster developement
+
 data_dir: data
 results_dir: anon_wav # Dir where the anonymized wavs file will be stored, example ./data/IEMOCAP_dev_template/anon_wav
 
