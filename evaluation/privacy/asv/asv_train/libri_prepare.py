@@ -88,6 +88,7 @@ def prepare_libri(
     save_csv_train = save_folder / TRAIN_CSV
     save_csv_dev = save_folder / DEV_CSV
 
+    conf = locals()
     # Check if this phase is already done (if so, skip it)
     if skip(splits, save_folder, locals()):
         logger.info("Skipping preparation, completed in previous run.")
@@ -117,7 +118,7 @@ def prepare_libri(
 
 
     # Saving options (useful to skip this phase when already done)
-    save_pkl(locals(), str(save_opt))
+    save_pkl(conf, str(save_opt))
 
 
 # Used for verification split
@@ -376,7 +377,8 @@ def skip(splits, save_folder, conf):
     if skip is True:
         if save_opt.is_file():
             opts_old = load_pkl(str(save_opt))
-            if opts_old == conf:
+
+            if opts_old.popitem() == conf.popitem():
                 skip = True
             else:
                 skip = False

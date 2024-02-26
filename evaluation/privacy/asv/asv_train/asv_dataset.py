@@ -55,6 +55,7 @@ class ASVDatasetGenerator:
         sb.dataio.dataset.add_dynamic_item(datasets, audio_pipeline)
 
         label_encoder = sb.dataio.encoder.CategoricalEncoder()
+        label_encoder.ignore_len()
         # 3. Define text pipeline:
         @sb.utils.data_pipeline.takes('spk_id')
         @sb.utils.data_pipeline.provides('spk_id', 'spk_id_encoded')

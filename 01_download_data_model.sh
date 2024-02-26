@@ -72,13 +72,13 @@ if [ ! -d $check_data ]; then
     if  [ ! -f .data.zip ]; then
         echo "Download VPC kaldi format datadir..."
         wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data.zip
+        mv data.zip .data.zip
     fi
     echo "Unpacking data"
-    mv data.zip .data.zip
     unzip .data.zip
 fi
 
-for model in asv_pre_ecapa asr_pre_sb ser_pre_sb; do
+for model in asv_pre_ecapa asr_pre_transformer_transformerlm ser_pre_sb; do
     if [ ! -d "exp/$model" ]; then
         if [ ! -f .pre_model_${model}.zip ]; then
             echo "Download pretrained $model models pre-trained..."

@@ -22,9 +22,9 @@ if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set 
 
 import torch
 
-from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, train_asr_eval, evaluate_ser
-from utils import (parse_yaml, scan_checkpoint, combine_asr_data, get_datasets,
-                   save_yaml, check_dependencies, setup_logger)
+from evaluation import evaluate_asv, train_asv_eval, evaluate_asr, evaluate_ser
+from utils import parse_yaml, scan_checkpoint, combine_asr_data, \
+                   save_yaml, check_dependencies, setup_logger, check_kaldi_formart_data
 
 logger = setup_logger(__name__)
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     eval_data_dir = params['data_dir']
     anon_suffix = params['anon_data_suffix']
     eval_steps = get_evaluation_steps(params)
-
+    check_kaldi_formart_data(params)
     results = {}
 
     # make sure given paths exist
