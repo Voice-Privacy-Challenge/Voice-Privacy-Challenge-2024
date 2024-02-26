@@ -57,7 +57,7 @@ utility:
 
     evaluation:
       model_type: EncoderASR # EncoderDecoderASR or EncoderASR (from speechbrain)
-      # hparams_file: transformer_inference.yaml # Check 'model_dir' config yaml file, default to 'hyperparams.yaml'
+      # hparams_file: hyperparams.yaml # Check the 'model_dir' config yaml file, default to 'hyperparams.yaml'
       model_dir: !ref <exp_dir>/<utility[asr][model_name]>
       eval_batchsize: 8 # Requires < 12Gib for the 'asr_pre_ctc_wav2vec2' model
       results_dir: !ref <exp_dir>/<utility[asr][model_name]>
