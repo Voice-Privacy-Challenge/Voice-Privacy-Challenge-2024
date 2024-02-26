@@ -9,7 +9,11 @@ source env.sh
 # Anonymization pipeline
 anon_config=anon_mcadams.yaml
 # anon_config=anon_sttts.yaml
+<<<<<<< HEAD
 # anon_config=anon_template.yaml
+=======
+anon_config=anon_asrbn.yaml
+>>>>>>> asrbn
 
 force_compute=
 # force_compute='--force_compute True'
