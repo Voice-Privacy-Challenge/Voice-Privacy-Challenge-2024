@@ -13,6 +13,7 @@ from datetime import datetime
 parser = ArgumentParser()
 parser.add_argument('--config', default='config_eval.yaml')
 parser.add_argument('--overwrite', type=str, default='{}')
+parser.add_argument('--force_compute', type=str, default='False')
 parser.add_argument('--gpu_ids', default='0')
 args = parser.parse_args()
 
@@ -96,6 +97,8 @@ if __name__ == '__main__':
                 if not model_dir.exists() or asv_train_params.get('retrain', True) is True:
                     start_time = time.time()
                     logger.info('Perform ASV training')
+                    if bool(args.force_compute):
+                        shutil.rmtree(model_dir, ignore_errors=True)
                     train_asv_eval(train_params=asv_train_params, output_dir=model_dir)
                     logger.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
                     model_dir = scan_checkpoint(model_dir, 'CKPT')
@@ -105,6 +108,12 @@ if __name__ == '__main__':
             if 'evaluation' in asv_params:
                 logger.info('Perform ASV evaluation')
                 model_dir = params['privacy']['asv']['evaluation']['model_dir']
+                results_dir = params['privacy']['asv']['evaluation']['results_dir']
+                if bool(args.force_compute):
+                    for info in os.walk(results_dir / f"{params['privacy']['asv']['evaluation']['distance']}_out"):
+                        dir, _, _ = info
+                        if dir.endswith(anon_suffix):
+                            shutil.rmtree(dir, ignore_errors=True)
                 model_dir = scan_checkpoint(model_dir, 'CKPT+') or model_dir
                 start_time = time.time()
                 eval_data_name = params['privacy']['asv']['dataset_name']
@@ -169,6 +178,11 @@ if __name__ == '__main__':
                             eval_asr.append(d['data'])
                         else:
                             eval_asr.append(d['name']+"_asr")
+
+                if bool(args.force_compute):
+                    results_dir = params['utility']['asr']['evaluation']['results_dir']
+                    for d in eval_asr:
+                        shutil.rmtree(Path(model_dir / d), ignore_errors=True)
 
                 asr_results = evaluate_asr(eval_datasets=eval_asr, eval_data_dir=eval_data_dir,
                                            params=asr_eval_params,

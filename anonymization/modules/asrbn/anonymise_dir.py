@@ -8,14 +8,13 @@ some features are missing from the thesis (Speaker F0 norm + F0 quant and other)
 
 import multiprocessing
 from pathlib import Path
-import wave
+import torchaudio
 from tqdm import tqdm
 
 import torch
 import kaldiio
 
 from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger, load_wav_from_scp
-from .utils import float2pcm
 
 logger = setup_logger(__name__)
 
@@ -101,16 +100,10 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
                 wav = wav_conv[i]
                 if len(wav.shape) > 1:
                     wav = wav[:, :original_len[i]]
-                signal = float2pcm(wav.numpy())
                 # write to buffer
                 u = utid[i]
                 output_file = results_dir / f'{u}.wav'
-                with output_file.open('wb') as file:
-                    with wave.open(file, 'wb') as stream:
-                        stream.setframerate(freq)
-                        stream.setnchannels(1)
-                        stream.setsampwidth(2)
-                        stream.writeframes(signal)
+                torchaudio.save(output_file, wav, freq, encoding='PCM_S', bits_per_sample=16)
         p = multiprocessing.Process(target=parallel_write, args=())
         p.start()
 

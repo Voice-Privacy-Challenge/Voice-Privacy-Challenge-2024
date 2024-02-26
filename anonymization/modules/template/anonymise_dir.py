@@ -50,7 +50,7 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
 
         # Save results to ./data/IEMOCAP_dev_template/anon_wav/uttid.wav
         output_file = results_dir / f'{uttid}.wav'
-        torchaudio.save(output_file, anon_signal, freq) # Prefer using the same freq as source
+        torchaudio.save(output_file, anon_signal, freq, encoding='PCM_S', bits_per_sample=16) # PCM using the same freq and bits rate as source
 
 
     # List of audio file to anonymize Dict of keys:uttid and values:audio file or kaldi like unix command

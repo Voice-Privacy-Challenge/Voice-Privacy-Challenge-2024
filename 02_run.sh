@@ -18,7 +18,7 @@ fi
 echo "Using config: $anon_config"
 
 force_compute=
-# force_compute='--force_compute True'
+force_compute='--force_compute True'
 
 # JSON to modify run_evaluation(s) configs, see below
 eval_overwrite="{"
@@ -35,8 +35,8 @@ fi
 python run_anonymization.py --config ${anon_config} ${force_compute}
 
 # Perform libri dev+test pre evaluation using pretrained ASR/ASV models
-python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}"
+python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # Train post ASV using anonymized libri-360 and perform libri dev+test post evaluation
 # ASV training takes 2hours
-python run_evaluation.py --config $(dirname ${anon_config})/eval_post.yaml --overwrite "${eval_overwrite}"
+python run_evaluation.py --config $(dirname ${anon_config})/eval_post.yaml --overwrite "${eval_overwrite}" ${force_compute}

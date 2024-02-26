@@ -18,8 +18,8 @@ def evaluate_asv(eval_datasets, eval_data_dir, params, device, anon_data_suffix,
 def asv_eval_speechbrain(eval_datasets, eval_data_dir, params, device, anon_data_suffix, model_dir=None):
     logger.info(f'Use ASV model for evaluation: {model_dir}')
 
-    save_dir = params['evaluation']['results_dir'] / f'{params["evaluation"]["distance"]}_out'
-    asv = ASV(model_dir=model_dir, device=device, score_save_dir=save_dir, distance=params['evaluation']['distance'],
+    save_dir = params['evaluation']['results_dir']
+    asv = ASV(model_dir=model_dir, device=device, score_save_dir=save_dir / f'{params["evaluation"]["distance"]}_out', distance=params['evaluation']['distance'],
               plda_settings=params['evaluation']['plda'], vec_type=params['model_type'])
 
     attack_scenarios = ['oo', 'oa', 'aa']
