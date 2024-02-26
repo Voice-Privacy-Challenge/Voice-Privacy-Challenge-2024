@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import time
 
+from .. import Pipeline
 from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger
 
 from ...modules.sttts.tts import SpeechSynthesis
@@ -13,7 +14,7 @@ import typing
 
 logger = setup_logger(__name__)
 
-class STTTSPipeline:
+class STTTSPipeline(Pipeline):
     def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
         Instantiates a STTTSPipeline with the complete feature extraction,

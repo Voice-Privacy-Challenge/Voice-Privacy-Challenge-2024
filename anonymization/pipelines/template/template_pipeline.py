@@ -5,11 +5,12 @@ from pathlib import Path
 
 from ...modules.template.anonymise_dir import process_data
 
+from .. import Pipeline
 from utils import setup_logger
 
 logger = setup_logger(__name__)
 
-class TemplatePipeline:
+class TemplatePipeline(Pipeline):
     def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
         Instantiates a TemplatePipeline.
