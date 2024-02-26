@@ -1,0 +1,14 @@
+data_dir: data
+results_dir: anon_wav # Dir where the anonymized wavs file will be stored, example ./data/IEMOCAP_dev_template/anon_wav
+
+pipeline: template # Name of the pipeline must be the same in run_anonymization.py.
+anon_suffix: !ref _<pipeline> # Path to the generated anonymized data-dir (data/dataset_template)
+
+# The datasets to anonymize (This is a sub-list, check real anonymization configs for the full list)
+datasets:
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+
+modules:
+  anon_suffix: !ref <anon_suffix> # YAML ref to the value of line 5
+  anon_wav_shape: 42 # Configure the anonymization function
