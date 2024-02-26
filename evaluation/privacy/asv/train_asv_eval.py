@@ -41,7 +41,8 @@ def asv_train_speechbrain(train_params, output_dir):
         'utt_selected_ways': train_params['utt_selection'],
         'number_of_epochs': train_params['epochs'],
         'data_folder': str(train_params['train_data_dir']),
-        'output_folder': str(output_dir)
+        'output_folder': str(output_dir),
+        'num_workers': train_params['num_workers']
     }
 
     config = train_params['train_config']
@@ -50,7 +51,6 @@ def asv_train_speechbrain(train_params, output_dir):
         hparams['out_n_neurons'] = 921
     else:
         hparams['out_n_neurons'] = int(train_params['num_spk'])
-
     sb_run_opts = deepcopy(run_opts)
     if torch.cuda.device_count() > 0:
         sb_run_opts['data_parallel_backend'] = True
