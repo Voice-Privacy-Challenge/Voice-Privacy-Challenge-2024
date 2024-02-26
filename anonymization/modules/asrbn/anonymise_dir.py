@@ -137,7 +137,8 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
             for u in utid:
                 output_file = results_dir / f'{u}.wav'
                 writer.writelines(f"{u} {output_file}\n")
-            torch.cuda.empty_cache()
+            if device.startswith("cuda"):
+                torch.cuda.empty_cache()
     # wait for last p to write the anonymized audios
     if p:
         p.join()

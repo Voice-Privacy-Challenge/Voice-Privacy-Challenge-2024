@@ -1,6 +1,7 @@
 # This code is based on
 # https://github.com/speechbrain/speechbrain/blob/develop/recipes/VoxCeleb/voxceleb_prepare.py
 import csv
+import os
 import logging
 import random
 from pathlib import Path
@@ -230,6 +231,9 @@ def _get_utt_split_lists(
         dev_snts = selected_list[split:]
 
         train_lst.extend(train_snts)
+        if bool(os.getenv('VPC_TEST_TOOLS', 'False')): # For testing only!
+            logger.critical("Train list contains dev speakers (Use this only for testing purposes)!!")
+            train_lst.extend(dev_snts)
         dev_lst.extend(dev_snts)
 
     return train_lst, dev_lst, out_utt2spk

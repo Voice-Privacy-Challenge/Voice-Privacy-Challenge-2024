@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('--force_compute', default=False, type=bool)
     args = parser.parse_args()
 
-    config = parse_yaml(Path('configs', args.config))
+    config = parse_yaml(Path(args.config))
     datasets = get_datasets(config)
 
     gpus = args.gpu_ids.split(',')
