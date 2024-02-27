@@ -13,7 +13,7 @@ else
   anon_config=configs/anon_mcadams.yaml
   # anon_config=configs/anon_sttts.yaml
   # anon_config=configs/anon_template.yaml
-  anon_config=configs/anon_asrbn.yaml
+  # anon_config=configs/anon_asrbn.yaml
 fi
 echo "Using config: $anon_config"
 

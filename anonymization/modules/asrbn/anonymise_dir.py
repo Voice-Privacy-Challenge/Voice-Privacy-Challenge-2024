@@ -10,6 +10,7 @@ import multiprocessing
 from pathlib import Path
 import torchaudio
 from tqdm import tqdm
+import random
 
 import torch
 import kaldiio
@@ -68,7 +69,8 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     output_path = Path(str(dataset_path) + settings['anon_suffix'])
     device = settings.get("device", "cpu")
     batch_size = settings.get("batch_size", 4)
-    single_spkid = settings.get("single_spkid", "6081")
+    if anon_level == "single":
+        single_spkid = settings.get("single_spkid", "6081")
     tag_version = settings.get("model_tag_version", "hifigan_bn_tdnnf_wav2vec2_vq_48_v1") 
 
     copy_data_dir(dataset_path, output_path)
@@ -80,9 +82,10 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
 
     model = torch.hub.load("deep-privacy/SA-toolkit", "anonymization",
                            tag_version=tag_version,
-                           trust_repo=True)
+                           trust_repo=True, force_reload=False)
     model.to(device)
     model.eval()
+    possible_targets = list(set(model.utt2spk.values()))
 
     @torch.no_grad()
     def process_wav(utid, freq, audio, f0, original_len):
@@ -92,14 +95,22 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
 
         # anonymize
         model.set_f0(f0.to(device)) # CPU extracted in by Dataloader (num_workers)
-        wav_conv = model.convert(audio, target=single_spkid)
+
+        if anon_level == "single":
+            wav_conv = model.convert(audio, target=single_spkid)
+        elif anon_level == "utt":
+            spkid = random.choice(possible_targets)
+            wav_conv = model.convert(audio, target=spkid)
+        else:
+            raise ValueError(f"{anon_level} not implemented")
         wav_conv = wav_conv.cpu()
 
         def parallel_write():
             for i in range(wav_conv.shape[0]):
                 wav = wav_conv[i]
-                if len(wav.shape) > 1:
-                    wav = wav[:, :original_len[i]]
+                if len(wav.shape) == 1:
+                    wav = wav.unsqueeze(0) # batch == 1 or len(dst) % batch == 1
+                wav = wav[:, :original_len[i]]
                 # write to buffer
                 u = utid[i]
                 output_file = results_dir / f'{u}.wav'

@@ -231,7 +231,7 @@ def _get_utt_split_lists(
         dev_snts = selected_list[split:]
 
         train_lst.extend(train_snts)
-        if bool(os.getenv('VPC_TEST_TOOLS', 'False')): # For testing only!
+        if os.getenv('VPC_TEST_TOOLS', 'False').lower() == "true": # For testing only!
             logger.critical("Train list contains dev speakers (Use this only for testing purposes)!!")
             train_lst.extend(dev_snts)
         dev_lst.extend(dev_snts)

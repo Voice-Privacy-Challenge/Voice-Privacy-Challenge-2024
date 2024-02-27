@@ -112,7 +112,7 @@ if __name__ == '__main__':
                 if bool(args.force_compute):
                     for info in os.walk(results_dir / f"{params['privacy']['asv']['evaluation']['distance']}_out"):
                         dir, _, _ = info
-                        if dir.endswith(anon_suffix):
+                        if anon_suffix in dir:
                             shutil.rmtree(dir, ignore_errors=True)
                 model_dir = scan_checkpoint(model_dir, 'CKPT+') or model_dir
                 start_time = time.time()
@@ -182,7 +182,7 @@ if __name__ == '__main__':
                 if bool(args.force_compute):
                     results_dir = params['utility']['asr']['evaluation']['results_dir']
                     for d in eval_asr:
-                        shutil.rmtree(Path(model_dir / d), ignore_errors=True)
+                        shutil.rmtree(Path(results_dir / Path(str(d) + str(anon_suffix))), ignore_errors=True)
 
                 asr_results = evaluate_asr(eval_datasets=eval_asr, eval_data_dir=eval_data_dir,
                                            params=asr_eval_params,

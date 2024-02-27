@@ -22,6 +22,7 @@ datasets:
 
 modules:
   anon_suffix: !ref <anon_suffix>
+  anon_level_utt: [train-clean-360] # Overwrite anon_level_single because above
   anon_level_single: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test, train-clean-360]
   single_spkid: "6081"
   # Other models can be found here: https://github.com/deep-privacy/SA-toolkit/releases

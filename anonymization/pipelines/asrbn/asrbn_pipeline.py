@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ...modules.asrbn.anonymise_dir import process_data
 
-from .. import Pipeline
+from .. import Pipeline, get_anon_level_from_config
 from utils import setup_logger
 
 logger = setup_logger(__name__)
@@ -29,20 +29,14 @@ class ASRBNPipeline(Pipeline):
             devices (list): a list of torch-interpretable devices
         """
         self.config = config
+        self.gpu_devices = devices
         self.force_compute = force_compute
         self.modules_config = config['modules']
 
     def run_anonymization_pipeline(self, datasets):
         # anonymize each dataset
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
-            if 'anon_level_spk' in self.modules_config and dataset_name in self.modules_config['anon_level_spk']:
-                raise ValueError("spk not implemented")
-                anon_level = "spk"
-            if 'anon_level_utt' in self.modules_config and dataset_name in self.modules_config['anon_level_utt']:
-                raise ValueError("utt not implemented")
-                anon_level = "utt"
-            if 'anon_level_single' in self.modules_config and dataset_name in self.modules_config['anon_level_single']:
-                anon_level = "single"
+            anon_level = get_anon_level_from_config(self.modules_config, dataset_name)
             print(f'{i + 1}/{len(datasets)}: ASR-BN processing of "{dataset_name}" at anon_level "{anon_level}"...')
             process_data(dataset_path=dataset_path,
                          anon_level=anon_level,
