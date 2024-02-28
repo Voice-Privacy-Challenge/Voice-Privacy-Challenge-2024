@@ -13,6 +13,7 @@ def setup_logger(name, log_dir='logs', filename=None):
     :return: Logger: logger
     """
     logger = logging.getLogger(name)
+    logger.handlers.clear()
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s- %(levelname)s - %(message)s')
     if filename:
@@ -26,6 +27,7 @@ def setup_logger(name, log_dir='logs', filename=None):
     #ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
     logger.addHandler(ch)
+    logger.propagate = False
     return logger
 
 

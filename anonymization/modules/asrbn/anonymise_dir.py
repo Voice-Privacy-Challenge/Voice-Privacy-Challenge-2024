@@ -69,8 +69,8 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     output_path = Path(str(dataset_path) + settings['anon_suffix'])
     device = settings.get("device", "cpu")
     batch_size = settings.get("batch_size", 4)
-    if anon_level == "single":
-        single_spkid = settings.get("single_spkid", "6081")
+    if anon_level == "constant":
+        target_constant_spkid = settings.get("target_constant_spkid", "6081") # For constant anon_level
     tag_version = settings.get("model_tag_version", "hifigan_bn_tdnnf_wav2vec2_vq_48_v1") 
 
     copy_data_dir(dataset_path, output_path)
@@ -78,14 +78,19 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     create_clean_dir(results_dir, force=force_compute)
 
     wav_scp = dataset_path / 'wav.scp'
-    path_wav_scp_out = output_path / 'wav.scp'
+    utt2spk = dataset_path / 'utt2spk'
+    wav_scp_out = output_path / 'wav.scp'
 
     model = torch.hub.load("deep-privacy/SA-toolkit", "anonymization",
                            tag_version=tag_version,
                            trust_repo=True, force_reload=False)
     model.to(device)
     model.eval()
-    possible_targets = list(set(model.utt2spk.values()))
+    possible_targets = model.spk # For spk and utt anon_level random choice
+
+    source_utt2spk = read_kaldi_format(utt2spk)
+    out_spk2target = {} # For spk anon_level
+
 
     @torch.no_grad()
     def process_wav(utid, freq, audio, f0, original_len):
@@ -93,23 +98,33 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
         freq = freq[0] # assume all freq = in same batch (and so dataset)
         audio = audio.to(device)
 
-        # anonymize
-        model.set_f0(f0.to(device)) # CPU extracted in by Dataloader (num_workers)
-
-        if anon_level == "single":
-            wav_conv = model.convert(audio, target=single_spkid)
+        # Anonymize function
+        model.set_f0(f0.to(device)) # CPU extracted by Dataloader (num_workers)
+        #  Batch select target spks from the available model list depending on anon_level
+        target_spks = []
+        if anon_level == "constant":
+            target_spks = [target_constant_spkid]*audio.shape[0]
         elif anon_level == "utt":
-            spkid = random.choice(possible_targets)
-            wav_conv = model.convert(audio, target=spkid)
+            target_spks = []
+            for ut in utid:
+                target_spks.append(random.choice(possible_targets))
+        elif anon_level == "spk":
+            for ut in utid:
+                source_spk = source_utt2spk[ut]
+                if source_spk not in out_spk2target:
+                    out_spk2target[source_spk] = random.choice(possible_targets)
+                target_spks.append(out_spk2target[source_spk])
         else:
             raise ValueError(f"{anon_level} not implemented")
+        #  Batch conversion
+        wav_conv = model.convert(audio, target=target_spks)
         wav_conv = wav_conv.cpu()
 
         def parallel_write():
             for i in range(wav_conv.shape[0]):
                 wav = wav_conv[i]
                 if len(wav.shape) == 1:
-                    wav = wav.unsqueeze(0) # batch == 1 or len(dst) % batch == 1
+                    wav = wav.unsqueeze(0) # batch == 1 -> len(dst) % batch == 1
                 wav = wav[:, :original_len[i]]
                 # write to buffer
                 u = utid[i]
@@ -117,7 +132,6 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
                 torchaudio.save(output_file, wav, freq, encoding='PCM_S', bits_per_sample=16)
         p = multiprocessing.Process(target=parallel_write, args=())
         p.start()
-
         return p
 
     wavs = read_kaldi_format(wav_scp)
@@ -125,7 +139,7 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     nj = min(nj, 18)
     p = None
 
-    with open(path_wav_scp_out, 'wt', encoding='utf-8') as writer:
+    with open(wav_scp_out, 'wt', encoding='utf-8') as writer:
         filtered_wavs = {}
         for u, file in wavs.items():
             output_file = results_dir / f'{u}.wav'
