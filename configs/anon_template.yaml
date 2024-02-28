@@ -1,4 +1,5 @@
 # Also checkout utils/test_tools.sh for faster developement
+# On it's own './02_run.sh ./configs/anon_template.yaml' WILL fail on EVALUATION as only one detaset is anonymized.
 
 data_dir: data
 results_dir: wav # Dir where the anonymized wavs file will be stored, example ./data/IEMOCAP_dev_template/wav

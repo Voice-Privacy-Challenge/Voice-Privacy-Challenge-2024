@@ -106,7 +106,7 @@ if __name__ == '__main__':
                     shutil.copy(asv_train_params['infer_config'], model_dir)
 
             if 'evaluation' in asv_params:
-                logger.info('Perform ASV evaluation')
+                logger.info('\nPerform ASV evaluation')
                 model_dir = params['privacy']['asv']['evaluation']['model_dir']
                 results_dir = params['privacy']['asv']['evaluation']['results_dir']
                 if bool(args.force_compute):
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     if 'utility' in eval_steps:
         if 'ser' in eval_steps['utility']:
-            logger.info('Perform SER evaluation')
+            logger.info('\nPerform SER evaluation')
             eval_data_name = params['utility']['ser']['dataset_name']
             ser_eval_params = params['utility']['ser']['evaluation']
             models_path = ser_eval_params['model_dir']
@@ -158,7 +158,7 @@ if __name__ == '__main__':
                 asr_eval_params["device"] = device
 
                 start_time = time.time()
-                logger.info('Perform ASR evaluation')
+                logger.info('\nPerform ASR evaluation')
                 eval_data_name = params['utility']['asr']['dataset_name']
                 eval_asr = []
                 for name in eval_data_name:
