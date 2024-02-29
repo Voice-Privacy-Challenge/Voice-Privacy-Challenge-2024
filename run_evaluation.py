@@ -96,8 +96,10 @@ if __name__ == '__main__':
                 asv_train_params = asv_params['training']
                 if not model_dir.exists() or asv_train_params.get('retrain', True) is True:
                     start_time = time.time()
+                    logger.info('====================')
                     logger.info('Perform ASV training')
-                    if bool(args.force_compute):
+                    logger.info('====================')
+                    if args.force_compute.lower() == "true":
                         shutil.rmtree(model_dir, ignore_errors=True)
                     train_asv_eval(train_params=asv_train_params, output_dir=model_dir)
                     logger.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
@@ -106,10 +108,12 @@ if __name__ == '__main__':
                     shutil.copy(asv_train_params['infer_config'], model_dir)
 
             if 'evaluation' in asv_params:
-                logger.info('\nPerform ASV evaluation')
+                logger.info('======================')
+                logger.info('Perform ASV evaluation')
+                logger.info('======================')
                 model_dir = params['privacy']['asv']['evaluation']['model_dir']
                 results_dir = params['privacy']['asv']['evaluation']['results_dir']
-                if bool(args.force_compute):
+                if args.force_compute.lower() == "true":
                     for info in os.walk(results_dir / f"{params['privacy']['asv']['evaluation']['distance']}_out"):
                         dir, _, _ = info
                         if anon_suffix in dir:
@@ -134,7 +138,9 @@ if __name__ == '__main__':
 
     if 'utility' in eval_steps:
         if 'ser' in eval_steps['utility']:
-            logger.info('\nPerform SER evaluation')
+            logger.info('======================')
+            logger.info('Perform SER evaluation')
+            logger.info('======================')
             eval_data_name = params['utility']['ser']['dataset_name']
             ser_eval_params = params['utility']['ser']['evaluation']
             models_path = ser_eval_params['model_dir']
@@ -158,7 +164,9 @@ if __name__ == '__main__':
                 asr_eval_params["device"] = device
 
                 start_time = time.time()
-                logger.info('\nPerform ASR evaluation')
+                logger.info('======================')
+                logger.info('Perform ASR evaluation')
+                logger.info('======================')
                 eval_data_name = params['utility']['asr']['dataset_name']
                 eval_asr = []
                 for name in eval_data_name:
@@ -179,7 +187,7 @@ if __name__ == '__main__':
                         else:
                             eval_asr.append(d['name']+"_asr")
 
-                if bool(args.force_compute):
+                if args.force_compute.lower() == "true":
                     results_dir = params['utility']['asr']['evaluation']['results_dir']
                     for d in eval_asr:
                         shutil.rmtree(Path(results_dir / Path(str(d) + str(anon_suffix))), ignore_errors=True)

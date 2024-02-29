@@ -83,10 +83,13 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
 
     model = torch.hub.load("deep-privacy/SA-toolkit", "anonymization",
                            tag_version=tag_version,
-                           trust_repo=True, force_reload=False)
+                           exit_if_new_version=True,
+                           force_reload=False,
+                           trust_repo=True,
+                           )
     model.to(device)
     model.eval()
-    possible_targets = model.spk # For spk and utt anon_level random choice
+    possible_targets = model.spk.copy() # For spk and utt anon_level random choice
 
     source_utt2spk = read_kaldi_format(utt2spk)
     out_spk2target = {} # For spk anon_level
@@ -102,12 +105,20 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
         model.set_f0(f0.to(device)) # CPU extracted by Dataloader (num_workers)
         #  Batch select target spks from the available model list depending on anon_level
         target_spks = []
-        if anon_level == "constant":
+        if anon_level == "constant": # The best way/most secure to evaluate privacy when applied to all dataset (train included)
             target_spks = [target_constant_spkid]*audio.shape[0]
         elif anon_level == "utt":
             target_spks = []
             for ut in utid:
                 target_spks.append(random.choice(possible_targets))
+        elif anon_level == "spk_uniq":
+            for ut in utid:
+                source_spk = source_utt2spk[ut]
+                if source_spk not in out_spk2target:
+                    out_spk2target[source_spk] = random.choice(possible_targets)
+                    # Remove target spk: size of possible source spk to anonymize == len(possible_targets) (==247) or you need to add spk target overlap)
+                    possible_targets.remove(out_spk2target[source_spk])
+                target_spks.append(out_spk2target[source_spk])
         elif anon_level == "spk":
             for ut in utid:
                 source_spk = source_utt2spk[ut]

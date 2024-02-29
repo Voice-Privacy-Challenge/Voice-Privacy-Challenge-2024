@@ -91,6 +91,7 @@ if [ ! -f $mark ]; then
   echo " == Installing python libraries =="
 
   pip3 install -r requirements.txt  || exit 1
+  pip3 install git+https://github.com/feerci/feerci.git@12b5fed
   touch $mark
 fi
 

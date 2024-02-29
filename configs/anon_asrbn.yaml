@@ -22,8 +22,8 @@ datasets:
 
 modules:
   anon_suffix: !ref <anon_suffix>
-  # anon_level_spk:      [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test] # Overwrite anon_level_utt because above
-  anon_level_utt:      [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test] # Overwrite anon_level_constant because above
+  # anon_level_spk_uniq:      [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test] # Overwrite anon_level_utt because above
+  # anon_level_utt:      [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test] # Overwrite anon_level_constant because above
   anon_level_constant: [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
   target_constant_spkid: "6081" # One of the training data (libriTTS)
   # Other models can be found here: https://github.com/deep-privacy/SA-toolkit/releases

@@ -127,13 +127,13 @@ class ASV:
         del sim_scores
 
         classA_llr_laplace, classB_llr_laplace = helpers.optimal_llr(tar=positive_scores, non=negative_scores, laplace=True, compute_eer=False)
-        eer,ci_lower,ci_upper,bootstrapped_eers = feerci.feerci(classB_llr_laplace,classA_llr_laplace,is_sorted=False)
+        eer,ci_lower,ci_upper,bootstrapped_eers = feerci.feerci(classB_llr_laplace,classA_llr_laplace,is_sorted=False,ci=.95)
 
         # Final EER computation
         # eer, th = EER(torch.tensor(positive_scores), torch.tensor(negative_scores))
         # min_dcf, th = minDCF(torch.tensor(positive_scores), torch.tensor(negative_scores))
         with open(save_dir / 'EER', 'w') as f:
-            f.write(str(eer*100) + " " + str(ci_lower*100) + str(ci_upper*100))
+            f.write(str(eer*100) + " " + str(ci_lower*100) + " " + str(ci_upper*100))
 
         return eer, ci_lower, ci_upper
 
