@@ -73,7 +73,7 @@ To run evaluation for arbitrary anonymized data:
 ```
 
 2. modify entry in [configs/eval_pre.yaml](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_pre.yaml)
-   and [configs/eval_post.yaml]([https://github.com/DigitalPhonetics/VoicePAT/blob/vpc/configs/](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_post.yaml):
+   and [configs/eval_post.yaml](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_post.yaml):
 ```
 anon_data_suffix: !PLACEHOLDER  # suffix for dataset to signal that it is anonymized, e.g. _mcadams, _b1b, or _gan
 ```
