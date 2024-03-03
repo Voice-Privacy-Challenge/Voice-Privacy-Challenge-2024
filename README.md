@@ -14,23 +14,17 @@ Password required, please register to get password.
 
 You can modify the `librispeech_corpus` variable to avoid downloading LibriSpeech 360.  
 [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus is required to download separetely by submitting request: https://sail.usc.edu/iemocap/iemocap_release.htm.
+
 You should modify the `iemocap_corpus` variable to where it is located on your server.
 
-## Anonymization and Evaluation 
+## Anonymization and Evaluation
+There are 2 options: 
+1.  Run McAdams (B2) anonymization and evaluation: `./02_run.sh`
 
-`./02_run.sh`
+2.  Run separetely anonymization and evaluation in two steps (currently McAdams (B2) is supported):
 
-Baselines: 
-- Anonymization using McAdams coefficient
 
-## Using Anonymization and Evaluation Flexibly 
-The recipe uses [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) toolkit, consists of **two separate procedures for anonymization and evaluation**. This means that the generation of anonymized speech is independent of the evaluation of anonymization systems. Both processes do not need to be executed in the same run or with the same settings. 
-
-### Anonymization: 
-The recipe supports B2 and [GAN-based](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10096607) speaker anonymization systems.
-#### B2: Anonymization using McAdams coefficient 
-This is the same baseline as the secondary baseline for the VoicePrivacy-2022. It does not require any training data and is based upon simple signal processing techniques using the McAdams coefficient.
-
+#### Step 1: Anonymization
 ```
 python run_anonymization_dsp.py --config anon_dsp.yaml
 ```
@@ -51,17 +45,8 @@ The anonymized audios will be saved to `$data_dir=data`,  and the `$anon_data_su
   data/train-clean-360_mcadams/wav/*wav
 ```
 
-#### GAN-based: Anonymization using Transformer-based ASR, FastSpeech2-based TTS and WGAN-based anonymizer.
 
-```
-bash anonymization/pipelines/sttts/sttts_install.sh
-source env.sh
-python run_anonymization.py --config anon_ims_sttts_pc.yaml --gpu_ids 0  --force_compute True
-```
-The anonymized audios will be saved to `$data_dir`
-
-
-### Evaluation
+#### Step 2: Evaluation
 Evaluation metrics includes:
 - Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers
 - Utility:
@@ -69,7 +54,7 @@ Evaluation metrics includes:
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
 
 
-The tookit supports the evaluation for any anonymized data:
+To run evaluation for arbitrary anonymized data:
 1. prepare 9 anonymized folders each containing the anonymized wav files:
 ```
   data/libri_dev_enrolls$anon_data_suffix/wav/*wav
