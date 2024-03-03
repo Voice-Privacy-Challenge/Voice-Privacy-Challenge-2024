@@ -50,11 +50,12 @@ The anonymized audios will be saved to `$data_dir=data`,  and the `$anon_data_su
 Evaluation metrics includes:
 - Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers
 - Utility:
-  - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech-train-clean-360 or ...)
+  - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech)
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
 
 
 To run evaluation for arbitrary anonymized data:
+
 1. prepare 9 anonymized folders each containing the anonymized wav files:
 ```
   data/libri_dev_enrolls$anon_data_suffix/wav/*wav
@@ -70,7 +71,9 @@ To run evaluation for arbitrary anonymized data:
 
   data/train-clean-360_mcadams/wav/*wav
 ```
-2. modify entry in [configs/eval_pre_from_anon_datadir.yaml](https://github.com/DigitalPhonetics/VoicePAT/blob/vpc/configs/eval_pre.yaml) and [configs/eval_post.yaml](https://github.com/DigitalPhonetics/VoicePAT/blob/vpc/configs/eval_post.yaml) :
+
+2. modify entry in [configs/eval_pre.yaml](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_pre.yaml)
+   and [configs/eval_post.yaml]([https://github.com/DigitalPhonetics/VoicePAT/blob/vpc/configs/](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_post.yaml):
 ```
 anon_data_suffix: !PLACEHOLDER  # suffix for dataset to signal that it is anonymized, e.g. _mcadams, _b1b, or _gan
 ```
