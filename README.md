@@ -114,3 +114,18 @@ evaluation:
   model_type: EncoderDecoderASR
 ```
 
+
+## Organizers (in alphabetical order)
+
+- Nicholas Evans - EURECOM, France
+- Pierre Champion - Inria, France
+- Sarina Meyer - University of Stuttgart, Germany
+- Xiaoxiao Miao - Singapore Institute of Technology, Singapore
+- Michele Panariello - EURECOM, France
+- Natalia Tomashenko - University of Avignon - Inria, France
+- Massimiliano Todisco - EURECOM, France
+- Emmanuel Vincent - Inria, France
+- Xin Wang - NII, Japan
+- Junichi Yamagishi - NII, Japan and University of Edinburgh, UK
+
+Contact: organisers@lists.voiceprivacychallenge.org
