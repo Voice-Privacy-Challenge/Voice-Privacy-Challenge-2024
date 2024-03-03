@@ -31,10 +31,12 @@ class McAdamsPipeline:
     def run_anonymization_pipeline(self, datasets):
         # anonymize each dataset
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
-            if dataset_name in self.modules_config['anon_level_spk']:
-                anon_level = "spk"
-            if dataset_name in self.modules_config['anon_level_utt']:
-                anon_level = "utt"
+            if 'anon_level_spk' in self.modules_config:
+                if dataset_name in self.modules_config['anon_level_spk']:
+                    anon_level = "spk"
+            if 'anon_level_utt' in self.modules_config:
+                if dataset_name in self.modules_config['anon_level_utt']:
+                    anon_level = "utt"
             print(f'{i + 1}/{len(datasets)}: McAdams processing of "{dataset_name}" at anon_level "{anon_level}" ...')
             process_data(dataset_path=dataset_path,
                          anon_level=anon_level,
