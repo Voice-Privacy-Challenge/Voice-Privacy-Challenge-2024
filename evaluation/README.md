@@ -16,4 +16,4 @@ The utility evaluation metric is word error rate (WER).
 
 ### SER
 The SER scripts are adapted from the Speechbrain recipe for IEMOCAP.
-The utility evaluation metric is word error rate (WER).
+The utility evaluation metric is unweighted average recall (UAR).
