@@ -26,23 +26,25 @@ There are 2 options:
 
 #### Step 1: Anonymization
 ```
-python run_anonymization_dsp.py --config anon_dsp.yaml
+python run_anonymization.py --config anon_mcadams.yaml
 ```
-The anonymized audios will be saved to `$data_dir=data`,  and the `$anon_data_suffix=_mcadams`, takes ~10 hours, including 9 folders:
+The anonymized audios will be saved in `$data_dir=data` into 9 folders corresponding to datasets.  
+The names of the created dataset folders for anonymized audio files are appended with the suffix, i.e. `$anon_data_suffix=_mcadams`. 
+For McAdams, anonymization of all data takes ~10 hours. 
 
 ```
-  data/libri_dev_enrolls_mcadams/wav/*wav
-  data/libri_dev_trials_m_mcadams/wav/*wav
-  data/libri_dev_trials_f_mcadams/wav/*wav
+  $data_dir/libri_dev_enrolls$anon_data_suffix/wav/*wav
+  $data_dir/libri_dev_trials_m$anon_data_suffix/wav/*wav
+  $data_dir/libri_dev_trials_f$anon_data_suffix/wav/*wav
 
-  data/libri_test_enrolls_mcadams/wav/*wav
-  data/libri_test_trials_m_mcadams/wav/*wav
-  data/libri_test_trials_f_mcadams/wav/*wav
+  $data_dir/libri_test_enrolls$anon_data_suffix/wav/*wav
+  $data_dir/libri_test_trials_m$anon_data_suffix/wav/*wav
+  $data_dir/libri_test_trials_f$anon_data_suffix/wav/*wav
 
-  data/IEMOCAP_dev_mcadams/wav/*wav
-  data/IEMOCAP_test_mcadams/wav/*wav
+  $data_dir/IEMOCAP_dev$anon_data_suffix/wav/*wav
+  $data_dir/IEMOCAP_test$anon_data_suffix/wav/*wav
 
-  data/train-clean-360_mcadams/wav/*wav
+  $data_dir/train-clean-360$anon_data_suffix/wav/*wav
 ```
 
 
@@ -69,7 +71,7 @@ To run evaluation for arbitrary anonymized data:
   data/IEMOCAP_dev$anon_data_suffix/wav/*wav
   data/IEMOCAP_test$anon_data_suffix/wav/*wav
 
-  data/train-clean-360_mcadams/wav/*wav
+  data/train-clean-360_$anon_data_suffix/wav/*wav
 ```
 
 2. modify entry in [configs/eval_pre.yaml](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_pre.yaml)
