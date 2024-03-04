@@ -1,0 +1,51 @@
+---- Time: 01-03-24_18:21 ----
+
+---- SER results ----
+   dataset split       ser     mean     min     max
+0  IEMOCAP   dev      anon  39.7900  38.548  41.788
+1  IEMOCAP   dev  original  69.0796  64.499  74.868
+2  IEMOCAP  test      anon  39.3290  32.904  44.210
+3  IEMOCAP  test  original  71.0618  67.586  76.463
+
+---- ASV results ----
+   dataset split gender enrollment     trial     EER  EER-ci_lower  EER-ci_upper
+0    libri   dev      f   original  original   9.815         8.962        11.807
+1    libri   dev      f   original      anon  48.791        46.942        50.925
+2    libri   dev      f       anon      anon  49.372        47.226        72.404
+3    libri   dev      m   original  original   0.000         0.467        54.121
+4    libri   dev      m   original      anon  46.589        44.479        48.523
+5    libri   dev      m       anon      anon  49.418        47.434        51.944
+6    libri  test      f   original  original   8.410         6.399        11.152
+7    libri  test      f   original      anon  51.818        49.543        53.748
+8    libri  test      f       anon      anon  50.274        48.446        52.834
+9    libri  test      m   original  original   0.446         0.446         0.446
+10   libri  test      m   original      anon  49.228        46.652        51.339
+11   libri  test      m       anon      anon  49.107        46.875        51.786
+
+---- ASR results ----
+   dataset split       asr     WER
+2  IEMOCAP   dev  original  23.653
+6  IEMOCAP   dev      anon  42.828
+3  IEMOCAP  test  original  25.393
+7  IEMOCAP  test      anon  43.033
+0    libri   dev  original   1.790
+4    libri   dev      anon   4.746
+1    libri  test  original   1.839
+5    libri  test      anon   4.565
+
+---- Time: 01-03-24_19:55 ----
+
+---- ASV results ----
+   dataset split gender enrollment     trial     EER  EER-ci_lower  EER-ci_upper
+0    libri   dev      f   original  original  25.335        23.329        51.920
+1    libri   dev      f   original      anon  38.265        36.700        40.256
+2    libri   dev      f       anon      anon  34.282        32.432        35.989
+3    libri   dev      m   original  original  16.641        15.086        18.040
+4    libri   dev      m   original      anon  35.770        34.059        37.792
+5    libri   dev      m       anon      anon  32.037        30.171        34.059
+6    libri  test      f   original  original  22.662        20.841        24.497
+7    libri  test      f   original      anon  38.026        35.466        39.854
+8    libri  test      f       anon      anon  32.176        29.799        34.369
+9    libri  test      m   original  original  19.533        17.857        21.652
+10   libri  test      m   original      anon  36.830        34.598        39.062
+11   libri  test      m       anon      anon  30.330        28.125        32.589
