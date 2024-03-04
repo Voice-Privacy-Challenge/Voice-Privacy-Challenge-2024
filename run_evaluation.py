@@ -48,11 +48,12 @@ def get_evaluation_steps(params):
     return eval_steps
 
 
-def save_result_summary(out_dir, results_dict, config):
+def save_result_summary(out_path, results_dict, config):
+    out_dir = Path(os.path.dirname(out_path))
     out_dir.mkdir(parents=True, exist_ok=True)
     save_yaml(config, out_dir / 'config.yaml')
 
-    with open(out_dir / 'results.txt', 'w') as f:
+    with open(out_path, 'w') as f:
         f.write(f'---- Time: {datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")} ----\n')
         if 'ser' in results_dict:
             f.write('\n')
@@ -178,5 +179,5 @@ if __name__ == '__main__':
 
     if results:
         now = datetime.strftime(datetime.today(), "%d-%m-%y_%H:%M")
-        results_summary_dir = params.get('results_summary_dir', Path('exp', 'results_summary', now))
-        save_result_summary(out_dir=results_summary_dir, results_dict=results, config=params)
+        results_summary_path = params.get('results_summary_path', Path('exp', 'results_summary', now))
+        save_result_summary(out_path=results_summary_path, results_dict=results, config=params)
