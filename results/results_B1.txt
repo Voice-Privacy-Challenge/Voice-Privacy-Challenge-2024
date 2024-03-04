@@ -1,0 +1,51 @@
+---- Time: 03-03-24_19:35 ----
+
+---- SER results ----
+   dataset split       ser     mean     min     max
+0  IEMOCAP   dev      anon  43.1258  35.751  46.636
+1  IEMOCAP   dev  original  69.0796  64.499  74.868
+2  IEMOCAP  test      anon  42.3138  34.407  46.753
+3  IEMOCAP  test  original  71.0618  67.586  76.463
+
+---- ASV results ----
+   dataset split gender enrollment     trial     EER
+0    libri   dev      f   original  original  10.511
+1    libri   dev      f   original      anon  49.595
+2    libri   dev      f       anon      anon  30.681
+3    libri   dev      m   original  original   0.931
+4    libri   dev      m   original      anon  50.292
+5    libri   dev      m       anon      anon  25.463
+6    libri  test      f   original  original   8.761
+7    libri  test      f   original      anon  49.044
+8    libri  test      f       anon      anon  30.290
+9    libri  test      m   original  original   0.418
+10   libri  test      m   original      anon  52.785
+11   libri  test      m       anon      anon  26.724
+
+---- ASR results ----
+   dataset split       asr     WER
+2  IEMOCAP   dev  original  23.659
+6  IEMOCAP   dev      anon  40.531
+3  IEMOCAP  test  original  25.386
+7  IEMOCAP  test      anon  42.784
+0    libri   dev  original   1.790
+4    libri   dev      anon   3.408
+1    libri  test  original   1.839
+5    libri  test      anon   6.268
+
+---- Time: 03-03-24_20:47 ----
+
+---- ASV results ----
+   dataset split gender enrollment     trial     EER
+0    libri   dev      f   original  original  21.448
+1    libri   dev      f   original      anon  54.266
+2    libri   dev      f       anon      anon  10.368
+3    libri   dev      m   original  original  15.855
+4    libri   dev      m   original      anon  56.987
+5    libri   dev      m       anon      anon   6.987
+6    libri  test      f   original  original  18.627
+7    libri  test      f   original      anon  53.466
+8    libri  test      f       anon      anon  10.584
+9    libri  test      m   original  original  12.247
+10   libri  test      m   original      anon  54.342
+11   libri  test      m       anon      anon   6.682

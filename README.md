@@ -14,62 +14,50 @@ Password required, please register to get password.
 
 You can modify the `librispeech_corpus` variable to avoid downloading LibriSpeech 360.  
 [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus is required to download separetely by submitting request: https://sail.usc.edu/iemocap/iemocap_release.htm.
+
 You should modify the `iemocap_corpus` variable to where it is located on your server.
 
-## Anonymization and Evaluation 
+## Anonymization and Evaluation
+There are 2 options: 
+1.  Run McAdams (B2) anonymization and evaluation: `./02_run.sh`
 
-`./02_run.sh`
+2.  Run separetely anonymization and evaluation in two steps (currently McAdams (B2) is supported):
 
-Baselines: 
-- Anonymization using McAdams coefficient
 
-## Using Anonymization and Evaluation Flexibly 
-The recipe uses [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) toolkit, consists of **two separate procedures for anonymization and evaluation**. This means that the generation of anonymized speech is independent of the evaluation of anonymization systems. Both processes do not need to be executed in the same run or with the same settings. 
-
-### Anonymization: 
-The recipe supports B2 and [GAN-based](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10096607) speaker anonymization systems.
-#### B2: Anonymization using McAdams coefficient 
-This is the same baseline as the secondary baseline for the VoicePrivacy-2022. It does not require any training data and is based upon simple signal processing techniques using the McAdams coefficient.
+#### Step 1: Anonymization
+```
+python run_anonymization.py --config anon_mcadams.yaml
+```
+The anonymized audios will be saved in `$data_dir=data` into 9 folders corresponding to datasets.  
+The names of the created dataset folders for anonymized audio files are appended with the suffix, i.e. `$anon_data_suffix=_mcadams`. 
+For McAdams, anonymization of all data takes ~10 hours. 
 
 ```
-python run_anonymization_dsp.py --config anon_dsp.yaml
-```
-The anonymized audios will be saved to `$data_dir=data`,  and the `$anon_data_suffix=_mcadams`, takes ~10 hours, including 9 folders:
+  $data_dir/libri_dev_enrolls$anon_data_suffix/wav/*wav
+  $data_dir/libri_dev_trials_m$anon_data_suffix/wav/*wav
+  $data_dir/libri_dev_trials_f$anon_data_suffix/wav/*wav
 
-```
-  data/libri_dev_enrolls_mcadams/wav/*wav
-  data/libri_dev_trials_m_mcadams/wav/*wav
-  data/libri_dev_trials_f_mcadams/wav/*wav
+  $data_dir/libri_test_enrolls$anon_data_suffix/wav/*wav
+  $data_dir/libri_test_trials_m$anon_data_suffix/wav/*wav
+  $data_dir/libri_test_trials_f$anon_data_suffix/wav/*wav
 
-  data/libri_test_enrolls_mcadams/wav/*wav
-  data/libri_test_trials_m_mcadams/wav/*wav
-  data/libri_test_trials_f_mcadams/wav/*wav
+  $data_dir/IEMOCAP_dev$anon_data_suffix/wav/*wav
+  $data_dir/IEMOCAP_test$anon_data_suffix/wav/*wav
 
-  data/IEMOCAP_dev_mcadams/wav/*wav
-  data/IEMOCAP_test_mcadams/wav/*wav
-
-  data/train-clean-360_mcadams/wav/*wav
+  $data_dir/train-clean-360$anon_data_suffix/wav/*wav
 ```
 
-#### GAN-based: Anonymization using Transformer-based ASR, FastSpeech2-based TTS and WGAN-based anonymizer.
 
-```
-bash anonymization/pipelines/sttts/sttts_install.sh
-source env.sh
-python run_anonymization.py --config anon_ims_sttts_pc.yaml --gpu_ids 0  --force_compute True
-```
-The anonymized audios will be saved to `$data_dir`
-
-
-### Evaluation
+#### Step 2: Evaluation
 Evaluation metrics includes:
 - Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers
 - Utility:
-  - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech-train-clean-360 or ...)
+  - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech)
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
 
 
-The tookit supports the evaluation for any anonymized data:
+To run evaluation for arbitrary anonymized data:
+
 1. prepare 9 anonymized folders each containing the anonymized wav files:
 ```
   data/libri_dev_enrolls$anon_data_suffix/wav/*wav
@@ -83,9 +71,11 @@ The tookit supports the evaluation for any anonymized data:
   data/IEMOCAP_dev$anon_data_suffix/wav/*wav
   data/IEMOCAP_test$anon_data_suffix/wav/*wav
 
-  data/train-clean-360_mcadams/wav/*wav
+  data/train-clean-360_$anon_data_suffix/wav/*wav
 ```
-2. modify entry in [configs/eval_pre_from_anon_datadir.yaml](https://github.com/DigitalPhonetics/VoicePAT/blob/vpc/configs/eval_pre.yaml) and [configs/eval_post.yaml](https://github.com/DigitalPhonetics/VoicePAT/blob/vpc/configs/eval_post.yaml) :
+
+2. modify entry in [configs/eval_pre.yaml](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_pre.yaml)
+   and [configs/eval_post.yaml](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/configs/eval_post.yaml):
 ```
 anon_data_suffix: !PLACEHOLDER  # suffix for dataset to signal that it is anonymized, e.g. _mcadams, _b1b, or _gan
 ```
@@ -113,4 +103,39 @@ asr:
 evaluation:
   model_type: EncoderDecoderASR
 ```
+
+
+## Organizers (in alphabetical order)
+
+- Nicholas Evans - EURECOM, France
+- Pierre Champion - Inria, France
+- Sarina Meyer - University of Stuttgart, Germany
+- Xiaoxiao Miao - Singapore Institute of Technology, Singapore
+- Michele Panariello - EURECOM, France
+- Natalia Tomashenko - University of Avignon - Inria, France
+- Massimiliano Todisco - EURECOM, France
+- Emmanuel Vincent - Inria, France
+- Xin Wang - NII, Japan
+- Junichi Yamagishi - NII, Japan and University of Edinburgh, UK
+
+Contact: organisers@lists.voiceprivacychallenge.org
+
+## License
+
+Copyright (C) 2024
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+---------------------------------------------------------------------------
 
