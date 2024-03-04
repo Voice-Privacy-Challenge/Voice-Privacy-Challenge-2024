@@ -45,8 +45,8 @@ modules:
       sim_threshold: 0.7
     extraction_results_path: !ref <intermediate_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
     anon_results_path: !ref <intermediate_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
-    anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
-    anon_level_utt: [train-clean-360]
+    # anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
+    anon_level_utt: [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
 
   prosody:
     extractor_type: ims

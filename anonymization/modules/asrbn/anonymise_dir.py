@@ -107,11 +107,11 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
         target_spks = []
         if anon_level == "constant": # The best way/most secure to evaluate privacy when applied to all dataset (train included)
             target_spks = [target_constant_spkid]*audio.shape[0]
-        elif anon_level == "utt":
+        elif anon_level == "random_per_utt":
             target_spks = []
             for ut in utid:
                 target_spks.append(random.choice(possible_targets))
-        elif anon_level == "spk_uniq":
+        elif anon_level == "random_per_spk_uniq":
             for ut in utid:
                 source_spk = source_utt2spk[ut]
                 if source_spk not in out_spk2target:
@@ -119,7 +119,7 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
                     # Remove target spk: size of possible source spk to anonymize == len(possible_targets) (==247) or you need to add spk target overlap)
                     possible_targets.remove(out_spk2target[source_spk])
                 target_spks.append(out_spk2target[source_spk])
-        elif anon_level == "spk":
+        elif anon_level == "random_per_spk":
             for ut in utid:
                 source_spk = source_utt2spk[ut]
                 if source_spk not in out_spk2target:

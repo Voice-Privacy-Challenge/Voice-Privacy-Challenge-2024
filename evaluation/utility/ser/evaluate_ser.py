@@ -61,6 +61,7 @@ def evaluate_ser(eval_datasets, eval_data_dir, models_path, anon_data_suffix, pa
 
             hyp = []
             ref = []
+            per_emo = {}
             for uttid, spkid, wav, wav_len in tqdm.tqdm(dataset):
                 if spkid != spkfold:
                     continue
@@ -68,14 +69,23 @@ def evaluate_ser(eval_datasets, eval_data_dir, models_path, anon_data_suffix, pa
                 out_prob, score, index, text_lab = classifiers[fold].classify_batch(wav)
                 hyp += [classifiers[fold].hparams.label_encoder.lab2ind[text_lab[0]]]
                 ref += [classifiers[fold].hparams.label_encoder.lab2ind[utt2emo[uttid]]]
+                if utt2emo[uttid] not in per_emo:
+                    per_emo[utt2emo[uttid]] = {"hyp": [], "ref": []}
+                per_emo[utt2emo[uttid]]["hyp"].append([classifiers[fold].hparams.label_encoder.lab2ind[text_lab[0]]])
+                per_emo[utt2emo[uttid]]["ref"].append([classifiers[fold].hparams.label_encoder.lab2ind[utt2emo[uttid]]])
 
             score = recall_score(y_true=ref, y_pred=hyp, average= "macro") * 100
             score = round(score, 3)
+            score_per_emo = {}
+            for k,v in per_emo.items():
+                score_per_emo[f"ACC_{k}"] = round(accuracy_score(y_true=v["ref"], y_pred=v["hyp"]) * 100, 3)
+
+
             test_set_info = test_set.split('_')
             if len(test_set_info) == 1:
                 test_set_info.append("_")
             results.append({'dataset': test_set_info[0], 'split': test_set_info[1], 'fold': fold,
-                            'ser': 'anon' if anon_data_suffix in test_set else 'original', 'UAR': score})
+                            'ser': 'anon' if anon_data_suffix in test_set else 'original', 'UAR': score, **score_per_emo})
             print(f'{test_set} fold: {fold} - UAR: {score}')
     results_df = pd.DataFrame(results)
     print(results_df)
