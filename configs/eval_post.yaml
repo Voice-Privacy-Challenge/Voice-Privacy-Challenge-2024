@@ -3,7 +3,7 @@ exp_dir: exp
 
 anon_data_suffix: _mcadams # added to transform data/libri_dev/ to data/libri_dev_mcadams/
 
-results_summary_path: !ref <exp_dir>/results_summary/eval_post<anon_data_suffix>/results_post.txt
+results_summary_path: !ref <exp_dir>/results_summary/eval_anon<anon_data_suffix>/results.anon
 
 train_data_name: !ref train-clean-360<anon_data_suffix>
 
