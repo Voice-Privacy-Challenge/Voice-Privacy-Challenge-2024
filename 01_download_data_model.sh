@@ -80,13 +80,13 @@ fi
 
 for model in asv_orig ser; do
     if [ ! -d "exp/$model" ]; then
-        if [ ! -f .pre_model_${model}.zip ]; then
+        if [ ! -f .${model}.zip ]; then
             echo "Download pretrained $model models pre-trained..."
-            wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/pre_model_${model}.zip
+            wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/${model}.zip
         fi
         echo "Unpacking pretrained evaluation models"
-        mv pre_model_${model}.zip .pre_model_${model}.zip
-        unzip .pre_model_${model}.zip
+        mv ${model}.zip .${model}.zip
+        unzip .${model}.zip
     fi
 done
 
