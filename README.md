@@ -89,7 +89,7 @@ anon_data_suffix: !PLACEHOLDER  # suffix for dataset to signal that it is anonym
 
 ```
 
-anon_suffix=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('./configs/${anon_config}'); print(load_hyperpyyaml(f, None).get('anon_suffix', ''))")
+anon_suffix=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('./configs/eval_pre.yaml}'); print(load_hyperpyyaml(f, None).get('anon_suffix', ''))")
 
 results_summary_path_orig=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('./configs/eval_pre.yaml'); print(load_hyperpyyaml(f, None).get('results_summary_path', ''))")
 
