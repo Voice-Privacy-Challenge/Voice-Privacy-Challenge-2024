@@ -62,13 +62,25 @@ def save_result_summary(out_path, results_dict, config):
             f.write('\n')
         if 'asv' in results_dict:
             f.write('\n')
-            f.write('---- ASV results ----\n')
-            f.write(results_dict['asv'].sort_values(by=['dataset', 'split']).to_string())
+            asv_results = results_dict['asv']
+            # if EERs computed by ASV_eval, only keeo the results of OO condition
+            if 'orig' in os.path.basename(out_path):
+                f.write('---- ASV_eval results ----\n')
+                asv_results_filter = asv_results[((asv_results['enrollment'] == 'original') & (asv_results['trial'] == 'original'))]
+            
+            # if EERs computed by ASV_eval, only keeo the results of OO condition
+            elif 'anon' in os.path.basename(out_path):
+                f.write('---- ASV_eval^anon results ----\n')
+                asv_results_filter = asv_results[((asv_results['enrollment'] == 'anon') & (asv_results['trial'] == 'anon'))]
+
+            f.write(asv_results_filter.sort_values(by=['dataset', 'split']).to_string())
             f.write('\n')
         if 'asr' in results_dict:
             f.write('\n')
             f.write('---- ASR results ----\n')
-            f.write(results_dict['asr'].sort_values(by=['dataset', 'split']).to_string())
+            asr_results = results_dict['asr']
+            asr_results_filter = asr_results[~(asr_results['dataset'] == 'IEMOCAP')]
+            f.write(asr_results_filter.sort_values(by=['dataset', 'split']).to_string())
             f.write('\n')
 
 
