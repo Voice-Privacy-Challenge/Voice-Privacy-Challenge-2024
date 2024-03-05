@@ -30,7 +30,7 @@ eval_steps:  # all metrics in this list will be computed in the evaluation. Remo
 privacy:
   asv:
     dataset_name: [libri_dev, libri_test]
-    model_name: asv_pre_ecapa
+    model_name: asv_orig
     model_type: ecapa
 
     evaluation:
@@ -45,7 +45,7 @@ privacy:
 utility:
   ser:
     dataset_name: [IEMOCAP_dev, IEMOCAP_test]
-    model_name: ser_pre_sb  # name for ASR model
+    model_name: ser  # name for ASR model
 
     evaluation:
       model_dir: !ref <exp_dir>/<utility[ser][model_name]>
@@ -53,7 +53,7 @@ utility:
 
   asr:
     dataset_name: [libri_dev, libri_test, IEMOCAP_dev, IEMOCAP_test]
-    model_name: asr_pre_ctc_wav2vec2 # name for ASR model, asr_pre_transformer_transformerlm + EncoderDecoderASR or asr_pre_ctc_wav2vec2 + EncoderASR
+    model_name: asr # name for ASR model, asr_pre_transformer_transformerlm + EncoderDecoderASR or asr_pre_ctc_wav2vec2 + EncoderASR
 
     evaluation:
       model_type: EncoderASR # EncoderDecoderASR or EncoderASR (from speechbrain)

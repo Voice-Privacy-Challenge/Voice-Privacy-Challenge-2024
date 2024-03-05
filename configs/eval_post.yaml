@@ -27,7 +27,7 @@ privacy:
     dataset_name: [libri_dev, libri_test]
 
     training:
-      model_dir: !ref <exp_dir>/asv_anon_<privacy[asv][model_type]><anon_data_suffix>_scratch  # path to existing ASV model or output for trained ASV model
+      model_dir: !ref <exp_dir>/asv_anon_<anon_data_suffix>  # path to existing ASV model or output for trained ASV model
       train_data_dir: !ref <data_dir>/<train_data_name> # path to original or anonymized training data for ASV
       train_config: evaluation/privacy/asv/asv_train/hparams/train_ecapa_tdnn_small.yaml
       infer_config: evaluation/privacy/asv/asv_train/hparams/ecapa/hyperparams.yaml
@@ -43,8 +43,8 @@ privacy:
       retrain: true  # retrain in any case (true) or skip training if model exists (false)
 
     evaluation:
-      model_dir: !ref <exp_dir>/asv_anon_<privacy[asv][model_type]><anon_data_suffix>_scratch  # path to existing ASV model or output for trained ASV model
-      results_dir: !ref <exp_dir>/asv_anon_<privacy[asv][model_type]><anon_data_suffix>_scratch  # path to existing ASV model or output for trained ASV model
+      model_dir: !ref <exp_dir>/asv_anon_<anon_data_suffix>  # path to existing ASV model or output for trained ASV model
+      results_dir: !ref <exp_dir>/asv_anon_<anon_data_suffix>  # path to existing ASV model or output for trained ASV model
       distance: cosine  # cosine or plda
       plda:   # ignored if distance is not plda
         model_dir: null  # path to trained PLDA or output of PLDA training

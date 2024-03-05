@@ -78,19 +78,19 @@ if [ ! -d $check_data ]; then
     unzip .data.zip
 fi
 
-for model in asv_pre_ecapa ser_pre_sb; do
+for model in asv_orig ser; do
     if [ ! -d "exp/$model" ]; then
-        if [ ! -f .pre_model_${model}.zip ]; then
+        if [ ! -f .${model}.zip ]; then
             echo "Download pretrained $model models pre-trained..."
-            wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/pre_model_${model}.zip
+            wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/${model}.zip
         fi
         echo "Unpacking pretrained evaluation models"
-        mv pre_model_${model}.zip .pre_model_${model}.zip
-        unzip .pre_model_${model}.zip
+        mv ${model}.zip .${model}.zip
+        unzip .${model}.zip
     fi
 done
 
-check_model=exp/asr_pre_ctc_wav2vec2
+check_model=exp/asr
 if [ ! -d $check_model ]; then
 python3 - <<EOF
 import speechbrain as sb
