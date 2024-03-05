@@ -85,6 +85,16 @@ anon_data_suffix: !PLACEHOLDER  # suffix for dataset to signal that it is anonym
   python run_evaluation.py --config eval_post.yaml
   ```
 
+4. get the final relevant results for ranking
+
+```
+anon_suffix=$anon_data_suffix  # TODO suffix for dataset to signal that it is anonymized, e.g. _mcadams, _b1b, or _gan
+results_summary_path_orig=exp/results_summary/eval_orig${anon_suffix}/results_orig.txt # the same value as $results_summary_path in configs/eval_pre.yaml
+results_summary_path_anon=exp/results_summary/eval_anon${anon_suffix}/results_anon.txt # the same value as $results_summary_path in configs/eval_post.yaml
+results_exp=exp/results_summary
+{ cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
+```
+
 ### Some potential questions you may have and how to solve:
 > 1. $ASV_{eval}^{anon}$ training is too slow!!
 
