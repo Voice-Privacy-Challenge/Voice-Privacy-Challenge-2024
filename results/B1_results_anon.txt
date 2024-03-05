@@ -1,0 +1,16 @@
+---- Time: 05-03-24_01:19 ----
+
+---- ASV results ----
+   dataset split gender enrollment     trial     EER
+0    libri   dev      f   original  original  21.448
+1    libri   dev      f   original      anon  54.266
+2    libri   dev      f       anon      anon  10.368
+3    libri   dev      m   original  original  15.855
+4    libri   dev      m   original      anon  56.987
+5    libri   dev      m       anon      anon   6.987
+6    libri  test      f   original  original  18.627
+7    libri  test      f   original      anon  53.466
+8    libri  test      f       anon      anon  10.584
+9    libri  test      m   original  original  12.247
+10   libri  test      m   original      anon  54.342
+11   libri  test      m       anon      anon   6.682
