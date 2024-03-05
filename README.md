@@ -1,5 +1,5 @@
 # Recipe for VoicePrivacy Challenge 2024 
-(Under development)
+
 
 ## Install
 
@@ -50,7 +50,7 @@ For McAdams, anonymization of all data takes ~10 hours.
 
 #### Step 2: Evaluation
 Evaluation metrics includes:
-- Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers
+- Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers (only results from the semi-informed attacker will be used in the challenge ranking) 
 - Utility:
   - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech)
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
@@ -94,15 +94,8 @@ If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes <3h, b
 
 Reduce the $eval_bachsize in config/eval_pre.yaml
 
-> 3. The default $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech) if you want to use a pretrained transformer+tramsformerLM trained on LibriSpeech-360h,
+> 3. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
 
-Modify entries in configs/eval_pre.yaml: 
-```
-asr:
-  model_name: asr_pre_transformer_transformerlm
-evaluation:
-  model_type: EncoderDecoderASR
-```
 
 
 ## Organizers (in alphabetical order)
