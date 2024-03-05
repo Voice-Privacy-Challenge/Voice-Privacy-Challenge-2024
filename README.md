@@ -95,6 +95,21 @@ results_exp=exp/results_summary
 { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
 ```
 
+
+
+## Results
+
+The result file with all the metrics and all datasets for submission will be generated in:
+* Summary results: `./exp/results_summary/result_for_rank$anon_data_suffix`
+
+Please see 
+* Summary [RESULTS B1](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/results/result_for_rank_b1b)
+* Summary [RESULTS B2](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/results/result_for_rank_mcadams)
+
+for the evalation and development data sets.
+
+
+
 ### Some potential questions you may have and how to solve:
 > 1. $ASV_{eval}^{anon}$ training is too slow!!
 
