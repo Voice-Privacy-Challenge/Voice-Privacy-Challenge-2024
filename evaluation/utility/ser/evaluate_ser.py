@@ -90,11 +90,7 @@ def evaluate_ser(eval_datasets, eval_data_dir, models_path, anon_data_suffix, pa
     results_df = pd.DataFrame(results)
     print(results_df)
     #result_mean = results_df.groupby(['dataset', 'split', 'ser'])['UAR'].agg(['mean', 'min', 'max'])
-    result_mean = results_df.groupby(['dataset', 'split', 'ser']).agg({'UAR': ['mean'],
-                                                      'ACC_sad': ['mean'],
-                                                      'ACC_ang': ['mean'],
-                                                      'ACC_hap': ['mean'],
-                                                      'ACC_neu': ['mean']})
+    result_mean = results_df.groupby(['dataset', 'split', 'ser']).agg({'UAR': ['mean'], **{k: ['mean'] for k in score_per_emo.keys()}})
     result_mean.reset_index(inplace=True)
     print(result_mean)
 

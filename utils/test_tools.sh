@@ -24,7 +24,7 @@ config['datasets'] = test_tools_dataset
 with open('./test_tools_configs/$(basename $eval)', 'w') as f:
     dump_hyperpyyaml(config, f)
 ")
-
+sed -i 's/exp\/results_summary/exp\/test_tool_results/g' ./test_tools_configs/$(basename $eval)
 done
 sed -i 's/train_data_name.*/train_data_name: !ref train-clean-360_test_tool<anon_data_suffix>/g' ./test_tools_configs/eval_post.yaml
 sed -i -E 's/(.*:)(.*)(mcadams)(.*)/\1 !ref\2test_tool<anon_data_suffix>\4/g' ./test_tools_configs/eval_post.yaml
