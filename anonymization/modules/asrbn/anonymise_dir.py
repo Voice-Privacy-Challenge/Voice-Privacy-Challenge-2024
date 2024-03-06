@@ -107,6 +107,15 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
         target_spks = []
         if anon_level == "constant": # The best way/most secure to evaluate privacy when applied to all dataset (train included)
             target_spks = [target_constant_spkid]*audio.shape[0]
+        elif anon_level == "bad_for_evaluation":
+            # This target selection algorithm is bad for evaluation as it does
+            # not generate suitable training data for the ASV eval training
+            # procedure. Use it with caution.
+            for ut in utid:
+                source_spk = source_utt2spk[ut]
+                if source_spk not in out_spk2target:
+                    out_spk2target[source_spk] = random.sample(possible_targets, 2)
+                target_spks.append(random.choice(out_spk2target[source_spk]))
         elif anon_level == "random_per_utt":
             target_spks = []
             for ut in utid:
