@@ -47,4 +47,4 @@ results_summary_path_anon=$(python3 -c "from hyperpyyaml import load_hyperpyyaml
 
 results_exp=exp/results_summary
 mkdir -p ${results_exp}
-{ cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result${anon_suffix}"
+{ cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
