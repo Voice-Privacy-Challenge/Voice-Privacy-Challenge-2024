@@ -1,5 +1,6 @@
 # Recipe for VoicePrivacy Challenge 2024 
 
+Please visit the [challenge website](https://www.voiceprivacychallenge.org/) for more information about the Challenge.
 
 ## Install
 
@@ -121,7 +122,12 @@ Reduce the $eval_bachsize in config/eval_pre.yaml
 
 > 3. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
 
+## General information
 
+For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/vp2020/docs/VoicePrivacy_2024_Eval_Plan_v.1.0.pdf) ...will be released ...
+
+#### Registration
+Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.gle/CbeJ3xnsSMRsoCUZ9)**.
 
 ## Organizers (in alphabetical order)
 
@@ -135,7 +141,7 @@ Reduce the $eval_bachsize in config/eval_pre.yaml
 - Natalia Tomashenko - Inria, France
 - Emmanuel Vincent - Inria, France
 - Xin Wang - NII, Japan
-- Junichi Yamagishi - NII, Japan and University of Edinburgh, UK
+- Junichi Yamagishi - NII, Japan
 
 Contact: organisers@lists.voiceprivacychallenge.org
 
