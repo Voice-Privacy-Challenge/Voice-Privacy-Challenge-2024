@@ -125,13 +125,14 @@ Reduce the $eval_bachsize in config/eval_pre.yaml
 
 ## Organizers (in alphabetical order)
 
-- Nicholas Evans - EURECOM, France
+
 - Pierre Champion - Inria, France
+- Nicholas Evans - EURECOM, France
 - Sarina Meyer - University of Stuttgart, Germany
 - Xiaoxiao Miao - Singapore Institute of Technology, Singapore
 - Michele Panariello - EURECOM, France
-- Natalia Tomashenko - University of Avignon - Inria, France
 - Massimiliano Todisco - EURECOM, France
+- Natalia Tomashenko - Inria, France
 - Emmanuel Vincent - Inria, France
 - Xin Wang - NII, Japan
 - Junichi Yamagishi - NII, Japan and University of Edinburgh, UK
