@@ -127,7 +127,7 @@ Reduce the $eval_bachsize in config/eval_pre.yaml
 For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/vp2020/docs/VoicePrivacy_2024_Eval_Plan_v.1.0.pdf) ...will be released ...
 
 #### Registration
-Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.gle/CbeJ3xnsSMRsoCUZ9)**.
+Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
 
 ## Organizers (in alphabetical order)
 
