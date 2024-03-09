@@ -31,7 +31,7 @@ python run_anonymization.py --config anon_mcadams.yaml
 ```
 The anonymized audios will be saved in `$data_dir=data` into 9 folders corresponding to datasets.  
 The names of the created dataset folders for anonymized audio files are appended with the suffix, i.e. `$anon_data_suffix=_mcadams`. 
-For McAdams, anonymization of all data takes ~10 hours. 
+For McAdams, anonymization of all data may vary from 30 min up to 10 hours depending on the available hardware (in particular, the number of available CPU cores (https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/8df345b196e0c81291160a31ff00f6b56f5231db/anonymization/modules/mcadams/anonymise_dir_mcadams_rand_seed.py#L82). 
 
 ```
   $data_dir/libri_dev_enrolls$anon_data_suffix/wav/*wav
