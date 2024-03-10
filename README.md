@@ -112,9 +112,10 @@ for the evalation and development data sets.
 
 
 ### Some potential questions you may have and how to solve:
-> 1. $ASV_{eval}^{anon}$ training is too slow!!
+> 1. $ASV_{eval}^{anon}$ training is slow
 
-If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes <3h, but if the drive is old and slow, in a worse case,  $ASV_{eval}^{anon}$ takes ~10h Increase $num_workers in config/eval_post.yaml may help to speed up the processing.
+Training of the $ASV_{eval}^{anon}$ model may vary from about 2 up to 10 hours depending on the available hardware.
+If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes ~2h, but if the drive is old and slow, in a worse case,  $ASV_{eval}^{anon}$ training takes ~10h. Increasing $num_workers in config/eval_post.yaml may help to speed up the processing.
 
 > 2. OOM problem when decoding by $ASR_{eval}$
 
