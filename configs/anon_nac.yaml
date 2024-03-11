@@ -9,6 +9,10 @@ model:
   voice_dir: anonymization/modules/nac/suno_voices/v2
 
 datasets:
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+  - name: IEMOCAP_test
+    data: IEMOCAP_test
   - name: libri_dev
     data: libri_dev
     enrolls: [_enrolls]

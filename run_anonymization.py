@@ -32,7 +32,10 @@ if __name__ == '__main__':
         check_dependencies('anonymization/pipelines//sttts/sttts_requirements.txt')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
     elif config['pipeline'] == "nac":
-        from anonymization.pipelines.nac.nac_pipeline import NACPipeline as pipeline
+        if devices[0] == torch.device('cpu'):
+            from anonymization.pipelines.nac.nac_pipeline import NACPipeline as pipeline
+        else:
+            from anonymization.pipelines.nac.nac_pipeline_accelerate import NACPipeline as pipeline
     else:
         raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")
 

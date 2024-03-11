@@ -90,6 +90,7 @@ mark=.done-tts
 if [ ! -f $mark ]; then
   # echo "Installing numpy"
   # pip install numpy==1.24.3 || exit 1
+  git clone https://github.com/m-pana/nac-requirements.git ./anonymization/modules/nac/coqui_tts
   pip install HyperPyYAML  # exit 1 is useless since set -e
   echo " == Installing customized Coqui TTS =="
   pip install ./anonymization/modules/nac/coqui_tts || exit 1
