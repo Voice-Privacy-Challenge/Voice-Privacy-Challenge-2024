@@ -42,8 +42,8 @@ python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --over
 python run_evaluation.py --config $(dirname ${anon_config})/eval_post.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # Merge results
-results_summary_path_orig=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('./configs/eval_pre.yaml'); print(load_hyperpyyaml(f, None).get('results_summary_path', ''))")
-results_summary_path_anon=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('./configs/eval_post.yaml'); print(load_hyperpyyaml(f, None).get('results_summary_path', ''))")
+results_summary_path_orig=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('$(dirname ${anon_config})/eval_pre.yaml'); print(load_hyperpyyaml(f, ${eval_overwrite}).get('results_summary_path', ''))")
+results_summary_path_anon=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('$(dirname ${anon_config})/eval_post.yaml'); print(load_hyperpyyaml(f, ${eval_overwrite}).get('results_summary_path', ''))")
 
 results_exp=exp/results_summary
 mkdir -p ${results_exp}
