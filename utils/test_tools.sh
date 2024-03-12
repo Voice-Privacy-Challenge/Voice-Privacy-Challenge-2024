@@ -6,7 +6,7 @@ source env.sh
 
 # Add your system here for fast testing
 configs_to_test=("anon_yours.yaml")
-configs_to_test=("anon_template.yaml" "anon_mcadams.yaml" "anon_sttts.yaml" "anon_asrbn.yaml")
+configs_to_test=("anon_template.yaml" "anon_mcadams.yaml" "anon_asrbn.yaml" "anon_sttts.yaml" )
 
 [ ! -d ./data/train-clean-360_test_tool ] && wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data_test_tools.zip && unzip data_test_tools.zip && rm data_test_tools.zip
 
@@ -45,5 +45,8 @@ with open('./test_tools_configs/${config}', 'w') as f:
   sed -i 's/train-clean-360$/train-clean-360_test_tool/g' ./test_tools_configs/${config}
 
   export VPC_TEST_TOOLS=True
+  echo "================="
+  echo " == $config "
+  echo "================="
   ./02_run.sh ./test_tools_configs/${config}
 done
