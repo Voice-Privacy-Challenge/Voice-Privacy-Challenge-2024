@@ -8,6 +8,8 @@ source env.sh
 configs_to_test=("anon_yours.yaml")
 configs_to_test=("anon_template.yaml" "anon_mcadams.yaml" "anon_asrbn.yaml" "anon_sttts.yaml" )
 
+\rm data/*test_tool_* -rf || true
+
 [ ! -d ./data/train-clean-360_test_tool ] && wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data_test_tools.zip && unzip data_test_tools.zip && rm data_test_tools.zip
 
 [ -d ./test_tools_configs ] && yes | rm -rf ./test_tools_configs
