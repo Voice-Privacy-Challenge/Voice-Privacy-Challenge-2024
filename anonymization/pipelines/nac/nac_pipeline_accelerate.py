@@ -24,9 +24,10 @@ class NACPipeline(Pipeline):
 
 
     def run_anonymization_pipeline(self, datasets):
-        checkpoint_dir = os.path.expanduser(self.config['model']['checkpoint_dir'])
-        voice_dir = self.config['model']['voice_dir']  # only one voice dir for now
-        results_dir = self.config['results_dir']
+        checkpoint_dir = os.path.expanduser(self.config['modules']['model']['checkpoint_dir'])
+        voice_dir = self.config['modules']['model']['voice_dir']  # only one voice dir for now
+        results_dir = self.config['data_dir']
+        anon_suffix = self.config['anon_suffix']
 
         # create result folder if needed
         if not os.path.isdir(results_dir):
@@ -35,7 +36,7 @@ class NACPipeline(Pipeline):
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
             logger.info(f"{i + 1}/{len(datasets)}: Processing {dataset_name}...")
 
-            scp_file = os.path.join(dataset_path, self.config['scp_name'])
+            scp_file = os.path.join(dataset_path, 'wav.scp')
             root = '.'
             ds_type = 'libri' if 'libri' in dataset_name else 'iemocap'  # absolute abomination
 
@@ -44,9 +45,9 @@ class NACPipeline(Pipeline):
 
 
             # create individual result folder for dataset
-            ds_out_folder = os.path.join(results_dir, dataset_name)
+            ds_out_folder = os.path.join(results_dir, f'{dataset_name}{anon_suffix}', 'wav')
             if not os.path.isdir(ds_out_folder):
-                os.mkdir(ds_out_folder)
+                os.makedirs(ds_out_folder)
 
             args_to_run = [
                 'accelerate', 'launch',
@@ -59,10 +60,14 @@ class NACPipeline(Pipeline):
                 '--target_rate', '16000'
             ]
 
+            new_env = os.environ.copy()
+            new_env['CUDA_VISIBLE_DEVICES'] = ','.join([str(dv.index) for dv in self.devices])
+
             if '360' not in dataset_name:
+                speaker_mappings_root = self.config['modules']['speaker_mappings_root']
                 args_to_run.extend(('--mapping_file', os.path.join(
-                    'anonymization/modules/nac/speaker_mappings', mapping_file_name)))
+                    speaker_mappings_root, mapping_file_name)))
                 # otherwise, train 360 is anonymized utterance level
 
-            subprocess.run(args_to_run)
+            subprocess.run(args_to_run, env=new_env)
             logger.info('Done.')
