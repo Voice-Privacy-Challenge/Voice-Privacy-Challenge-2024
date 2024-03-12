@@ -46,7 +46,7 @@ with open('./test_tools_configs/${config}', 'w') as f:
 
   export VPC_TEST_TOOLS=True
   echo "================="
-  echo " == $config "
+  echo " $config "
   echo "================="
   ./02_run.sh ./test_tools_configs/${config}
 done
