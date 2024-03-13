@@ -22,8 +22,8 @@ class NACPipeline(Pipeline):
                 If you really want to make your GPUs go brrrr, consider checking out the original repo of the system.
         """
         self.device = devices[0]  # completely ignoring what comes afterward
-        checkpoint_dir = os.path.expanduser(config['model']['checkpoint_dir'])
-        voice_dirs = [config['model']['voice_dir']]  # only one voice dir for now
+        checkpoint_dir = os.path.expanduser(config['modules']['model']['checkpoint_dir'])
+        voice_dirs = [config['modules']['model']['voice_dir']]  # only one voice dir for now
 
         logger.info('Instantiating anonymizer model...')
         self.anonymizer = NACanonymizer(

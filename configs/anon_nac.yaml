@@ -5,7 +5,8 @@ data_dir: data
 
 modules:
   model:
-    checkpoint_dir: ~/.local/share/tts/tts_models--multilingual--multi-dataset--bark
+    # checkpoint_dir: ~/.local/share/tts/tts_models--multilingual--multi-dataset--bark
+    checkpoint_dir: exp/nac_checkpoints
     voice_dir: anonymization/modules/nac/suno_voices/v2
 
   speaker_mappings_root: anonymization/modules/nac/speaker_mappings

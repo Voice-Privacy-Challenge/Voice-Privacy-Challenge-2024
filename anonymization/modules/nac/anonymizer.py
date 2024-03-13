@@ -19,7 +19,11 @@ class Anonymizer(torch.nn.Module):
         super().__init__()
 
         if checkpoint_dir is None:
-            checkpoint_dir = os.path.expanduser('~/.local/share/tts/tts_models--multilingual--multi-dataset--bark')
+            checkpoint_dir = 'exp/nac_checkpoints'
+
+        if not os.path.exists(checkpoint_dir):
+            print(f"Checkpoint directory {checkpoint_dir} not found, creating it")
+            os.makedirs(checkpoint_dir)
 
         # 1. initialize Bark
         config = BarkConfig()  # don't change the custom config for the love of god
