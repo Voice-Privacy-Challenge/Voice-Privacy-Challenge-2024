@@ -5,14 +5,14 @@
 set -e
 
 nj=$(nproc)
-
 home=$PWD
+venv_dir=$PWD/venv
+source ./env.sh
+
 ESPAK_VERSION=1.51.1
 
-venv_dir=$PWD/venv
-export MAMBA_ROOT_PREFIX=".micromamba"  # Local install of micromamba (where the libs/bin will be cached)
-
-source ./env.sh
+compute_and_write_hash "anonymization/pipelines/sttts/requirements.txt"  # SHA256: 787543461248fb09472d079a6c0506b0c4c88162b4a225106fbb9890693197da
+trigger_new_install "exp/sttts_models .done-sttts-requirements .done-espeak"
 
 # Download GAN pre-models only if perform GAN anonymization
 if [ ! -d exp/sttts_models ]; then
@@ -30,8 +30,7 @@ fi
 
 mark=.done-sttts-requirements
 if [ ! -f $mark ]; then
-  echo " == Installing python libraries =="
-
+  echo " == Installing STTTS python libraries =="
   pip3 install -r anonymization/pipelines/sttts/requirements.txt  || exit 1
   touch $mark
 fi

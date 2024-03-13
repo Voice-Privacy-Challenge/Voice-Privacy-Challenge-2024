@@ -17,7 +17,7 @@ class ASRBNPipeline(Pipeline):
 
         This pipeline consists of:
                   ->      F0 (yaapt: no transformation)    --\
-            input ->    ASR-BN (vq stransformed or not)  --->  Speech synthesis (hifigan)
+            input ->    ASR-BN (vq transformed or not)  --->  Speech synthesis (hifigan)
                                                                           ^
                                                                           |
                                                                   Target speaker (one-hot)

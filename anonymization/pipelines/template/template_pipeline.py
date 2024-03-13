@@ -15,7 +15,7 @@ class TemplatePipeline(Pipeline):
         """
         Instantiates a TemplatePipeline.
 
-        This is an example on how in create your own anonymization pipeline with the provided helper functions.
+        This is an example to help you create your own anonymization pipeline with the provided helper functions.
 
         Args:
             config (dict): a configuration dictionary, e.g., see anon_*.yaml

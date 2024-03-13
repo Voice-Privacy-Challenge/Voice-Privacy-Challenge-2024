@@ -2,8 +2,16 @@ from pathlib import Path
 from argparse import ArgumentParser
 import torch
 import subprocess
+import sys
 
 from utils import parse_yaml, get_datasets, check_dependencies, setup_logger
+
+logger = setup_logger(__name__)
+
+def shell_run(cmd):
+    if subprocess.run(['bash', cmd]).returncode != 0:
+        logger.error(f'Failed to install: {cmd}')
+        sys.exit(1)
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -24,14 +32,20 @@ if __name__ == '__main__':
     else:
         devices.append(torch.device('cpu'))
 
-    logger = setup_logger(__name__)
     if config['pipeline'] == "mcadams":
         from anonymization.pipelines.mcadams import McAdamsPipeline as pipeline
     elif config['pipeline'] == "sttts":
-        subprocess.run(['bash', 'anonymization/pipelines/sttts/install.sh'])
+        shell_run('anonymization/pipelines/sttts/install.sh')
         check_dependencies('anonymization/pipelines/sttts/requirements.txt')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
+    elif config['pipeline'] == "nac":
+        shell_run('anonymization/pipelines/nac/install.sh')
+        if devices[0] == torch.device('cpu'):
+            from anonymization.pipelines.nac.nac_pipeline import NACPipeline as pipeline
+        else:
+            from anonymization.pipelines.nac.nac_pipeline_accelerate import NACPipeline as pipeline
     elif config['pipeline'] == "asrbn":
+        shell_run('anonymization/pipelines/asrbn/install.sh')
         check_dependencies('anonymization/pipelines/asrbn/requirements.txt')
         from anonymization.pipelines.asrbn import ASRBNPipeline as pipeline
     elif config['pipeline'] == "template":

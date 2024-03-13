@@ -5,7 +5,9 @@ __pycache__/
 .done-*
 .micromamba/
 venv/
+venv_nac/
 env.sh
+env_nac.sh
 espeak-ng-*
 .*.zip
 test_tools_configs
@@ -142,3 +144,6 @@ exp
 pre_model.zip
 /model*/*
 subset_data_dir.sh
+.idea
+anonymization/modules/nac/coqui_tts/
+.install-hash*

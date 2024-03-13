@@ -1,11 +1,11 @@
-matplotlib==3.4.3
-librosa==0.9.2
+matplotlib
+librosa
 tensorboard>=2.15.1
-soundfile>=0.12.1
-ffmpeg>=1.4
+soundfile
+ffmpeg
 tqdm
 pyarrow>=15.0.0
-pandas>=2.2.0
+pandas
 speechbrain==0.5.16
 pyloudnorm>=0.1.1
 noisereduce==3.0.0
