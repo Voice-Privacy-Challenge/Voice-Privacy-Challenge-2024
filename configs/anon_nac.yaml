@@ -21,7 +21,7 @@ datasets:
 
 modules:
   model:
-    checkpoint_dir: ~/.local/share/tts/tts_models--multilingual--multi-dataset--bark
+    checkpoint_dir: exp/nac_models
     voice_dir: exp/nac_mappings/suno_voices/v2
 
   speaker_mappings_root: exp/nac_mappings/speaker_mappings
