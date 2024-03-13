@@ -90,7 +90,7 @@ mark=.done-tts
 if [ ! -f $mark ]; then
   zip_file="./anonymization/modules/nac/speaker_mappings.zip"
   unzip_location="./anonymization/modules/nac"
-  curl -L -o $zip_file https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/nac_mappings.zip/nac_speaker_mappings.zip
+  curl -L -o $zip_file https://github.com/m-pana/nac-requirements/releases/download/1.0/nac_speaker_mappings.zip
   unzip $zip_file -d $unzip_location
   rm $zip_file
   git clone https://github.com/m-pana/nac-requirements.git ./anonymization/modules/nac/coqui_tts
