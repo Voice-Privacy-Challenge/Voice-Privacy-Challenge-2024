@@ -1,0 +1,27 @@
+pipeline: nac
+anon_suffix: !ref _<pipeline>
+
+data_dir: data
+
+modules:
+  model:
+    checkpoint_dir: ~/.local/share/tts/tts_models--multilingual--multi-dataset--bark
+    voice_dir: anonymization/modules/nac/suno_voices/v2
+
+  speaker_mappings_root: anonymization/modules/nac/speaker_mappings
+
+datasets:
+  - name: libri_dev
+    data: libri_dev
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: libri_test
+    data: libri_test
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: train-clean-360
+    data: train-clean-360
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+  - name: IEMOCAP_test
+    data: IEMOCAP_test

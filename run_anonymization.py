@@ -31,6 +31,12 @@ if __name__ == '__main__':
         subprocess.run(['bash', 'anonymization/pipelines/sttts/install.sh'])
         check_dependencies('anonymization/pipelines/sttts/requirements.txt')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
+    elif config['pipeline'] == "nac":
+        subprocess.run(['bash', 'anonymization/pipelines/nac/install.sh'])
+        if devices[0] == torch.device('cpu'):
+            from anonymization.pipelines.nac.nac_pipeline import NACPipeline as pipeline
+        else:
+            from anonymization.pipelines.nac.nac_pipeline_accelerate import NACPipeline as pipeline
     elif config['pipeline'] == "asrbn":
         check_dependencies('anonymization/pipelines/asrbn/requirements.txt')
         from anonymization.pipelines.asrbn import ASRBNPipeline as pipeline
