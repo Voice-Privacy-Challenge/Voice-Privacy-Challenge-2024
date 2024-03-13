@@ -31,8 +31,8 @@ trigger_new_install() {
   hash_check=".install-hash-$(basename $(dirname $0))"
   stored_hash=$(cat $hash_check 2> /dev/null || >&2 echo "First install of $0")
   current_hash=$(sha256sum "$0" | awk '{print $1}')
-  if [ "$current_hash" != "$stored_hash" ]; then
-    [ ! -z $stored_hash ] && echo "$0 has been modified. Triggering new installation..."
+  if [ "$current_hash" != "$stored_hash" ] && [ "$NEW_INSTALL_TRIGGER" != "no" ]; then
+    [ ! -z $stored_hash ] && echo "$0 has been modified. Triggering new installation..." && echo "Use 'export NEW_INSTALL_TRIGGER=no' do disable this behavoir"
     \rm -rf $@ || true
     echo "$current_hash" > $hash_check
   fi
