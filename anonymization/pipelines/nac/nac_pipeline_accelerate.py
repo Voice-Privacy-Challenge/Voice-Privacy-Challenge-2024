@@ -69,5 +69,6 @@ class NACPipeline(Pipeline):
                     speaker_mappings_root, mapping_file_name)))
                 # otherwise, train 360 is anonymized utterance level
 
-            subprocess.run(args_to_run, env=new_env)
+            if subprocess.run(args_to_run, env=new_env).returncode != 0:
+                exit(1)
             logger.info('Done.')

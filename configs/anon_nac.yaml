@@ -24,4 +24,4 @@ modules:
     checkpoint_dir: ~/.local/share/tts/tts_models--multilingual--multi-dataset--bark
     voice_dir: exp/nac_mappings/suno_voices/v2
 
-  speaker_mappings_root: anonymization/modules/nac/speaker_mappings
+  speaker_mappings_root: exp/nac_mappings/speaker_mappings
