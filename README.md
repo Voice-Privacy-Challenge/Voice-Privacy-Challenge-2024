@@ -75,7 +75,7 @@ data/train-clean-360${anon_data_suffix}/wav/*wav
 > The evaluation script will take care of everything else. (Automatic creation
 > of: wav.scp/spk2gender/...)  
 >
-> Or for more detailed example of an anonymization system, with original wav.scp
+> Or for a more detailed example of an anonymization system, with original wav.scp
 > loading and directory structure creation, please refer to:
 > - [configs/anon_template.yaml](./configs/anon_template.yaml)
 > - [anonymization/modules/template/anonymise_dir.py](./anonymization/modules/template/anonymise_dir.py)
