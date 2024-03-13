@@ -56,7 +56,7 @@ class ProsodyExtraction:
                 try:
                     utt_prosody = self.extractor.extract_prosody(transcript=text, ref_audio_path=wav_path,
                                                                  input_is_phones=text_is_phones)
-                except IndexError:
+                except IndexError as e:
                     logger.warn(f'IndexError for {utt}')
                     continue
                 duration, pitch, energy, start_silence, end_silence = utt_prosody

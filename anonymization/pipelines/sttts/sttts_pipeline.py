@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import time
 
-from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger
+from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger, change_wav_scp
 
 from ...modules.sttts.tts import SpeechSynthesis
 from ...modules.sttts.text import SpeechRecognition
@@ -149,14 +149,14 @@ class STTTSPipeline:
 
             if self.prosody_anonymization:
                 start_time = time.time()
-                anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody)
+                anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody, dataset_name=dataset_name)
                 logger.info("--- Prosody anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
             else:
                 anon_prosody = prosody
 
             # Step 3: Synthesize
             start_time = time.time()
-            wav_scp = self.speech_synthesis.synthesize_speech(dataset_name=dataset_name, texts=texts,
+            wav_scp, gen_wav_dir = self.speech_synthesis.synthesize_speech(dataset_name=dataset_name, texts=texts,
                                                               speaker_embeddings=anon_embeddings,
                                                               prosody=anon_prosody, emb_level=anon_embeddings.emb_level)
             logger.info("--- Synthesis time: %f min ---" % (float(time.time() - start_time) / 60))
@@ -176,8 +176,12 @@ class STTTSPipeline:
             # Overwrite spk2gender if it has been modify
             spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
             save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
+            wav_output_dir = (output_path / 'wav').absolute()
+            if not wav_output_dir.exists():
+                wav_output_dir.symlink_to(gen_wav_dir.absolute(), target_is_directory=True)
+            output_wav_scp = change_wav_scp(wav_scp, gen_wav_dir, output_path)
             # Overwrite wav.scp with the paths to the anonymized wavs
-            save_kaldi_format(anon_wav_scps[dataset_name], output_path / 'wav.scp')
+            save_kaldi_format(output_wav_scp, output_path / 'wav.scp')
 
         logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
 

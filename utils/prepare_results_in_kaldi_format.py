@@ -33,6 +33,8 @@ def combine_asr_data(input_dirs, output_dir):
 def list_wav_files_recursively(folder_path):
     wav_files = []
     for root, dirs, files in os.walk(folder_path):
+        for dir in dirs:
+            wav_files.extend(list_wav_files_recursively(f'{root}/{dir}'))
         for file in files:
             if file.endswith('.wav'):
                 wav_files.append(os.path.join(root, file))
@@ -82,6 +84,9 @@ def create_kaldi_formart_data(ori_folder, anon_folder, required_files):
                     token = temp[0]
                     audio_path = dirname / token
                     fp.write(f"{token} {audio_path}.wav\n")
+
+def change_wav_scp(wav_scp, source_folder, target_folder):
+    return {utt: path.replace('source_folder', 'target_folder') for utt, path in wav_scp.items()}
 
 def check_kaldi_formart_data(config): 
     logger.info('Check Kaldi format files')

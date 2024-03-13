@@ -9,7 +9,7 @@ class ProsodyAnonymization:
     def __init__(self, settings, results_dir=None, save_intermediate=True, force_compute=False):
         self.save_intermediate = save_intermediate
         self.force_compute = force_compute if force_compute else settings.get('force_compute_anonymization', False)
-        anonymizer_type = settings.get('anonymizer_type', 'ims')
+        anonymizer_type = settings.get('anonymizer', 'ims')
 
         if results_dir:
             self.results_dir = results_dir

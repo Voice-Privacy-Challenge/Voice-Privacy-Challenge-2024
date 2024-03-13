@@ -37,12 +37,16 @@ def extraction_job(params):
         if isinstance(wav_path, list):
             wav_path = wav_path[1]
         signal, fs = torchaudio.load(wav_path)
+        # if len(signal.shape) == 2:
+        #     signal = signal.squeeze(0)
         norm_wave = normalize_wave(signal, fs, device=device)
 
         try:
             spk_embs = [extractor.extract_vector(audio=norm_wave, sr=fs) for extractor in speaker_extractors]
         except RuntimeError as e:
+            print(e)
             logger.warning(f'Runtime error: {utt}, {signal.shape}, {norm_wave.shape}')
+            raise
             continue
 
         if len(spk_embs) == 1:

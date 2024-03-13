@@ -51,6 +51,8 @@ class ImsASR:
 
     def recognize_speech_of_audio(self, audio_file):
         speech, rate = soundfile.read(audio_file)
+        if len(speech.shape) == 2:
+            speech = speech.squeeze(0)
         speech = torch.tensor(resampy.resample(speech, rate, 16000), device=self.device)
 
         nbests = self.speech2text(speech)

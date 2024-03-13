@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def read_kaldi_format(filename, return_as_dict=True, values_as_string=False):
     key_list = []
     value_list = []
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
             splitted_line = line.split()
             if len(splitted_line) == 1:
