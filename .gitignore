@@ -145,3 +145,4 @@ pre_model.zip
 /model*/*
 subset_data_dir.sh
 .idea
+anonymization/modules/nac/coqui_tts/

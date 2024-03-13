@@ -7,7 +7,7 @@ ffmpeg>=1.4
 tqdm
 pyarrow>=15.0.0
 pandas>=2.2.0
-numba==0.58
+numba
 speechbrain==0.5.16
 pyloudnorm>=0.1.1
 kaldiio>=2.18.0

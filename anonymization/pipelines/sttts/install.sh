@@ -5,14 +5,11 @@
 set -e
 
 nj=$(nproc)
-
 home=$PWD
-ESPAK_VERSION=1.51.1
-
 venv_dir=$PWD/venv
-export MAMBA_ROOT_PREFIX=".micromamba"  # Local install of micromamba (where the libs/bin will be cached)
-
 source ./env.sh
+
+ESPAK_VERSION=1.51.1
 
 # Download GAN pre-models only if perform GAN anonymization
 if [ ! -d exp/sttts_models ]; then

@@ -6,7 +6,7 @@ source env.sh
 
 # Add your system here for fast testing
 configs_to_test=("anon_yours.yaml")
-configs_to_test=("anon_template.yaml" "anon_mcadams.yaml" "anon_asrbn.yaml" "anon_sttts.yaml" )
+configs_to_test=("anon_nac.yaml" "anon_template.yaml" "anon_mcadams.yaml" "anon_asrbn.yaml" "anon_sttts.yaml" )
 
 \rm data/*test_tool_* -rf || true
 
