@@ -11,6 +11,17 @@ source ./env.sh
 
 ESPAK_VERSION=1.51.1
 
+hash_check=".install-hash-STTTS"
+stored_hash=$(echo $(cat $hash_check 2> /dev/null) || echo "empty")
+current_hash=$(sha256sum "$0" | awk '{print $1}')
+if [ "$current_hash" != "$stored_hash" ]; then
+  echo "STTTS install script has been modified. Triggering new installation..."
+  \rm -rf exp/sttts_models || true
+  \rm -f .done-sttts-requirements || true
+  \rm -f .done-espeak || true
+  echo "$current_hash" > $hash_check
+fi
+
 # Download GAN pre-models only if perform GAN anonymization
 if [ ! -d exp/sttts_models ]; then
     echo "Download pretrained models of GAN-basd speaker anonymization system..."

@@ -9,6 +9,16 @@ home=$PWD
 venv_dir=$PWD/venv
 source ./env.sh
 
+hash_check=".install-hash-NAC"
+stored_hash=$(echo $(cat $hash_check 2> /dev/null) || echo "empty")
+current_hash=$(sha256sum "$0" | awk '{print $1}')
+if [ "$current_hash" != "$stored_hash" ]; then
+  echo "NAC install script has been modified. Triggering new installation..."
+  \rm -rf exp/nac_mappings || true
+  \rm -f .done-nac-requirements || true
+  echo "$current_hash" > $hash_check
+fi
+
 # Download nac mappings
 if [ ! -d exp/nac_mappings ]; then
     echo "Download pre-computed speaker mappings for the NAC pipeline"

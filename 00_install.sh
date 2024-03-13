@@ -24,6 +24,14 @@ TORCH_VERSION=2.0.1
 
 MAMBA_PACKAGES_TO_INSTALL="sshpass OpenSSH sox libflac tar libacl inotify-tools ocl-icd-system git-lfs ffmpeg wget curl make cmake ncurses ninja python=3.11 nvtop automake libtool gxx=12.3.0 gcc=12.3.0 python-sounddevice"
 
+stored_hash=$(echo $(cat .install-hash 2> /dev/null) || echo "empty")
+current_hash=$(sha256sum "$0" | awk '{print $1}')
+if [ "$current_hash" != "$stored_hash" ]; then
+  echo "$0 has been modified. Triggering new installation..."
+  # \rm .micromamba/micromamba .done-* || true
+  echo "$current_hash" > .install-hash
+fi
+
 mark=.done-venv
 if [ ! -f $mark ]; then
   echo " == Making virtual environment =="

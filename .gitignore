@@ -146,3 +146,4 @@ pre_model.zip
 subset_data_dir.sh
 .idea
 anonymization/modules/nac/coqui_tts/
+.install-hash*
