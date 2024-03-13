@@ -9,15 +9,8 @@ home=$PWD
 venv_dir=$PWD/venv
 source ./env.sh
 
-hash_check=".install-hash-NAC"
-stored_hash=$(echo $(cat $hash_check 2> /dev/null) || echo "empty")
-current_hash=$(sha256sum "$0" | awk '{print $1}')
-if [ "$current_hash" != "$stored_hash" ]; then
-  echo "NAC install script has been modified. Triggering new installation..."
-  \rm -rf exp/nac_mappings || true
-  \rm -f .done-nac-requirements || true
-  echo "$current_hash" > $hash_check
-fi
+compute_and_write_hash "anonymization/modules/nac/coqui_tts/requirements.txt"  # SHA256: 81d2267383004a6f3176cf92e65659e5e81845b78c0cc2d4709c6efb010d7500
+trigger_new_install "exp/nac_mappings .done-nac-requirements"
 
 # Download nac mappings
 if [ ! -d exp/nac_mappings ]; then
@@ -33,9 +26,9 @@ fi
 mark=.done-nac-requirements
 if [ ! -f $mark ]; then
   echo " == Installing NAC libraries =="
-  dir="./anonymization/modules/nac/coqui_tts"
-  [ -d $dir ] && yes | rm -rf $dir
-  git clone https://github.com/m-pana/nac-requirements.git $dir
-  pip install -e $dir
+  coqui_tts_dir="./anonymization/modules/nac/coqui_tts"
+  [ -d $coqui_tts_dir ] && yes | rm -rf $coqui_tts_dir
+  git clone https://github.com/m-pana/nac-requirements.git $coqui_tts_dir
+  pip install -e $coqui_tts_dir
   touch $mark
 fi

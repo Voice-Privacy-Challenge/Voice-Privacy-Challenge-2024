@@ -9,14 +9,8 @@ home=$PWD
 venv_dir=$PWD/venv
 source ./env.sh
 
-hash_check=".install-hash-ASRBN"
-stored_hash=$(echo $(cat $hash_check 2> /dev/null) || echo "empty")
-current_hash=$(sha256sum "$0" | awk '{print $1}')
-if [ "$current_hash" != "$stored_hash" ]; then
-  echo "ASRBN install script has been modified. Triggering new installation..."
-  \rm -f .done-asrbn-requirements || true
-  echo "$current_hash" > $hash_check
-fi
+compute_and_write_hash "anonymization/pipelines/asrbn/requirements.txt"  # SHA256: 83b977d3e6716e665c5673810d0b39a1bbc422580c0ce6372da4431c04e8cfa4
+trigger_new_install ".done-asrbn-requirements"
 
 mark=.done-asrbn-requirements
 if [ ! -f $mark ]; then
