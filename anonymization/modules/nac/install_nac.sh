@@ -88,8 +88,11 @@ source ./env_nac.sh
 
 mark=.done-tts
 if [ ! -f $mark ]; then
-  # echo "Installing numpy"
-  # pip install numpy==1.24.3 || exit 1
+  zip_file="./anonymization/modules/nac/speaker_mappings.zip"
+  unzip_location="./anonymization/modules/nac"
+  curl -L -o $zip_file https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/nac_mappings.zip/nac_speaker_mappings.zip
+  unzip $zip_file -d $unzip_location
+  rm $zip_file
   git clone https://github.com/m-pana/nac-requirements.git ./anonymization/modules/nac/coqui_tts
   pip install HyperPyYAML  # exit 1 is useless since set -e
   echo " == Installing customized Coqui TTS =="
