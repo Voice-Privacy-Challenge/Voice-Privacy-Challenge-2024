@@ -45,38 +45,38 @@ There are 2 options:
 ---------------------------------------------------------------------------
 
 #### Step 1: Anonymization
-```
-python run_anonymization.py --config configs/anon_mcadams.yaml
-```
-The anonymized directories (kaldi-like structure) will be saved in `$data_dir=data` (see configs/anon_mcadams.yaml) for the 9 necessary folders.  
-The names of the created anonymized dataset are appended with the suffix of the anonymization pipeline, i.e. `$anon_data_suffix=_mcadams` (see configs/anon_mcadams.yaml).  
-For McAdams, anonymization of all data may vary from 30 min up to 10 hours depending on the available the number of available CPU cores.
+```sh
+python run_anonymization.py --config configs/anon_mcadams.yaml  # Compute time vary from 30min to 10h depending on the the number of cores.
 
-After anonymization, the directories produced are the following:
+# Or your own script..
+```
+The names of the 9 necessary anonymized datasets are the original names appended with a suffix corresponding to an anonymization pipeline, i.e. `$anon_data_suffix=_mcadams` (see configs/anon_mcadams.yaml).  
+
+After anonymization, the directories/wavs produced should be the following:
 ```log
-data_dir=data
 anon_data_suffix=_mcadams
-${data_dir}/libri_dev_enrolls${anon_data_suffix}/wav/*wav
-${data_dir}/libri_dev_trials_m${anon_data_suffix}/wav/*wav
-${data_dir}/libri_dev_trials_f${anon_data_suffix}/wav/*wav
+data/libri_dev_enrolls${anon_data_suffix}/wav/*wav
+data/libri_dev_trials_m${anon_data_suffix}/wav/*wav
+data/libri_dev_trials_f${anon_data_suffix}/wav/*wav
 
-${data_dir}/libri_test_enrolls${anon_data_suffix}/wav/*wav
-${data_dir}/libri_test_trials_m${anon_data_suffix}/wav/*wav
-${data_dir}/libri_test_trials_f${anon_data_suffix}/wav/*wav
+data/libri_test_enrolls${anon_data_suffix}/wav/*wav
+data/libri_test_trials_m${anon_data_suffix}/wav/*wav
+data/libri_test_trials_f${anon_data_suffix}/wav/*wav
 
-${data_dir}/IEMOCAP_dev${anon_data_suffix}/wav/*wav
-${data_dir}/IEMOCAP_test${anon_data_suffix}/wav/*wav
+data/IEMOCAP_dev${anon_data_suffix}/wav/*wav
+data/IEMOCAP_test${anon_data_suffix}/wav/*wav
 
-${data_dir}/train-clean-360${anon_data_suffix}/wav/*wav
+data/train-clean-360${anon_data_suffix}/wav/*wav
 ```
 
 > [!IMPORTANT]  
 > When developing your own anonymization system, you can simply replicate this directory/wav
 > structure.  
-> The evaluation script will take care of everything else.  
+> The evaluation script will take care of everything else. (Automatic creation
+> of: wav.scp/spk2gender/...)  
 >
-> Or for more detailed example of an anonymization system, with wav.scp loading and
-> directory structure creation, please refer to:
+> Or for more detailed example of an anonymization system, with original wav.scp
+> loading and directory structure creation, please refer to:
 > - [configs/anon_template.yaml](./configs/anon_template.yaml)
 > - [anonymization/modules/template/anonymise_dir.py](./anonymization/modules/template/anonymise_dir.py)
 > - [anonymization/pipelines/template/template_pipeline.py](./anonymization/pipelines/template/template_pipeline.py)
@@ -89,30 +89,23 @@ Evaluation metrics includes:
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
 
 
-
-To run evaluation for a pipeline you need to:
-1. Have prepare the above anonymized data directories.
-2. modify entry in [configs/eval_pre.yaml](./configs/eval_post.yaml)
-   and [configs/eval_post.yaml](./configs/eval_post.yaml) if you are not using [02_run.sh](./02_run.sh):
-    ```yaml
-    anon_data_suffix: !PLACEHOLDER  # suffix for the anonymized dataset, e.g. _mcadams, _sttts, ...
-    ```
-3. perform evaluations
+To run evaluation separately for a pipeline you need to:
+1. Have prepare the above anonymized data directories with the correct `$anon_data_suffix`.
+2. perform evaluations
     ```sh
-    python run_evaluation.py --config configs/eval_pre.yaml
-    python run_evaluation.py --config configs/eval_pre.yaml
+    python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
+    python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
     ```
 
-4. get the final relevant results for ranking
+3. get the final relevant results for ranking
     ```sh
-    anon_suffix=$anon_data_suffix  # TODO # suffix for the anonymized dataset, e.g. _mcadams, _sttts
-    results_summary_path_orig=exp/results_summary/eval_orig${anon_suffix}/results_orig.txt # the same value as $results_summary_path in configs/eval_pre.yaml
-    results_summary_path_anon=exp/results_summary/eval_anon${anon_suffix}/results_anon.txt # the same value as $results_summary_path in configs/eval_post.yaml
+    results_summary_path_orig=exp/results_summary/eval_orig${anon_data_suffix}/results_orig.txt # the same value as $results_summary_path in configs/eval_pre.yaml
+    results_summary_path_anon=exp/results_summary/eval_anon${anon_data_suffix}/results_anon.txt # the same value as $results_summary_path in configs/eval_post.yaml
     results_exp=exp/results_summary
-    { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
+    { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_data_suffix}"
     ```
 
-> (All of the four above step are automated in [02_run.sh](./02_run.sh)).
+> (All of the above steps are automated in [02_run.sh](./02_run.sh)).
 
 ## Results
 
