@@ -9,7 +9,6 @@ home=$PWD
 venv_dir=$PWD/venv
 source ./env.sh
 
-compute_and_write_hash "anonymization/modules/nac/coqui_tts/requirements.txt"  # SHA256: 81d2267383004a6f3176cf92e65659e5e81845b78c0cc2d4709c6efb010d7500
 trigger_new_install "exp/nac_mappings .done-nac-requirements"
 
 # Download nac mappings
