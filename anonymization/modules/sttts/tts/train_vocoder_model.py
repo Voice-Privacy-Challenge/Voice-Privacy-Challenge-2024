@@ -6,10 +6,10 @@ import random
 import torch
 from torch.utils.data import ConcatDataset
 
-from .IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.HiFiGAN import HiFiGANGenerator
-from .IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.HiFiGAN import HiFiGANMultiScaleMultiPeriodDiscriminator
-from .IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.HiFiGANDataset import HiFiGANDataset
-from .IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.hifigan_train_loop import train_loop
+from IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.HiFiGAN import HiFiGANGenerator
+from IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.HiFiGAN import HiFiGANMultiScaleMultiPeriodDiscriminator
+from IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.HiFiGANDataset import HiFiGANDataset
+from IMSToucan.TrainingInterfaces.Spectrogram_to_Wave.HiFIGAN.hifigan_train_loop import train_loop
 
 
 def get_file_list_libritts(train_data_path):
@@ -44,16 +44,11 @@ def run(gpu_id, resume_checkpoint, finetune, resume, model_dir, train_data_path)
     if not os.path.exists(model_save_dir):
         os.makedirs(model_save_dir)
 
-    # sampling multiple times from the dataset, because it's to big to fit all at once
-    for run_id in range(1):  # TODO 800
+    # sampling multiple times from the dataset, because it's too big to fit all at once
+    for run_id in range(800):
 
-        file_lists = list(random.sample(get_file_list_libritts(train_data_path), 5000))
-
-        datasets = list()
-
-        for index, file_list in enumerate(file_lists):
-            datasets.append(HiFiGANDataset(list_of_paths=file_list, cache_dir=f"Corpora/{index}", use_random_corruption=True))
-        train_set = ConcatDataset(datasets)
+        file_list = random.sample(get_file_list_libritts(train_data_path), 5000)
+        train_set = HiFiGANDataset(list_of_paths=file_list, cache_dir=f"Corpora/0", use_random_corruption=True)
 
         generator = HiFiGANGenerator()
         generator.reset_parameters()
@@ -62,7 +57,7 @@ def run(gpu_id, resume_checkpoint, finetune, resume, model_dir, train_data_path)
         print("Training model")
         if run_id == 0:
             train_loop(batch_size=16,
-                       epochs=2,  # TODO 20
+                       epochs=20,
                        generator=generator,
                        discriminator=discriminator,
                        train_dataset=train_set,
@@ -88,7 +83,7 @@ def run(gpu_id, resume_checkpoint, finetune, resume, model_dir, train_data_path)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='IMS Speech Synthesis Toolkit - Call to Train')
 
-    parser.add_argument('--train_path',
+    parser.add_argument('--train_data_path',
                         type=str,
                         help="Path to train data.",
                         default="corpora/LibriTTS/clean")
@@ -120,7 +115,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    run(train_data_path=args.train_path,
+    run(train_data_path=args.train_data_path,
         gpu_id=args.gpu_id,
         resume_checkpoint=args.resume_checkpoint,
         resume=args.resume,

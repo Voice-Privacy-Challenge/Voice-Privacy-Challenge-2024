@@ -43,7 +43,7 @@ frontend_conf:
 batch_type: numel
 batch_bins: 10000000
 accum_grad: 8
-max_epoch: 6 #70
+max_epoch: 70
 patience: 5
 init: none
 best_model_criterion:

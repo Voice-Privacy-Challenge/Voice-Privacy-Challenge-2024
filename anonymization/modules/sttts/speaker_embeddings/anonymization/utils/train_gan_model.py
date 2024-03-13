@@ -5,10 +5,10 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .WGAN.dataset import SpeakerEmbeddingsDataset
-from .WGAN.training.train_wgan import train_gan
-from .WGAN.training.logger import setup_logger, setup_tensorboard
-from .WGANW.init_wgan import create_wgan
+from WGAN.dataset import SpeakerEmbeddingsDataset
+from WGAN.training.train_wgan import train_gan
+from WGAN.training.logger import setup_logger, setup_tensorboard
+from WGAN.init_wgan import create_wgan
 
 
 def get_comet_logging():
@@ -19,12 +19,12 @@ def get_comet_logging():
 def get_args():
     parser = ArgumentParser()
     parser.add_argument(
-        "--data_dir",
+        "--data_path",
         help="Path to speaker embeddings",
-        default=Path("dataset/reference_embeddings/speaker_embeddings.pt"),
+        default=Path("dataset/reference_embeddings/utt-level/speaker_vectors.pt"),
         type=Path,
     )
-    parser.add_argument("--gpu", help="GPU to use for training", action="append")
+    parser.add_argument("--gpu_id", help="GPU to use for training", default=0)
     parser.add_argument("--id", default=None)
     parser.add_argument("--config", type=str, default="./WGAN/configs/train_gan.json")
     parser.add_argument("--comet_ml_experiment_name", type=str, default=None)
@@ -63,7 +63,7 @@ def main(args):
     if args.comet_ml_experiment_name:
         experiment.set_name(args.comet_ml_experiment_name)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(f"cuda:{args.gpu_id}" if torch.cuda.is_available() else "cpu")
     logger.info("Using device '{}'".format(device))
 
     # parse json parameter file file
@@ -77,12 +77,12 @@ def main(args):
     logger.info("GAN parameters")
     logger.info(gan_parameters)
 
-    gan = create_wgan(logger=logger, parameters=gan_parameters, device=device)
+    gan = create_wgan(parameters=gan_parameters, device=device)
     # atexit.register(exit_handler, gan, Path('models'))
 
     # create dataset & dataloader
     dataset = SpeakerEmbeddingsDataset(
-        feature_path=args.data_dir,
+        feature_path=args.data_path,
         device=device,
         normalize_data=gan_parameters["normalize_data"],
     )
@@ -97,9 +97,9 @@ def main(args):
         writer=writer,
         timestampStr=timestampStr,
         experiment=experiment,
-        save_vis_every=gan_parameters["save_every"],
+        save_vis_every=gan_parameters["save_every"]
     )
 
 
 if __name__ == "__main__":
-    main(get_args())  # --gpu 3 --data_dir
+    main(get_args())

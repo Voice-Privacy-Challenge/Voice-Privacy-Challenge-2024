@@ -23,7 +23,6 @@ def train_gan(
     writer,
     timestampStr,
     experiment,
-    visualize=True,
     save_vis_every=2,
 ):
     # train gan
@@ -68,6 +67,7 @@ def train_gan(
                 train_loader.dataset.dataset.std.unsqueeze(0).cpu(),
             )
             logger.info("Saving samples")
+            Path('./test_samples').mkdir(exist_ok=True)
             torch.save(
                 samples_generated,
                 f"./test_samples/{timestampStr}_generated_samples_num_steps_{model.num_steps}.pt",
@@ -77,49 +77,6 @@ def train_gan(
                 models_dir, parameters, timestampStr, dataset.mean, dataset.std
             )
             logger.info("Model saved")
-
-            if visualize:
-                vis_algo = "tsne"
-                logger.info(f"Visualizing samples with {vis_algo}")
-                vis = Visualizer(algorithm=vis_algo)
-                orginial_samples = [
-                    t.cpu() for t in train_loader.dataset.dataset[0:2000][0]
-                ]
-                # samples_generated = model.sample_generator(
-                #     num_samples=500, nograd=True
-                # ).cpu()
-                samples_generated = inverse_normalize(
-                    model.sample_generator(num_samples=100, nograd=True).cpu(),
-                    mean=train_loader.dataset.dataset.mean.unsqueeze(0),
-                    std=train_loader.dataset.dataset.std.unsqueeze(0),
-                )
-
-                samples_generated_list = [t for t in samples_generated]
-                filename = f"test_samples/visualizations/{timestampStr}_{vis_algo}_num_steps_{model.num_steps}.png"
-                fig = vis.visualize_speaker_embeddings(
-                    samples_generated_list,
-                    orginial_samples,
-                    "GAN Samples",
-                    filename,
-                )
-
-                comet_filename = f"{timestampStr}_{vis_algo}.png"
-                if experiment:
-                    experiment.log_image(
-                        filename,
-                        name=comet_filename,
-                        overwrite=False,
-                        image_format="png",
-                        image_scale=1.0,
-                        image_shape=None,
-                        image_colormap=None,
-                        image_minmax=None,
-                        image_channels="last",
-                        copy_to_tmp=True,
-                        step=model.num_steps,
-                    )
-
-                logger.info(f"Visualization image saved as {filename}")
 
     logger.info("Save model")
     model.save_model_checkpoint(

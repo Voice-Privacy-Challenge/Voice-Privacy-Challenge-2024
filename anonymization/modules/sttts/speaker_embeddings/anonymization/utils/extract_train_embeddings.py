@@ -1,8 +1,10 @@
 import argparse
 import torch
 from pathlib import Path
+import sys
 
-from ...speaker_extraction import SpeakerExtraction
+sys.path.insert(0, str(Path('../../../../../..').resolve().absolute()))
+from anonymization.modules.sttts.speaker_embeddings.speaker_extraction import SpeakerExtraction
 
 
 def extract_train_embeddings(data_path, save_dir, gpu_id, emb_model_path, vec_type, emb_level):
@@ -14,7 +16,7 @@ def extract_train_embeddings(data_path, save_dir, gpu_id, emb_model_path, vec_ty
     }
     extractor = SpeakerExtraction(devices=[device], settings=settings, results_dir=Path(save_dir),
                                   save_intermediate=True, force_compute=True)
-    extractor.extract_embeddings(dataset_path=Path(data_path), dataset_name='reference_embeddings')
+    extractor.extract_speakers(dataset_path=Path(data_path), dataset_name='reference_embeddings')
 
 
 if __name__ == '__main__':
@@ -28,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu_id', type=str, help="Which GPU to run on. Will run on CPU if not specified.",
                         default="cpu")
     parser.add_argument('--emb_model_path', type=str, help="Location of embedding extraction model.",
-                        default="../../../../../exp/sttts_models/tts/Embedding/embedding_function.pt")
+                        default="../../../../../../exp/sttts_models/tts/Embedding/embedding_function.pt")
     parser.add_argument('--vec_type', type=str, help="Which vector type to use for extraction, e.g. style-embed, "
                                                      "ecapa, ecapa+xvector, ...",
                         default="style-embed")

@@ -4,9 +4,9 @@ import random
 import torch
 from torch.utils.data import ConcatDataset
 
-from .IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.FastSpeech2 import FastSpeech2
-from .IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.fastspeech2_train_loop import train_loop
-from .IMSToucan.Utility.corpus_preparation import prepare_fastspeech_corpus
+from IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.FastSpeech2 import FastSpeech2
+from IMSToucan.TrainingInterfaces.Text_to_Spectrogram.FastSpeech2.fastspeech2_train_loop import train_loop
+from IMSToucan.Utility.corpus_preparation import prepare_fastspeech_corpus
 
 
 def limit_to_n(path_to_transcript_dict, n=30000):
@@ -67,21 +67,6 @@ def run(gpu_id, resume_checkpoint, finetune, model_dir, resume, train_data_path)
     model = FastSpeech2(lang_embs=None)
 
     print("Training model")
-    # train_loop(net=model,
-    #            train_dataset=train_set,
-    #            device=device,
-    #            save_directory=save_dir,
-    #            batch_size=32,
-    #            lang="en",
-    #            lr=0.001,
-    #            epochs_per_save=1,
-    #            warmup_steps=4000,
-    #            path_to_checkpoint=resume_checkpoint,
-    #            fine_tune=finetune,
-    #            resume=resume,
-    #            phase_1_steps=50000,
-    #            phase_2_steps=50000)
-
     train_loop(net=model,
                train_dataset=train_set,
                device=device,
@@ -90,12 +75,13 @@ def run(gpu_id, resume_checkpoint, finetune, model_dir, resume, train_data_path)
                lang="en",
                lr=0.001,
                epochs_per_save=1,
-               warmup_steps=2,
+               warmup_steps=4000,
                path_to_checkpoint=resume_checkpoint,
                fine_tune=finetune,
                resume=resume,
-               phase_1_steps=5,
-               phase_2_steps=5)
+               phase_1_steps=50000,
+               phase_2_steps=50000)
+
 
 
 if __name__ == '__main__':
@@ -133,8 +119,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    run(train_data_path=args.train_data_path,  # /mount/arbeitsdaten/analysis/meyersa/voice_anonymization/framework/espnet/egs2/asr_training/asr/downloads/LibriTTS/train-clean-100
-        gpu_id=args.gpu_id,  # 3
+    run(train_data_path=args.train_data_path,
+        gpu_id=args.gpu_id,
         resume_checkpoint=args.resume_checkpoint,
         resume=args.resume,
         finetune=args.finetune,
