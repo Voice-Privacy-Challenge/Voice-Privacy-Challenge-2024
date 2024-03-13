@@ -18,8 +18,8 @@ def evaluate_asv(eval_datasets, eval_data_dir, params, device, anon_data_suffix,
 def asv_eval_speechbrain(eval_datasets, eval_data_dir, params, device, anon_data_suffix, model_dir=None):
     logger.info(f'Use ASV model for evaluation: {model_dir}')
 
-    save_dir = params['evaluation']['results_dir'] / f'{params["evaluation"]["distance"]}_out'
-    asv = ASV(model_dir=model_dir, device=device, score_save_dir=save_dir, distance=params['evaluation']['distance'],
+    save_dir = params['evaluation']['results_dir']
+    asv = ASV(model_dir=model_dir, device=device, score_save_dir=save_dir / f'{params["evaluation"]["distance"]}_out', distance=params['evaluation']['distance'],
               plda_settings=params['evaluation']['plda'], vec_type=params['model_type'])
 
     attack_scenarios = ['oo', 'oa', 'aa']
@@ -31,8 +31,11 @@ def asv_eval_speechbrain(eval_datasets, eval_data_dir, params, device, anon_data
             enroll_name = f'{enroll}{get_suffix(scenario[0])}'
             test_name = f'{trial}{get_suffix(scenario[1])}'
 
-            EER = asv.eer_compute(enrol_dir=eval_data_dir / enroll_name, test_dir=eval_data_dir / test_name,
+            EER, ci_lower, ci_upper = asv.eer_compute(enrol_dir=eval_data_dir / enroll_name, test_dir=eval_data_dir / test_name,
                                   trial_runs_file=eval_data_dir / trial / 'trials')
+            EER = round(EER * 100, 3)
+            ci_lower = round(ci_lower * 100, 3)
+            ci_upper = round(ci_upper * 100, 3)
 
             print(f'{enroll_name}-{test_name}: {scenario.upper()}-EER={EER}')
             trials_info = trial.split('_')
@@ -41,7 +44,8 @@ def asv_eval_speechbrain(eval_datasets, eval_data_dir, params, device, anon_data
                 gender += '_common'
             results.append({'dataset': trials_info[0], 'split': trials_info[1], 'gender': gender,
                             'enrollment': 'original' if scenario[0] == 'o' else 'anon',
-                            'trial': 'original' if scenario[1] == 'o' else 'anon', 'EER': round(EER * 100, 3)})
+                            'trial': 'original' if scenario[1] == 'o' else 'anon', 'EER': EER,
+                            'EER-ci_lower': ci_lower, 'EER-ci_upper': ci_upper})
 
     results_df = pd.DataFrame(results)
     print(results_df)

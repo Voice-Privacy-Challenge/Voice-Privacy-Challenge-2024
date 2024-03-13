@@ -1,7 +1,7 @@
 data_dir: data
 exp_dir: exp
 
-anon_data_suffix: _mcadams # added to transform data/libri_dev/ to data/libri_dev_mcadams/ with data/libri_dev_mcadams/anon_wav/*wav
+anon_data_suffix: _mcadams # added to transform data/libri_dev/ to data/libri_dev_mcadams/ with data/libri_dev_mcadams/wav/*wav
 
 results_summary_path: !ref <exp_dir>/results_summary/eval_orig<anon_data_suffix>/results_orig.txt
 

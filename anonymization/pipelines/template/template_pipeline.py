@@ -3,22 +3,19 @@
 
 from pathlib import Path
 
-from ...modules.mcadams.anonymise_dir_mcadams_rand_seed import process_data
+from ...modules.template.anonymise_dir import process_data
 
 from .. import Pipeline, get_anon_level_from_config
 from utils import setup_logger
 
 logger = setup_logger(__name__)
 
-class McAdamsPipeline(Pipeline):
+class TemplatePipeline(Pipeline):
     def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
-        Instantiates a McAdamsPipeline.
+        Instantiates a TemplatePipeline.
 
-        This pipeline consists of:
-                                 -> non-real poles -> McAdam coef -> modified poles
-            input -> LP analysis -> real poles     ---------------->                -> LP synthesis -> output
-                                 -> residual       ---------------->
+        This is an example on how in create your own anonymization pipeline with the provided helper functions.
 
         Args:
             config (dict): a configuration dictionary, e.g., see anon_*.yaml
@@ -33,8 +30,9 @@ class McAdamsPipeline(Pipeline):
     def run_anonymization_pipeline(self, datasets):
         # anonymize each dataset
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
-            anon_level = get_anon_level_from_config(self.modules_config, dataset_name)
-            print(f'{i + 1}/{len(datasets)}: McAdams processing of "{dataset_name}" at anon_level "{anon_level}" ...')
+            anon_level = None
+            # anon_level = get_anon_level_from_config(self.modules_config, dataset_name)
+            print(f'{i + 1}/{len(datasets)}: Template processing of "{dataset_name}" at anon_level "{anon_level}"...')
             process_data(dataset_path=dataset_path,
                          anon_level=anon_level,
                          results_dir=self.config['results_dir'],

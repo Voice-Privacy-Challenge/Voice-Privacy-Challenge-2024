@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('--force_compute', default=False, type=bool)
     args = parser.parse_args()
 
-    config = parse_yaml(Path('configs', args.config))
+    config = parse_yaml(Path(args.config))
     datasets = get_datasets(config)
 
     gpus = args.gpu_ids.split(',')
@@ -31,6 +31,11 @@ if __name__ == '__main__':
         subprocess.run(['bash', 'anonymization/pipelines/sttts/install.sh'])
         check_dependencies('anonymization/pipelines/sttts/requirements.txt')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
+    elif config['pipeline'] == "asrbn":
+        check_dependencies('anonymization/pipelines/asrbn/requirements.txt')
+        from anonymization.pipelines.asrbn import ASRBNPipeline as pipeline
+    elif config['pipeline'] == "template":
+        from anonymization.pipelines.template import TemplatePipeline as pipeline
     else:
         raise ValueError(f"Pipeline {config['pipeline']} not defined/imported")
 

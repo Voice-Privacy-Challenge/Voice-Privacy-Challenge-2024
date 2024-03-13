@@ -3,6 +3,8 @@ from datetime import datetime
 import time
 
 from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger, change_wav_scp
+from .. import Pipeline, get_anon_level_from_config
+from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger
 
 from ...modules.sttts.tts import SpeechSynthesis
 from ...modules.sttts.text import SpeechRecognition
@@ -13,7 +15,7 @@ import typing
 
 logger = setup_logger(__name__)
 
-class STTTSPipeline:
+class STTTSPipeline(Pipeline):
     def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
         Instantiates a STTTSPipeline with the complete feature extraction,
@@ -122,10 +124,7 @@ class STTTSPipeline:
             logger.info("--- Speech recognition time: %f min ---" % (float(time.time() - start_time) / 60))
 
             start_time = time.time()
-            if dataset_name in self.modules_config["speaker_embeddings"]['anon_level_spk']:
-                anon_level = "spk"
-            if dataset_name in self.modules_config["speaker_embeddings"]['anon_level_utt']:
-                anon_level = "utt"
+            anon_level = get_anon_level_from_config(self.modules_config["speaker_embeddings"], dataset_name)
             spk_embeddings = self.speaker_extraction[anon_level].extract_speakers(dataset_path=dataset_path,
                                                                       dataset_name=dataset_name)
             logger.info(f"--- Speaker extraction anon_level ({anon_level}) time: {(float(time.time() - start_time) / 60)} min ---")

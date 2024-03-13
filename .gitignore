@@ -8,6 +8,7 @@ venv/
 env.sh
 espeak-ng-*
 .*.zip
+test_tools_configs
 
 # C extensions
 *.so
@@ -140,3 +141,4 @@ data
 exp
 pre_model.zip
 /model*/*
+subset_data_dir.sh
