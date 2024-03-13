@@ -123,7 +123,7 @@ class SpeechSynthesis:
 
                 for new_wav_dict in new_wavs:
                     wavs.update(new_wav_dict)
-        return wavs, dataset_results_dir
+        return wavs
 
 
 def synthesis_job(instances, tts_model, out_dir, sleep, text_is_phones=False, save_output=False):

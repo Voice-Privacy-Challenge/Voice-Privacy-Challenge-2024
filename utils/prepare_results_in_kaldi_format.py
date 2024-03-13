@@ -106,9 +106,6 @@ def create_wavscp_formart_data(ori_folder, anon_folder):
         fp.write(wav_scp_content)
 
 
-def change_wav_scp(wav_scp, source_folder, target_folder):
-    return {utt: path.replace('source_folder', 'target_folder') for utt, path in wav_scp.items()}
-
 def check_kaldi_formart_data(config):
     logger.info('Check data directories format..')
     # 1) check datastes exist: anonymized dev$suffix test$suffix and anonymized train-clean-360$suffix

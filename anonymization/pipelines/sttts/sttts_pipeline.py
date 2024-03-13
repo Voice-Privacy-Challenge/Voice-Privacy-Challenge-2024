@@ -155,7 +155,7 @@ class STTTSPipeline(Pipeline):
 
             # Step 3: Synthesize
             start_time = time.time()
-            wav_scp, gen_wav_dir = self.speech_synthesis.synthesize_speech(dataset_name=dataset_name, texts=texts,
+            wav_scp = self.speech_synthesis.synthesize_speech(dataset_name=dataset_name, texts=texts,
                                                               speaker_embeddings=anon_embeddings,
                                                               prosody=anon_prosody, emb_level=anon_embeddings.emb_level)
             logger.info("--- Synthesis time: %f min ---" % (float(time.time() - start_time) / 60))
@@ -175,12 +175,8 @@ class STTTSPipeline(Pipeline):
             # Overwrite spk2gender if it has been modify
             spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
             save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
-            wav_output_dir = (output_path / 'wav').absolute()
-            if not wav_output_dir.exists():
-                wav_output_dir.symlink_to(gen_wav_dir.absolute(), target_is_directory=True)
-            output_wav_scp = change_wav_scp(wav_scp, gen_wav_dir, output_path)
             # Overwrite wav.scp with the paths to the anonymized wavs
-            save_kaldi_format(output_wav_scp, output_path / 'wav.scp')
+            save_kaldi_format(wav_scp, output_path / 'wav.scp')
 
         logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
 
