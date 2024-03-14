@@ -11,6 +11,8 @@ source ./env.sh
 
 ESPAK_VERSION=1.51.1
 
+download_intermediate_repr=true
+
 compute_and_write_hash "anonymization/pipelines/sttts/requirements.txt"  # SHA256: 68b108ebe942a9de604440d8a1278710ee29e559942702c366b0de414edf890a
 trigger_new_install "exp/sttts_models .done-sttts-requirements .done-espeak"
 
@@ -27,6 +29,14 @@ if [ ! -d exp/sttts_models ]; then
     rm exp/sttts_models/*.zip
 fi
 
+# Download precomputed intermediate results (transcription, prosody, speaker embeddings) to avoid slow recomputation if not necessary
+if [ ! -d exp/anon_pipeline_sttts ] && [ ${download_intermediate_repr} = true ]; then
+    echo "Download precomputed intermediate results of GAN-based speaker anonymization system..."
+    mkdir -p exp/anon_pipeline_sttts
+    wget -q -O exp/anon_pipeline_sttts/intermediate_representations_libri.zip https://github.com/DigitalPhonetics/speaker-anonymization/releases/download/intermediate_representations/intermediate_representations_libri.zip
+    unzip -oq exp/anon_pipeline_sttts/intermediate_representations_libri.zip -d exp/anon_pipeline_sttts
+    rm exp/anon_pipeline_sttts/intermediate_representations_libri.zip
+fi
 
 mark=.done-sttts-requirements
 if [ ! -f $mark ]; then
