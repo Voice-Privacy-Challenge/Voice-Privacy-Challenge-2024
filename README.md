@@ -35,11 +35,17 @@ You have to modify the `iemocap_corpus` variable of `./01_download_data_model.sh
 There are two options:
 1. (Recommended) Run anonymization and evaluation: `./02_run.sh configs/anon_mcadams.yaml`.  
     The available configs are:
-    - [configs/anon_mcadams.yaml](configs/anon_mcadams.yaml) (the default) a fast CPU-only signal processing-based system. [paper](https://arxiv.org/abs/2011.01130)
-    - [configs/anon_template.yaml](configs/anon_template.yaml) a template here to guide you through creating your own system.
-    - [configs/anon_sttts.yaml](configs/anon_sttts.yaml) a system based on (unmodified) phone sequence, (modified) prosody, and (modified) speaker embedding representations + TTS. [paper1](https://www.isca-archive.org/interspeech_2022/meyer22b_interspeech.html), [paper2](https://ieeexplore.ieee.org/document/10022601), [paper3](https://ieeexplore.ieee.org/document/10096607)
-    - [configs/anon_nac.yaml](configs/anon_nac.yaml) a system based on **n**eural **a**udio **c**odecs. [paper](https://arxiv.org/abs/2309.14129)
-    - [configs/anon_asrbn.yaml](configs/anon_asrbn.yaml) a fast VC system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations + HiFi-GAN. [paper](https://arxiv.org/abs/2308.04455)
+    - [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml)  
+    A fast CPU-only signal processing-based system (the default). [paper](https://arxiv.org/abs/2011.01130)
+    - [`configs/anon_template.yaml`](configs/anon_template.yaml)  
+    A template here to guide you through creating your own system.
+    - [`configs/anon_sttts.yaml`](configs/anon_sttts.yaml)  
+    A system based on (unmodified) phone sequence, (modified) prosody, and (modified) speaker embedding representations + TTS. [paper1](https://www.isca-archive.org/interspeech_2022/meyer22b_interspeech.html), [paper2](https://ieeexplore.ieee.org/document/10022601), [paper3](https://ieeexplore.ieee.org/document/10096607)
+    - [`configs/anon_nac.yaml`](configs/anon_nac.yaml)  
+    A system based on **n**eural **a**udio **c**odecs. [paper](https://arxiv.org/abs/2309.14129)
+    - [`configs/anon_asrbn.yaml`](configs/anon_asrbn.yaml)  
+    A fast system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations + HiFi-GAN. [paper](https://arxiv.org/abs/2308.04455)
+    
 2. Run anonymization and evaluation separately in the two steps detailed here:
 
 ---------------------------------------------------------------------------
@@ -50,7 +56,7 @@ python run_anonymization.py --config configs/anon_mcadams.yaml  # Compute time v
 
 # Or your own script..
 ```
-The names of the nine necessary anonymized datasets are the original names appended with a suffix corresponding to an anonymization pipeline, i.e. `$anon_data_suffix=_mcadams` (see configs/anon_mcadams.yaml).  
+The names of the nine necessary anonymized datasets are the original names appended with a suffix corresponding to an anonymization pipeline, i.e. `$anon_data_suffix=_mcadams` (see [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml)).  
 
 After anonymization, the directories/wavs produced should be the following:
 ```log
