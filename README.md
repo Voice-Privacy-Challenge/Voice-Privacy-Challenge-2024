@@ -117,14 +117,26 @@ Please see the [RESULTS folder](./results) for the provided anonymization pipeli
 ### Some potential questions you may have and how to solve them:
 > 1. $ASV_{eval}^{anon}$ training is slow
 
-Training of the $ASV_{eval}^{anon}$ model may vary from about two up to 10 hours, depending on the available hardware.
-If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes ~ two h, but if the drive is old and slow, in a worse case,  $ASV_{eval}^{anon}$ training takes ~10h. Increasing $num_workers in config/eval_post.yaml may help to speed up the processing.
+Training of the $ASV_{eval}^{anon}$ model may vary from about 2h to 10h, depending on the available hardware.
+If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes ~ 2h, but if the drive is old and slow, in a worse case,  $ASV_{eval}^{anon}$ training takes ~10h. Increasing $num_workers in config/eval_post.yaml may help to speed up the processing.
 
 > 2. OOM problem when decoding by $ASR_{eval}$
 
 Reduce the $eval_bachsize in config/eval_pre.yaml
 
 > 3. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
+
+> 4. You get a similar error as this one when running the evaluation:
+> ```log
+> 2024-03-14 10:00:08,040 - utils.prepare_results_in_kaldi_format- WARNING - data/train-clean-360_sttts/wav.scp: b'159-121891-0000' (file: b'data/train-clean-360$anon_data_suffix/wav/159-121891-0000.wav') is not a valid path.
+> 2024-03-14 10:00:08,041 - utils.prepare_results_in_kaldi_format- INFO - Automatic wav.scp creation for data/train-clean-360$anon_data_suffix from data/train-clean-360$anon_data_suffix/**/*.wav
+> 2024-03-14 10:00:08,041 - utils.prepare_results_in_kaldi_format- ERROR - Directory data/train-clean-360_sttts/**/* doesn't contain any audios, please create a wav.scp file with correct paths, or place the wavs in data/train-clean-360$anon_data_suffix/wav/$UTTID.wav
+> ```
+
+Error on `utils.prepare_results_in_kaldi_format` means something bad happened when running the anonymization pipeline.  
+Remove all `data/*$anon_data_suffix` directories and re-run anonymization+evaluation. (if `$anon_data_suffix=suff`, also remove the directories that share a matching suffix in the suffix like: `$anon_data_suffix=something_suff`).  
+Check that your anonymization pipeline produces a wav file for each dataset
+entry, every original wav should have its anonymized counterpart.  
 
 
 ---
