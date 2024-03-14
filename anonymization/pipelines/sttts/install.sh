@@ -11,7 +11,7 @@ source ./env.sh
 
 ESPAK_VERSION=1.51.1
 
-compute_and_write_hash "anonymization/pipelines/sttts/requirements.txt"  # SHA256: 787543461248fb09472d079a6c0506b0c4c88162b4a225106fbb9890693197da
+compute_and_write_hash "anonymization/pipelines/sttts/requirements.txt"  # SHA256: 68b108ebe942a9de604440d8a1278710ee29e559942702c366b0de414edf890a
 trigger_new_install "exp/sttts_models .done-sttts-requirements .done-espeak"
 
 # Download GAN pre-models only if perform GAN anonymization

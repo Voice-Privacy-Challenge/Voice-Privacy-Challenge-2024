@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .done-*
 .micromamba/
+.micromamba
 venv/
 venv_nac/
 env.sh
