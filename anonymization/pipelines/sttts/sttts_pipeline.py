@@ -2,7 +2,6 @@ from pathlib import Path
 from datetime import datetime
 import time
 
-from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger, change_wav_scp
 from .. import Pipeline, get_anon_level_from_config
 from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger
 
