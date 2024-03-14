@@ -83,7 +83,6 @@ class InferenceSpeechBrainASR:
 
     def compute_wer(self, ref_texts, hyp_texts, out_file):
         wer_stats = ErrorRateStats()
-        #print(hyp_texts.keys())
 
         ids = []
         predicted = []
