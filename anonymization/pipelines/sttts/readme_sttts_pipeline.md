@@ -18,7 +18,7 @@ The ASR model is an end-to-end model based on the hybrid CTC/attention architect
 It is implemented in the [ESPnet](https://github.com/espnet/espnet) toolkit and similar to [ESPnet's LibriTTS recipe](https://github.com/espnet/espnet/tree/master/egs2/libritts/asr1).
 The model performs phonetic speech recognition, i.e., it output the transcribed speech as phonetic sequences. 
 To make life easier for the speech synthesis, it also outputs word boundaries and punctuation.
-The start of each transcribed utterance is marked with '~' and its end with '~#'.
+The start of each transcribed utterance is marked with '\~' and its end with '\~#'.
 
 
 ### Prosody Extraction and Modification
