@@ -52,3 +52,5 @@ with open('./test_tools_configs/${config}', 'w') as f:
   echo "================="
   ./02_run.sh ./test_tools_configs/${config}
 done
+
+\rm data/*test_tool_* -rf || true

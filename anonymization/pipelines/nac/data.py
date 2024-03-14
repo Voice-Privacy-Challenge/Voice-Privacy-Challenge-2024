@@ -64,6 +64,8 @@ class SCPPathDataset(Dataset):
         # 1. if a mapping file is given, just use that
         if mapping_file:
             print(f"Mapping file {mapping_file} given to dataset, ignoring 'voice_folder' and 'speaker_level' parameters.")
+            if os.getenv('VPC_TEST_TOOLS', 'False').lower() == "true": # For testing only!
+                mapping_file = mapping_file.replace("_test_tool", "")
             with open(mapping_file) as f:
                 self.speaker_mapping = json.load(f)
             self.spk_to_proxy_spk = lambda spk_id: self.speaker_mapping[spk_id]

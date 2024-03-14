@@ -14,6 +14,7 @@ else
   # anon_config=configs/anon_sttts.yaml
   # anon_config=configs/anon_template.yaml
   # anon_config=configs/anon_asrbn.yaml
+  # anon_config=configs/anon_nac.yaml
 fi
 echo "Using config: $anon_config"
 
@@ -44,6 +45,7 @@ python run_evaluation.py --config $(dirname ${anon_config})/eval_post.yaml --ove
 # Merge results
 results_summary_path_orig=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('$(dirname ${anon_config})/eval_pre.yaml'); print(load_hyperpyyaml(f, ${eval_overwrite}).get('results_summary_path', ''))")
 results_summary_path_anon=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('$(dirname ${anon_config})/eval_post.yaml'); print(load_hyperpyyaml(f, ${eval_overwrite}).get('results_summary_path', ''))")
+[[ "$results_summary_path_anon" == *"_test_tool"* ]] && exit 0
 
 results_exp=exp/results_summary
 mkdir -p ${results_exp}

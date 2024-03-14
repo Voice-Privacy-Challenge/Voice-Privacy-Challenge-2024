@@ -39,7 +39,7 @@ There are two options:
     - [configs/anon_template.yaml](configs/anon_template.yaml) a template here to guide you through creating your own system.
     - [configs/anon_sttts.yaml](configs/anon_sttts.yaml) a system based on (unmodified) phone sequence, (modified) prosody, and (modified) speaker embedding representations + TTS. [paper1](https://www.isca-archive.org/interspeech_2022/meyer22b_interspeech.html), [paper2](https://ieeexplore.ieee.org/document/10022601), [paper3](https://ieeexplore.ieee.org/document/10096607)
     - [configs/anon_nac.yaml](configs/anon_nac.yaml) a system based on **n**eural **a**udio **c**odecs. [paper](https://arxiv.org/abs/2309.14129)
-    - [configs/anon_asrbn.yaml](configs/anon_asrbn.yaml) a system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations + HiFi-GAN. [paper](https://arxiv.org/abs/2308.04455)
+    - [configs/anon_asrbn.yaml](configs/anon_asrbn.yaml) a fast VC system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations + HiFi-GAN. [paper](https://arxiv.org/abs/2308.04455)
 2. Run anonymization and evaluation separately in the two steps detailed here:
 
 ---------------------------------------------------------------------------
