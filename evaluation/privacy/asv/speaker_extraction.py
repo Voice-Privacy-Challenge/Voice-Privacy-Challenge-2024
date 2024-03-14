@@ -44,10 +44,8 @@ def extraction_job(params):
         try:
             spk_embs = [extractor.extract_vector(audio=norm_wave, sr=fs) for extractor in speaker_extractors]
         except RuntimeError as e:
-            print(e)
             logger.warning(f'Runtime error: {utt}, {signal.shape}, {norm_wave.shape}')
-            raise
-            continue
+            raise e
 
         if len(spk_embs) == 1:
             vector = spk_embs[0]
