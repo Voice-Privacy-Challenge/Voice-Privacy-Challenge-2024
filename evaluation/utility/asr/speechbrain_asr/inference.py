@@ -89,12 +89,9 @@ class InferenceSpeechBrainASR:
         predicted = []
         targets = []
         for utt_id, ref in ref_texts.items():
-            try:
-                predicted.append(hyp_texts[utt_id])
-                ids.append(utt_id)
-                targets.append(ref)
-            except:
-                print(utt_id)
+            ids.append(utt_id)
+            targets.append(ref)
+            predicted.append(hyp_texts[utt_id])
 
         wer_stats.append(ids=ids, predict=self.plain_text_key(predicted), target=self.plain_text_key(targets))
         out_file.parent.mkdir(exist_ok=True, parents=True)
