@@ -49,7 +49,7 @@ class STTTSPipeline(Pipeline):
             devices=devices,
             save_intermediate=save_intermediate,
             settings=modules_config["asr"],
-            force_compute=force_compute,
+            #force_compute=force_compute,
         )
 
         # Speaker component
@@ -61,7 +61,7 @@ class STTTSPipeline(Pipeline):
                 devices=devices,
                 save_intermediate=save_intermediate,
                 settings=modules_config["speaker_embeddings"],
-                force_compute=force_compute,
+                #force_compute=force_compute,
             )
             self.speaker_anonymization[level] = SpeakerAnonymization(
                 vectors_dir=vectors_dir,
@@ -77,7 +77,7 @@ class STTTSPipeline(Pipeline):
                 device=devices[0],
                 save_intermediate=save_intermediate,
                 settings=modules_config["prosody"],
-                force_compute=force_compute,
+                #force_compute=force_compute,
             )
             if "anonymizer" in modules_config["prosody"]:
                 self.prosody_anonymization = ProsodyAnonymization(

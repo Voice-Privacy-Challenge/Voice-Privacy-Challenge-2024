@@ -26,6 +26,7 @@ intermediate_dir: !ref exp/anon_pipeline_<pipeline>
 modules:
   asr:
     recognizer: ims
+    force_compute_recognition: false
     model_path: !ref <models_dir>/asr/asr_branchformer_tts-phn_en.zip
     ctc_weight: 0.2
     utt_start_token: "~"
@@ -34,6 +35,7 @@ modules:
 
   speaker_embeddings:
     anonymizer: ims
+    force_compute_extraction: false
     force_compute_anonymization: false
     vec_type: style-embed
     emb_model_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
@@ -50,6 +52,7 @@ modules:
 
   prosody:
     extractor_type: ims
+    force_compute_extraction: false
     aligner_model_path: !ref <models_dir>/tts/Aligner/aligner.pt
     extraction_results_path: !ref <intermediate_dir>/original_prosody/ims_extractor
     anonymizer_type: ims
