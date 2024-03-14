@@ -70,7 +70,7 @@ However, you can also use other embeddings extractors, e.g. [the ECAPA-TDNN mode
 
 The scripts for training the GAN model are located in [anonymization/modules/sttts/speaker_embeddings/anonymization/utils](../../modules/sttts/speaker_embeddings/anonymization/utils).
 For the actual training, you only need one tensor file that contains all original speaker embeddings of your training data.
-This file is for example generated when you call the [speaker_extraction](../../modules/sttts/speaker_embeddings/speaker_extraction.py) during the STTTS anonymization or during the evaluation pipelines.
+This file is for example generated when you call the [speaker_extraction](../../../evaluation/privacy/asv/speaker_extraction.py) during the STTTS anonymization or during the evaluation pipelines.
 
 If you do not have this file already, please run [extract_train_embeddings.py](../../modules/sttts/speaker_embeddings/anonymization/utils/extract_train_embeddings.py) first.
 You need to specify the path to the data in kaldi format (i.e., with `wav.scp`,`utt2spk`, etc.) and the specifics for the embedding extractor.
