@@ -13,5 +13,5 @@ datasets:
     data: IEMOCAP_dev
 
 modules:
-  anon_suffix: !ref <anon_suffix> # YAML ref to the value of line 5
+  anon_suffix: !ref <anon_suffix> # YAML ref to the value of line 8
   anon_wav_shape: 48000 # Configure the anonymization function (>3second audio min for ASV training (eval_post.yaml))
