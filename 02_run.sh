@@ -32,14 +32,14 @@ if [[ $anon_suffix ]]; then
   eval_overwrite="$eval_overwrite \"anon_data_suffix\": \"$anon_suffix\"}"
 fi
 
-# Generate anonymized audio (libri dev+test set & libri-360h)
+# Generate anonymized audio (libri dev+test set & IEMOCAP dev+test set & libri-360h)
 python run_anonymization.py --config ${anon_config} ${force_compute}
 
-# Perform libri dev+test pre evaluation using pretrained ASR/ASV models
+# Perform libri dev+test & IEMOCAP dev+test pre evaluation using pretrained ASR/ASV/SER models
 python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # Train post ASV using anonymized libri-360 and perform libri dev+test post evaluation
-# ASV training takes 2hours
+# ASV training takes ~2hours
 python run_evaluation.py --config $(dirname ${anon_config})/eval_post.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # Merge results
