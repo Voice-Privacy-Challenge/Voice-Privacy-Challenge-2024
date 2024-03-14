@@ -813,35 +813,8 @@ def get_phone_to_id():
         phone_to_id[phone] = index
     return phone_to_id
 
-
-def generate_feature_table():
-    ipa_to_phonemefeats = generate_feature_lookup()
-
-    feat_types = set()
-    for ipa in ipa_to_phonemefeats:
-        if len(ipa) == 1:
-            [feat_types.add(feat) for feat in ipa_to_phonemefeats[ipa].keys()]
-
-    feat_to_val_set = dict()
-    for feat in feat_types:
-        feat_to_val_set[feat] = set()
-    for ipa in ipa_to_phonemefeats:
-        if len(ipa) == 1:
-            for feat in ipa_to_phonemefeats[ipa]:
-                feat_to_val_set[feat].add(ipa_to_phonemefeats[ipa][feat])
-
-    # print(feat_to_val_set)
-
-    value_list = set()
-    for val_set in [feat_to_val_set[feat] for feat in feat_to_val_set]:
-        for value in val_set:
-            value_list.add(value)
-    # print("{")
-    # for index, value in enumerate(list(value_list)):
-    #     print('"{}":{},'.format(value,index))
-    # print("}")
-
-    value_to_index = {
+def get_feature_to_index_lookup():
+    return {
         # MODIFIER
         # -- stress: modified by the previous symbol
         "stressed"           : 0,
@@ -926,6 +899,35 @@ def generate_feature_table():
         "voiced"             : 61,
 
         }
+
+def generate_feature_table():
+    ipa_to_phonemefeats = generate_feature_lookup()
+
+    feat_types = set()
+    for ipa in ipa_to_phonemefeats:
+        if len(ipa) == 1:
+            [feat_types.add(feat) for feat in ipa_to_phonemefeats[ipa].keys()]
+
+    feat_to_val_set = dict()
+    for feat in feat_types:
+        feat_to_val_set[feat] = set()
+    for ipa in ipa_to_phonemefeats:
+        if len(ipa) == 1:
+            for feat in ipa_to_phonemefeats[ipa]:
+                feat_to_val_set[feat].add(ipa_to_phonemefeats[ipa][feat])
+
+    # print(feat_to_val_set)
+
+    value_list = set()
+    for val_set in [feat_to_val_set[feat] for feat in feat_to_val_set]:
+        for value in val_set:
+            value_list.add(value)
+    # print("{")
+    # for index, value in enumerate(list(value_list)):
+    #     print('"{}":{},'.format(value,index))
+    # print("}")
+
+    value_to_index = get_feature_to_index_lookup()
 
     phone_to_vector = dict()
     for ipa in ipa_to_phonemefeats:

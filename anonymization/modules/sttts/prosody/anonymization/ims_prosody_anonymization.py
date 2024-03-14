@@ -7,7 +7,7 @@ class ImsProsodyAnonymization:
         self.random_offset_lower = random_offset_lower
         self.random_offset_higher = random_offset_higher
 
-    def anonymize_values(self, duration, energy, pitch, *kwargs):
+    def anonymize_values(self, duration, energy, pitch, start_silence=None, end_silence=None, *kwargs):
         if self.random_offset_lower is not None and self.random_offset_higher is not None:
             scales = torch.randint(low=self.random_offset_lower, high=self.random_offset_higher,
                                    size=energy.size()).float() / 100
@@ -21,7 +21,9 @@ class ImsProsodyAnonymization:
         return_dict = {
             'duration': duration,
             'energy': energy,
-            'pitch': pitch
+            'pitch': pitch,
+            'start_silence': start_silence,
+            'end_silence': end_silence
         }
 
         return_dict.update(kwargs)

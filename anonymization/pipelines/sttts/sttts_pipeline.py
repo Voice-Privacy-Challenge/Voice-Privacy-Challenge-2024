@@ -147,7 +147,7 @@ class STTTSPipeline(Pipeline):
 
             if self.prosody_anonymization:
                 start_time = time.time()
-                anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody)
+                anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody, dataset_name=dataset_name)
                 logger.info("--- Prosody anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
             else:
                 anon_prosody = prosody
@@ -175,7 +175,7 @@ class STTTSPipeline(Pipeline):
             spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
             save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
             # Overwrite wav.scp with the paths to the anonymized wavs
-            save_kaldi_format(anon_wav_scps[dataset_name], output_path / 'wav.scp')
+            save_kaldi_format(wav_scp, output_path / 'wav.scp')
 
         logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
 

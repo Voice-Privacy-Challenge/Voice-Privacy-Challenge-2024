@@ -1,0 +1,33 @@
+{
+    "model": "resnet",
+    "gan_variant": "wgan-qc",
+    "epochs": 1,
+    "cycles": 2000,
+    "n_max_iterations": 10000000,
+    "learning_rate": 1e-5,
+    "betas": [
+        0.5,
+        0.999
+    ],
+    "z_dim": 16,
+    "size": 8,
+    "nfilter": 8,
+    "nfilter_max": 16,
+    "batch_size": 128,
+    "data_dim": [
+        1,
+        1,
+        192
+    ],
+    "activation": "leaky_relu",
+    "num_workers": 8,
+    "conv_filters": 40,
+    "gamma": 1,
+    "milestones": [
+        1500,
+        3000,
+        5000
+    ],
+    "save_every": 1,
+    "normalize_data": false
+}

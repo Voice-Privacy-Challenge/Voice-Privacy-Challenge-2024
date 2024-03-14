@@ -22,7 +22,7 @@ MAMBA_VERSION=1.5.1-0
 CUDA_VERSION=11.7
 TORCH_VERSION=2.0.1
 
-MAMBA_PACKAGES_TO_INSTALL="sshpass OpenSSH sox libflac tar libacl inotify-tools ocl-icd-system git-lfs ffmpeg wget curl make cmake ncurses ninja python=3.11 nvtop automake libtool gxx=12.3.0 gcc=12.3.0 python-sounddevice"
+MAMBA_PACKAGES_TO_INSTALL="sshpass OpenSSH sox libflac tar libacl inotify-tools ocl-icd-system git-lfs ffmpeg wget curl make cmake ncurses ninja python=3.11 nvtop automake libtool gxx=12.3.0 gcc=12.3.0 python-sounddevice pkg-config"
 
 
 cat <<\EOF > env.sh

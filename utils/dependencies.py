@@ -2,6 +2,7 @@ from importlib.metadata import version, PackageNotFoundError
 from packaging.requirements import Requirement
 from packaging.version import parse
 
+
 def check_dependencies(requirements_file):
     missing_dependencies = []
     nonmatching_versions = []
@@ -15,11 +16,10 @@ def check_dependencies(requirements_file):
 
             try:
                 installed_version = version(requirement.name)
+                if not parse(installed_version) in requirement.specifier:
+                    nonmatching_versions.append((requirement, installed_version))
             except PackageNotFoundError:
                 missing_dependencies.append(line)
-
-            if not parse(installed_version) in requirement.specifier:
-                nonmatching_versions.append((requirement, installed_version))
 
     error_msg = ''
     if missing_dependencies:
