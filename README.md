@@ -109,6 +109,7 @@ To run evaluation separately for a pipeline, you need to:
     results_summary_path_anon=exp/results_summary/eval_anon${anon_data_suffix}/results_anon.txt # the same value as $results_summary_path in configs/eval_post.yaml
     results_exp=exp/results_summary
     { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_data_suffix}"
+    zip ${results_exp}/result_for_submission${anon_data_suffix}.zip -r exp/asr/*${anon_data_suffix} exp/asr/*${anon_data_suffix}.csv exp/ser/*${anon_data_suffix}.csv exp/results_summary/*${anon_data_suffix}* exp/asv_orig/*${anon_data_suffix} exp/asv_orig/*${anon_data_suffix}.csv exp/asv_anon${anon_data_suffix}
     ```
 
 > (All of the above steps are automated in [02_run.sh](./02_run.sh)).
@@ -117,6 +118,7 @@ To run evaluation separately for a pipeline, you need to:
 
 The result file with all the metrics and all datasets for submission will be generated in:
 * Summary results: `./exp/results_summary/result_for_rank$anon_data_suffix`
+* Additional information for submission: `./exp/results_summary/result_for_submission${anon_data_suffix}.zip`
 
 Please see the [RESULTS folder](./results) for the provided anonymization pipelines.
 

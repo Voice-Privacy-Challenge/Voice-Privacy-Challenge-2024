@@ -50,3 +50,4 @@ results_summary_path_anon=$(python3 -c "from hyperpyyaml import load_hyperpyyaml
 results_exp=exp/results_summary
 mkdir -p ${results_exp}
 { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
+zip ${results_exp}/result_for_submission${anon_suffix}.zip -r exp/asr/*${anon_suffix} exp/asr/*${anon_suffix}.csv exp/ser/*${anon_suffix}.csv exp/results_summary/*${anon_suffix}* exp/asv_orig/*${anon_suffix} exp/asv_orig/*${anon_suffix}.csv exp/asv_anon${anon_suffix} > /dev/null
