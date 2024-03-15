@@ -23,6 +23,9 @@ datasets:
 models_dir:  exp/sttts_models
 save_intermediate: true
 intermediate_dir: !ref exp/anon_pipeline_<pipeline>
+# For faster inferance, download precomputed prosody/speaker_embedding/phn_transcript (libri only)
+download_precomputed_intermediate_repr: true
+
 modules:
   asr:
     recognizer: ims

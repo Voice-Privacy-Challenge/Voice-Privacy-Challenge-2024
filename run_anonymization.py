@@ -10,7 +10,7 @@ logger = setup_logger(__name__)
 
 def shell_run(cmd):
     if subprocess.run(['bash', cmd]).returncode != 0:
-        logger.error(f'Failed to install: {cmd}')
+        logger.error(f'Failed to bash execute: {cmd}')
         sys.exit(1)
 
 if __name__ == '__main__':
@@ -37,6 +37,8 @@ if __name__ == '__main__':
     elif config['pipeline'] == "sttts":
         shell_run('anonymization/pipelines/sttts/install.sh')
         check_dependencies('anonymization/pipelines/sttts/requirements.txt')
+        if "download_precomputed_intermediate_repr" in config and config["download_precomputed_intermediate_repr"]:
+            shell_run('anonymization/pipelines/sttts/download_precomputed_intermediate_repr.sh')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
     elif config['pipeline'] == "nac":
         shell_run('anonymization/pipelines/nac/install.sh')
