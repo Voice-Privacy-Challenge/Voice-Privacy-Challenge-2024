@@ -54,14 +54,15 @@ class NACPipeline(Pipeline):
                 'accelerate', 'launch',
                 '--config_file', 'anonymization/modules/nac/accelerate_config.yaml',
                 f'--num_processes={len(self.devices)}',
-                f'--gpu_ids=' + ','.join([str(dv.index) for dv in self.devices]),
                 'anonymization/pipelines/nac/inference.py', scp_file, ds_out_folder, checkpoint_dir,
                 '--data_root', root,
                 '--voice_dir', str(voice_dir),
                 '--ds_type', ds_type,
                 '--target_rate', '16000'
             ]
+            if len(self.devices) > 1:
+                args_to_run.append(f'--gpu_ids=' + ','.join([str(dv.index) for dv in self.devices]))
 
-            if subprocess.run(args_to_run, env=new_env).returncode != 0:
+            if subprocess.run(args_to_run).returncode != 0:
                 exit(1)
             logger.info('Done.')

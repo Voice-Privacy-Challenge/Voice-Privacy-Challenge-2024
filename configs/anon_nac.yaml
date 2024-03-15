@@ -1,4 +1,5 @@
 data_dir: data
+results_dir: wav
 
 pipeline: nac
 anon_suffix: !ref _<pipeline>

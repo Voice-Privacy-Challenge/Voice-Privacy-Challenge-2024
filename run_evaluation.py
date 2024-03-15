@@ -21,7 +21,7 @@ if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set 
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
 else: # CUDA_VISIBLE_DEVICES more important than the gpu_ids arg
-    args.gpu_ids = os.environ['CUDA_VISIBLE_DEVICES']
+    args.gpu_ids = [ i for i, _ in enumerate(os.environ['CUDA_VISIBLE_DEVICES'].split(","))]
 
 import torch
 

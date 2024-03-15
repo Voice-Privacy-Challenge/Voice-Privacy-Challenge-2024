@@ -47,7 +47,7 @@ class NACPipeline(Pipeline):
 
             # prepare scp dataset
             scp_dataset = SCPPathDataset(
-                scp_file=os.path.join(dataset_path, self.config['scp_name']),
+                scp_file=os.path.join(dataset_path, "wav.scp"),
                 root='.',  # this assumes that the method is always called by the main script
                 ds_type='libri',
                 voice_folder=None,  # we are using predefined mappings so this doesnt matter
