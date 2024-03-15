@@ -1,8 +1,23 @@
-from pathlib import Path
+# We need to set CUDA_VISIBLE_DEVICES before we import Pytorch, so we will read all arguments directly on startup
 from argparse import ArgumentParser
-import torch
+import os
+parser = ArgumentParser()
+
+parser.add_argument('--config', default='anon_config.yaml')
+parser.add_argument('--gpu_ids', default='0')
+parser.add_argument('--force_compute', default=False, type=bool)
+args = parser.parse_args()
+
+if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set devices
+    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
+else: # CUDA_VISIBLE_DEVICES more important than the gpu_ids arg
+    args.gpu_ids = os.environ['CUDA_VISIBLE_DEVICES']
+
+from pathlib import Path
 import subprocess
 import sys
+import torch
 
 from utils import parse_yaml, get_datasets, check_dependencies, setup_logger
 
@@ -14,11 +29,6 @@ def shell_run(cmd):
         sys.exit(1)
 
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('--config', default='anon_config.yaml')
-    parser.add_argument('--gpu_ids', default='0')
-    parser.add_argument('--force_compute', default=False, type=bool)
-    args = parser.parse_args()
 
     config = parse_yaml(Path(args.config))
     datasets = get_datasets(config)
