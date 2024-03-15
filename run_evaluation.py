@@ -20,6 +20,8 @@ args = parser.parse_args()
 if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set devices
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
+else: # CUDA_VISIBLE_DEVICES more important than the gpu_ids arg
+    args.gpu_ids = ",".join([ str(i) for i, _ in enumerate(os.environ['CUDA_VISIBLE_DEVICES'].split(","))])
 
 import torch
 
@@ -68,7 +70,7 @@ def save_result_summary(out_path, results_dict, config):
             if 'orig' in os.path.basename(out_path):
                 f.write('---- ASV_eval results ----\n')
                 asv_results_filter = asv_results[((asv_results['enrollment'] == 'original') & (asv_results['trial'] == 'original'))]
-            
+
             # if EERs computed by ASV_eval^anon, only keep the results of AA condition
             elif 'anon' in os.path.basename(out_path):
                 f.write('---- ASV_eval^anon results ----\n')

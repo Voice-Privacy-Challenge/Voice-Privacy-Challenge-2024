@@ -19,7 +19,7 @@ for data_set in libri_dev libri_test; do
         if [ ! -f corpora/$data_set.tar.gz ]; then
             mkdir -p corpora
             cd corpora
-            sshpass -p "$password"  sftp getdata@voiceprivacychallenge.univ-avignon.fr <<EOF
+            sshpass -p "$password"  sftp -oStrictHostKeyChecking=no getdata@voiceprivacychallenge.univ-avignon.fr <<EOF
     cd /challengedata/corpora
     get $data_set.tar.gz
     bye
