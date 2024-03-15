@@ -52,6 +52,7 @@ if __name__ == '__main__':
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
     elif config['pipeline'] == "nac":
         shell_run('anonymization/pipelines/nac/install.sh')
+        sys.path.append(os.path.join(os.path.dirname(__file__), 'anonymization/modules/nac/coqui_tts/'))
         if devices[0] == torch.device('cpu'):
             from anonymization.pipelines.nac.nac_pipeline import NACPipeline as pipeline
         else:
