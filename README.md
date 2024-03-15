@@ -35,8 +35,8 @@ You have to modify the `iemocap_corpus` variable of `./01_download_data_model.sh
 There are two options:
 1. (Recommended) Run anonymization and evaluation: `./02_run.sh configs/anon_mcadams.yaml`.  
     The available configs are:
-    - [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml) (**B1**)  
-    A fast CPU-only signal processing-based system (the default). [paper](https://arxiv.org/abs/2011.01130)
+    - [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml) (**B2**)  
+    A fast CPU-only signal processing-based system  (the default). [paper](https://arxiv.org/abs/2011.01130)
     - [`configs/anon_template.yaml`](configs/anon_template.yaml)  
     A template here to guide you through creating your own system.
     - [`configs/anon_sttts.yaml`](configs/anon_sttts.yaml) (**B3**)   
