@@ -1,4 +1,5 @@
 from ...pipelines.pipeline import Pipeline
+from ...modules.nac.anonymizer import Anonymizer as NACAnonymizer
 from utils import setup_logger
 import subprocess
 
@@ -22,6 +23,10 @@ class NACPipeline(Pipeline):
         self.devices = devices
         self.config = config
 
+        # just instantiate the model once to download the checkpoints if needed
+        NACAnonymizer(checkpoint_dir=os.path.expanduser(self.config['modules']['model']['checkpoint_dir']))
+
+
 
     def run_anonymization_pipeline(self, datasets):
         checkpoint_dir = os.path.expanduser(self.config['modules']['model']['checkpoint_dir'])
@@ -39,10 +44,6 @@ class NACPipeline(Pipeline):
             scp_file = os.path.join(dataset_path, 'wav.scp')
             root = '.'
             ds_type = 'libri' if 'libri' in dataset_name else 'iemocap'  # absolute abomination
-
-            # the mapping file does not have _female or _male (for gender equality or for laziness)
-            mapping_file_name = f'speaker_mapping_{dataset_name.replace("_f", "").replace("_m", "")}.json'
-
 
             # create individual result folder for dataset
             ds_out_folder = os.path.join(results_dir, f'{dataset_name}{anon_suffix}', 'wav')
@@ -62,12 +63,6 @@ class NACPipeline(Pipeline):
 
             new_env = os.environ.copy()
             new_env['CUDA_VISIBLE_DEVICES'] = ','.join([str(dv.index) for dv in self.devices])
-
-            if '360' not in dataset_name:
-                speaker_mappings_root = self.config['modules']['speaker_mappings_root']
-                args_to_run.extend(('--mapping_file', os.path.join(
-                    speaker_mappings_root, mapping_file_name)))
-                # otherwise, train 360 is anonymized utterance level
 
             if subprocess.run(args_to_run, env=new_env).returncode != 0:
                 exit(1)

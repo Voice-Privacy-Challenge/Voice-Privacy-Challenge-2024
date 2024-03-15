@@ -46,14 +46,11 @@ class NACPipeline(Pipeline):
             logger.info(f"{i + 1}/{len(datasets)}: Processing {dataset_name}...")
 
             # prepare scp dataset
-            # the mapping file does not have _female or _male (for gender equality or for laziness)
-            mapping_file_name = f'speaker_mapping_{dataset_name.replace("_f", "").replace("_m", "")}.json'
             scp_dataset = SCPPathDataset(
                 scp_file=os.path.join(dataset_path, self.config['scp_name']),
                 root='.',  # this assumes that the method is always called by the main script
                 ds_type='libri',
                 voice_folder=None,  # we are using predefined mappings so this doesnt matter
-                mapping_file=os.path.join(self.config['speaker_mappings_root'], mapping_file_name)
             )
 
             # create individual result folder for dataset
