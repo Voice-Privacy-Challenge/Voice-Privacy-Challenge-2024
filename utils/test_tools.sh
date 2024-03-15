@@ -53,4 +53,8 @@ with open('./test_tools_configs/${config}', 'w') as f:
   ./02_run.sh ./test_tools_configs/${config}
 done
 
+  echo "============================="
+  echo " Test completed with success "
+  echo "============================="
+
 \rm data/*test_tool_* -rf || true

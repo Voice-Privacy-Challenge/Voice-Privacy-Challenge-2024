@@ -11,6 +11,7 @@ env.sh
 env_nac.sh
 espeak-ng-*
 .*.zip
+*.zip
 test_tools_configs
 
 # C extensions
