@@ -79,7 +79,7 @@ class STTTSPipeline(Pipeline):
                 settings=modules_config["prosody"],
                 #force_compute=force_compute,
             )
-            if "anonymizer" in modules_config["prosody"]:
+            if "anonymizer_type" in modules_config["prosody"]:
                 self.prosody_anonymization = ProsodyAnonymization(
                     save_intermediate=save_intermediate,
                     settings=modules_config["prosody"],
