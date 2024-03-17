@@ -1,4 +1,4 @@
----- Time: 05-03-24_12:26 ----
+---- Time: 17-03-24_12:06 ----
 
 ---- SER results ----
    dataset split       ser      UAR  ACC_sad  ACC_ang  ACC_hap  ACC_neu
@@ -19,11 +19,10 @@
   dataset split       asr    WER
 0   libri   dev  original  1.790
 4   libri   dev      anon  3.408
-1   libri  test  original  1.839
+1   libri  test  original  1.837
 5   libri  test      anon  6.253
 
-
----- Time: 05-03-24_12:29 ----
+---- Time: 17-03-24_12:37 ----
 
 ---- ASV_eval^anon results ----
    dataset split gender enrollment trial     EER
@@ -31,4 +30,3 @@
 5    libri   dev      m       anon  anon   6.987
 8    libri  test      f       anon  anon  10.584
 11   libri  test      m       anon  anon   6.682
-
