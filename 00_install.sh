@@ -115,7 +115,6 @@ if [ ! -f $mark ]; then
 
   pip3 install -r requirements.txt  || exit 1
   pip3 install Cython
-  pip3 install git+https://github.com/deep-privacy/feerci.git@dev
   touch $mark
 fi
 

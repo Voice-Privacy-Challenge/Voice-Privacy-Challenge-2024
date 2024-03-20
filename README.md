@@ -132,7 +132,7 @@ Please see the [RESULTS folder](./results) for the provided anonymization pipeli
 
 > Reduce the $eval_bachsize in config/eval_pre.yaml. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
 
-4. You get a similar error as this one when running the evaluation:
+3. You get a similar error as this one when running the evaluation:
  ```log
  2024-03-14 10:00:08,040 - utils.prepare_results_in_kaldi_format- WARNING - data/train-clean-360_sttts/wav.scp: b'159-121891-0000' (file: b'data/train-clean-360$anon_data_suffix/wav/159-121891-0000.wav') is not a valid path.
  2024-03-14 10:00:08,041 - utils.prepare_results_in_kaldi_format- INFO - Automatic wav.scp creation for data/train-clean-360$anon_data_suffix from data/train-clean-360$anon_data_suffix/**/*.wav

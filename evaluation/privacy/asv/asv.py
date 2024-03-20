@@ -5,8 +5,6 @@ import torch
 from speechbrain.utils.metric_stats import EER
 from sklearn.metrics.pairwise import cosine_distances
 import pandas as pd
-from .metrics import helpers
-import feerci
 
 from .utils import PLDAModel
 from .speaker_extraction import SpeakerExtraction
@@ -126,16 +124,13 @@ class ASV:
         positive_scores, negative_scores = self._split_scores(trial_scores.values, trials)
         del sim_scores
 
-        classA_llr_laplace, classB_llr_laplace = helpers.optimal_llr(tar=positive_scores, non=negative_scores, laplace=True, compute_eer=False)
-        eer,ci_lower,ci_upper,bootstrapped_eers = feerci.feerci(classB_llr_laplace,classA_llr_laplace,is_sorted=False,ci=.95)
 
         # Final EER computation
-        # eer, th = EER(torch.tensor(positive_scores), torch.tensor(negative_scores))
+        eer, th = EER(torch.tensor(positive_scores), torch.tensor(negative_scores))
         # min_dcf, th = minDCF(torch.tensor(positive_scores), torch.tensor(negative_scores))
         with open(save_dir / 'EER', 'w') as f:
-            f.write(str(eer*100) + " " + str(ci_lower*100) + " " + str(ci_upper*100))
-
-        return eer, ci_lower, ci_upper
+            f.write(str(eer))
+        return eer
 
     def compute_distances(self, enrol_vectors, enrol_ids, test_vectors, test_ids):
         if self.distance == 'plda':
