@@ -123,6 +123,11 @@ Reduce the $eval_bachsize in config/eval_pre.yaml
 
 > 3. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
 
+> 4. "Host key verification failed" when running `./01_download_data_model.sh`.
+
+To fix this, you can run: `ssh-keygen -R "voiceprivacychallenge.univ-avignon.fr"` before running the script `./01_download_data_model.sh`. 
+(Will be fixed in the next release).
+
 ## General information
 
 For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v1.0.pdf)
