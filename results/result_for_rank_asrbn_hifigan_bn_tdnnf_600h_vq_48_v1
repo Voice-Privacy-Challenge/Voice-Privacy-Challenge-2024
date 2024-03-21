@@ -1,32 +1,32 @@
----- Time: 14-03-24_22:46 ----
+---- Time: 21-03-24_03:09 ----
 
 ---- SER results ----
    dataset split       ser      UAR  ACC_sad  ACC_neu  ACC_ang  ACC_hap
                                mean     mean     mean     mean     mean
-0  IEMOCAP   dev      anon  36.4598   2.7532  16.6176  49.0198  77.4470
+0  IEMOCAP   dev      anon  36.1132   2.5762  16.3346  48.8038  76.7388
 1  IEMOCAP   dev  original  69.0796  63.6292  65.9652  79.7770  66.9476
-2  IEMOCAP  test      anon  35.7944   2.2424  23.5026  45.7722  71.6602
+2  IEMOCAP  test      anon  35.9378   1.7428  24.2464  45.8014  71.9610
 3  IEMOCAP  test  original  71.0618  72.5706  71.6618  72.8246  67.1912
 
 ---- ASV_eval results ----
-  dataset split gender enrollment     trial    EER  EER-ci_lower  EER-ci_upper
-0   libri   dev      f   original  original  9.815         8.819        11.807
-3   libri   dev      m   original  original  0.000         0.467        53.966
-6   libri  test      f   original  original  8.410         6.399        10.969
-9   libri  test      m   original  original  0.446         0.446         0.446
+  dataset split gender enrollment     trial     EER
+0   libri   dev      f   original  original  10.511
+3   libri   dev      m   original  original   0.931
+6   libri  test      f   original  original   8.761
+9   libri  test      m   original  original   0.418
 
 ---- ASR results ----
   dataset split       asr    WER
 0   libri   dev  original  1.790
-4   libri   dev      anon  9.456
+4   libri   dev      anon  9.632
 1   libri  test  original  1.839
-5   libri  test      anon  9.431
+5   libri  test      anon  9.334
 
----- Time: 15-03-24_00:10 ----
+---- Time: 21-03-24_06:13 ----
 
 ---- ASV_eval^anon results ----
-   dataset split gender enrollment trial     EER  EER-ci_lower  EER-ci_upper
-2    libri   dev      f       anon  anon  28.450        25.462        29.445
-5    libri   dev      m       anon  anon  20.840        19.751        22.551
-8    libri  test      f       anon  anon  18.464        18.099        22.486
-11   libri  test      m       anon  anon  20.759        18.750        22.545
+   dataset split gender enrollment trial     EER
+2    libri   dev      f       anon  anon  25.567
+5    libri   dev      m       anon  anon  20.498
+8    libri  test      f       anon  anon  20.256
+11   libri  test      m       anon  anon  20.714
