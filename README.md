@@ -18,26 +18,34 @@ You can modify the `librispeech_corpus` variable of `./01_download_data_model.sh
 You have to modify the `iemocap_corpus` variable of `./01_download_data_model.sh` to where it is located on your server.  
 
 > [!IMPORTANT]  
-> The [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus must be downloaded on your own by submitting a request at https://sail.usc.edu/iemocap/iemocap_release.htm.
+> The [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus must be downloaded on your own by submitting a request at https://sail.usc.edu/iemocap/iemocap_release.htm. The waiting time may take up to 7-9 days.
 
 ---
 
 ## Anonymization and Evaluation
 There are two options:
-1. (Recommended) Run anonymization and evaluation: `./02_run.sh configs/anon_mcadams.yaml`.  
-    The available configs are:
-    - [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml) (**B2**)  
-    A fast CPU-only signal processing-based system  (the default). [paper](https://arxiv.org/abs/2011.01130)
-    - [`configs/anon_template.yaml`](configs/anon_template.yaml)  
-    A template here to guide you through creating your own system.
-    - [`configs/anon_sttts.yaml`](configs/anon_sttts.yaml) (**B3**)   
-    A system based on (unmodified) phone sequence, (modified) prosody, and (modified) speaker embedding representations + TTS. [paper1](https://www.isca-archive.org/interspeech_2022/meyer22b_interspeech.html), [paper2](https://ieeexplore.ieee.org/document/10022601), [paper3](https://ieeexplore.ieee.org/document/10096607)
-    - [`configs/anon_nac.yaml`](configs/anon_nac.yaml) (**B4**)  
-    A system based on **n**eural **a**udio **c**odecs. [paper](https://arxiv.org/abs/2309.14129)
-    - [`configs/anon_asrbn.yaml`](configs/anon_asrbn.yaml) (**B5, B6**)  
-    A fast system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations + HiFi-GAN. [paper](https://arxiv.org/abs/2308.04455)
+1. Run anonymization and evaluation: `./02_run.sh configs/anon_mcadams.yaml`.  
+    For each anonymization baseline, there is a corresponding config file:
+    -  #### [Anonymization using the McAdams coefficient](https://arxiv.org/abs/2011.01130): **B2**
+         [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml)  A fast CPU-only signal processing-based system  (default).
+
+    -  #### [Anonymization using phonetic transcriptions and GAN (STTTS)](https://ieeexplore.ieee.org/document/10096607): **B3**
+         [`configs/anon_sttts.yaml`](configs/anon_sttts.yaml)  A system based on unmodified phone sequence, modified prosody, modified speaker embedding representations and speech synthesis.
+
+    -  #### [Anonymization using **n**eural audio codec (NAC) language modeling](https://arxiv.org/abs/2309.14129): **B4**
+
+        [`configs/anon_nac.yaml`](configs/anon_nac.yaml) 
+
+    -  #### [Anonymization using ASR-BN with vector quantization (VQ)](https://arxiv.org/abs/2308.04455): **B5** and **B6** 
+
+        [`configs/anon_asrbn.yaml`](configs/anon_asrbn.yaml) A fast system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations and  a HiFi-GAN speech synthesis model.
+  
+ 
+    -   #### A template for using own anonymization system
+        [`configs/anon_template.yaml`](configs/anon_template.yaml)  
     
-2. Run anonymization and evaluation separately in the two steps detailed here:
+      
+1. Run anonymization and evaluation separately in the two steps:
 
 ---------------------------------------------------------------------------
 
