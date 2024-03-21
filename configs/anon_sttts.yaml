@@ -22,10 +22,14 @@ datasets:
 
 models_dir:  exp/sttts_models
 save_intermediate: true
-intermediate_dir: !ref exp/anon_pipiline_<pipeline>
+intermediate_dir: !ref exp/anon_pipeline_<pipeline>
+# For faster inferance, download precomputed prosody/speaker_embedding/phn_transcript (libri only)
+download_precomputed_intermediate_repr: true
+
 modules:
   asr:
     recognizer: ims
+    force_compute_recognition: false
     model_path: !ref <models_dir>/asr/asr_branchformer_tts-phn_en.zip
     ctc_weight: 0.2
     utt_start_token: "~"
@@ -34,6 +38,7 @@ modules:
 
   speaker_embeddings:
     anonymizer: ims
+    force_compute_extraction: false
     force_compute_anonymization: false
     vec_type: style-embed
     emb_model_path: !ref <models_dir>/tts/Embedding/embedding_function.pt
@@ -45,17 +50,18 @@ modules:
       sim_threshold: 0.7
     extraction_results_path: !ref <intermediate_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
     anon_results_path: !ref <intermediate_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
-    anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
-    anon_level_utt: [train-clean-360]
+    anon_level_spk: []
+    anon_level_utt: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test, train-clean-360]
 
   prosody:
     extractor_type: ims
+    force_compute_extraction: false
     aligner_model_path: !ref <models_dir>/tts/Aligner/aligner.pt
     extraction_results_path: !ref <intermediate_dir>/original_prosody/ims_extractor
-    #anonymizer_type: ims  # uncomment following lines to use random offset modification
-    #random_offset_lower: null
-    #random_offset_higher: null
-    #anon_results_path: anon_prosody/random_offsets
+    anonymizer_type: ims
+    random_offset_lower: 60
+    random_offset_higher: 140
+    anon_results_path: !ref <intermediate_dir>/anon_prosody/random_offsets
 
   tts:
     synthesizer: ims

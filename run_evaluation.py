@@ -13,12 +13,15 @@ from datetime import datetime
 parser = ArgumentParser()
 parser.add_argument('--config', default='config_eval.yaml')
 parser.add_argument('--overwrite', type=str, default='{}')
+parser.add_argument('--force_compute', type=str, default='False')
 parser.add_argument('--gpu_ids', default='0')
 args = parser.parse_args()
 
 if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set devices
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
+else: # CUDA_VISIBLE_DEVICES more important than the gpu_ids arg
+    args.gpu_ids = ",".join([ str(i) for i, _ in enumerate(os.environ['CUDA_VISIBLE_DEVICES'].split(","))])
 
 import torch
 
@@ -67,7 +70,7 @@ def save_result_summary(out_path, results_dict, config):
             if 'orig' in os.path.basename(out_path):
                 f.write('---- ASV_eval results ----\n')
                 asv_results_filter = asv_results[((asv_results['enrollment'] == 'original') & (asv_results['trial'] == 'original'))]
-            
+
             # if EERs computed by ASV_eval^anon, only keep the results of AA condition
             elif 'anon' in os.path.basename(out_path):
                 f.write('---- ASV_eval^anon results ----\n')
@@ -88,7 +91,7 @@ if __name__ == '__main__':
     check_dependencies('requirements.txt')
     multiprocessing.set_start_method("fork",force=True)
 
-    params = parse_yaml(Path('configs', args.config), overrides=json.loads(args.overwrite))
+    params = parse_yaml(Path(args.config), overrides=json.loads(args.overwrite))
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
     eval_data_dir = params['data_dir']
@@ -108,7 +111,11 @@ if __name__ == '__main__':
                 asv_train_params = asv_params['training']
                 if not model_dir.exists() or asv_train_params.get('retrain', True) is True:
                     start_time = time.time()
+                    logger.info('====================')
                     logger.info('Perform ASV training')
+                    logger.info('====================')
+                    if args.force_compute.lower() == "true":
+                        shutil.rmtree(model_dir, ignore_errors=True)
                     train_asv_eval(train_params=asv_train_params, output_dir=model_dir)
                     logger.info("ASV training time: %f min ---" % (float(time.time() - start_time) / 60))
                     model_dir = scan_checkpoint(model_dir, 'CKPT')
@@ -116,8 +123,16 @@ if __name__ == '__main__':
                     shutil.copy(asv_train_params['infer_config'], model_dir)
 
             if 'evaluation' in asv_params:
+                logger.info('======================')
                 logger.info('Perform ASV evaluation')
+                logger.info('======================')
                 model_dir = params['privacy']['asv']['evaluation']['model_dir']
+                results_dir = params['privacy']['asv']['evaluation']['results_dir']
+                if args.force_compute.lower() == "true":
+                    for info in os.walk(results_dir / f"{params['privacy']['asv']['evaluation']['distance']}_out"):
+                        dir, _, _ = info
+                        if anon_suffix in dir:
+                            shutil.rmtree(dir, ignore_errors=True)
                 model_dir = scan_checkpoint(model_dir, 'CKPT+') or model_dir
                 start_time = time.time()
                 eval_data_name = params['privacy']['asv']['dataset_name']
@@ -138,7 +153,9 @@ if __name__ == '__main__':
 
     if 'utility' in eval_steps:
         if 'ser' in eval_steps['utility']:
+            logger.info('======================')
             logger.info('Perform SER evaluation')
+            logger.info('======================')
             eval_data_name = params['utility']['ser']['dataset_name']
             ser_eval_params = params['utility']['ser']['evaluation']
             models_path = ser_eval_params['model_dir']
@@ -162,7 +179,9 @@ if __name__ == '__main__':
                 asr_eval_params["device"] = device
 
                 start_time = time.time()
+                logger.info('======================')
                 logger.info('Perform ASR evaluation')
+                logger.info('======================')
                 eval_data_name = params['utility']['asr']['dataset_name']
                 eval_asr = []
                 for name in eval_data_name:
@@ -182,6 +201,11 @@ if __name__ == '__main__':
                             eval_asr.append(d['data'])
                         else:
                             eval_asr.append(d['name']+"_asr")
+
+                if args.force_compute.lower() == "true":
+                    results_dir = params['utility']['asr']['evaluation']['results_dir']
+                    for d in eval_asr:
+                        shutil.rmtree(Path(results_dir / Path(str(d) + str(anon_suffix))), ignore_errors=True)
 
                 asr_results = evaluate_asr(eval_datasets=eval_asr, eval_data_dir=eval_data_dir,
                                            params=asr_eval_params,

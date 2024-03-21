@@ -1,0 +1,26 @@
+data_dir: data
+results_dir: wav
+
+pipeline: nac
+anon_suffix: !ref _<pipeline>
+
+datasets:
+  - name: IEMOCAP_dev
+    data: IEMOCAP_dev
+  - name: IEMOCAP_test
+    data: IEMOCAP_test
+  - name: libri_dev
+    data: libri_dev
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: libri_test
+    data: libri_test
+    enrolls: [_enrolls]
+    trials: [_trials_f, _trials_m]
+  - name: train-clean-360
+    data: train-clean-360
+
+modules:
+  model:
+    checkpoint_dir: exp/nac_models
+    voice_dir: exp/nac_mappings/suno_voices/v2

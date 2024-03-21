@@ -110,7 +110,7 @@ class ASV:
         enrol_vectors = torch.stack(enrol_vectors)
         test_vectors = torch.stack(test_vectors)
 
-        save_dir = Path(self.score_save_dir, f'{Path(enrol_dir).name}-{Path(test_dir).name}')
+        save_dir = Path(self.score_save_dir.parent, f'{Path(enrol_dir).name}-{Path(test_dir).name}')
         save_dir.mkdir(exist_ok=True)
 
         sim_scores, enrol_indices, test_indices = self.compute_distances(enrol_vectors=enrol_vectors,
@@ -124,12 +124,12 @@ class ASV:
         positive_scores, negative_scores = self._split_scores(trial_scores.values, trials)
         del sim_scores
 
+
         # Final EER computation
         eer, th = EER(torch.tensor(positive_scores), torch.tensor(negative_scores))
         # min_dcf, th = minDCF(torch.tensor(positive_scores), torch.tensor(negative_scores))
         with open(save_dir / 'EER', 'w') as f:
             f.write(str(eer))
-
         return eer
 
     def compute_distances(self, enrol_vectors, enrol_ids, test_vectors, test_ids):

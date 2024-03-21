@@ -19,7 +19,7 @@ for data_set in libri_dev libri_test; do
         if [ ! -f corpora/$data_set.tar.gz ]; then
             mkdir -p corpora
             cd corpora
-            sshpass -p "$password"  sftp getdata@voiceprivacychallenge.univ-avignon.fr <<EOF
+            sshpass -p "$password"  sftp -oStrictHostKeyChecking=no getdata@voiceprivacychallenge.univ-avignon.fr <<EOF
     cd /challengedata/corpora
     get $data_set.tar.gz
     bye
@@ -78,31 +78,17 @@ if [ ! -d $check_data ]; then
     unzip .data.zip
 fi
 
-for model in asv_orig ser; do
+for model in asv_orig ser asr; do
     if [ ! -d "exp/$model" ]; then
         if [ ! -f .${model}.zip ]; then
             echo "Download pretrained $model models pre-trained..."
             wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/${model}.zip
+            mv ${model}.zip .${model}.zip
         fi
         echo "Unpacking pretrained evaluation models"
-        mv ${model}.zip .${model}.zip
         unzip .${model}.zip
     fi
 done
-
-check_model=exp/asr
-if [ ! -d $check_model ]; then
-python3 - <<EOF
-import speechbrain as sb
-
-sb.pretrained.interfaces.Pretrained.from_hparams(
-    source="speechbrain/asr-wav2vec2-librispeech",
-    savedir="$check_model",
-    revision="a9fdfb4",
-    download_only=True
-)
-EOF
-fi
 
 if [ ! -d "data/IEMOCAP/wav/Session1" ]; then
     if [ ! -z $iemocap_corpus ]; then

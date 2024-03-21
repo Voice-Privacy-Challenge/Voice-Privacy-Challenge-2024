@@ -4,11 +4,13 @@
 from pathlib import Path
 
 from ...modules.mcadams.anonymise_dir_mcadams_rand_seed import process_data
+
+from .. import Pipeline, get_anon_level_from_config
 from utils import setup_logger
 
 logger = setup_logger(__name__)
 
-class McAdamsPipeline:
+class McAdamsPipeline(Pipeline):
     def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
         Instantiates a McAdamsPipeline.
@@ -31,12 +33,7 @@ class McAdamsPipeline:
     def run_anonymization_pipeline(self, datasets):
         # anonymize each dataset
         for i, (dataset_name, dataset_path) in enumerate(datasets.items()):
-            if 'anon_level_spk' in self.modules_config:
-                if dataset_name in self.modules_config['anon_level_spk']:
-                    anon_level = "spk"
-            if 'anon_level_utt' in self.modules_config:
-                if dataset_name in self.modules_config['anon_level_utt']:
-                    anon_level = "utt"
+            anon_level = get_anon_level_from_config(self.modules_config, dataset_name)
             print(f'{i + 1}/{len(datasets)}: McAdams processing of "{dataset_name}" at anon_level "{anon_level}" ...')
             process_data(dataset_path=dataset_path,
                          anon_level=anon_level,

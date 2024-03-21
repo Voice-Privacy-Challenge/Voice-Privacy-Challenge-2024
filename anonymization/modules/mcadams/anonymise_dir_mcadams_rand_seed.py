@@ -18,10 +18,9 @@ import scipy.signal
 import shutil
 import wave
 
-import kaldiio
 from pathlib import Path
 from tqdm import tqdm
-from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger
+from utils import read_kaldi_format, copy_data_dir, create_clean_dir, setup_logger, load_wav_from_scp
 
 multiprocessing.set_start_method('spawn', force=True)
 
@@ -66,12 +65,12 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     path_wav_scp_out = output_path / 'wav.scp'
 
     # get the number of utterances in the dataset
-    wavs = read_kaldi_format(wav_scp)
-    N = len(wavs)
+    reader = read_kaldi_format(wav_scp)
+    N = len(reader)
 
     if anon_level == 'spk':
         # sample per speaker
-        seeds = map(lambda x: hash_textstring(utt2spk[x]), wavs.keys())
+        seeds = map(lambda x: hash_textstring(utt2spk[x]), reader.keys())
         rngs = map(np.random.default_rng, seeds)
         mcadams_coeffs = map(lambda x: x.uniform(settings['mc_coeff_min'], settings['mc_coeff_max']), rngs)
     else:
@@ -83,7 +82,6 @@ def process_data(dataset_path: Path, anon_level: str, results_dir: Path, setting
     if 'nj' in settings:
         nj = settings['nj']
     settings["force_compute"] = force_compute
-    reader = kaldiio.load_scp(str(wav_scp))
     fn = functools.partial(process_wav, settings=settings, reader=reader, output_path=str(results_dir))
     # the minimum utterances is 393 libri-dev-enroll, make sure chunksize=393//nj*10 > 0, otherwise scp_entries=Null
     with multiprocessing.Pool(processes=nj) as pool:
@@ -100,7 +98,9 @@ def process_wav(mcadams, utid, reader, settings, output_path):
         logger.debug(f'File {output_file} already exists')
         return f'{utid} {output_file}\n'
 
-    (freq, samples) = reader[utid]
+    file = reader[utid]
+    samples, freq = load_wav_from_scp(file)
+    samples = samples.squeeze(0).numpy()
 
     # convert from int16 to float
     if samples.dtype == np.int16:

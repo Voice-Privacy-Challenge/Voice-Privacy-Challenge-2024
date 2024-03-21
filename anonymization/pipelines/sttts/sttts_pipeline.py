@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import time
 
+from .. import Pipeline, get_anon_level_from_config
 from utils import read_kaldi_format, copy_data_dir, save_kaldi_format, check_dependencies, setup_logger
 
 from ...modules.sttts.tts import SpeechSynthesis
@@ -13,7 +14,7 @@ import typing
 
 logger = setup_logger(__name__)
 
-class STTTSPipeline:
+class STTTSPipeline(Pipeline):
     def __init__(self, config: dict, force_compute: bool = False, devices: list = [0]):
         """
         Instantiates a STTTSPipeline with the complete feature extraction,
@@ -48,7 +49,7 @@ class STTTSPipeline:
             devices=devices,
             save_intermediate=save_intermediate,
             settings=modules_config["asr"],
-            force_compute=force_compute,
+            #force_compute=force_compute,
         )
 
         # Speaker component
@@ -60,7 +61,7 @@ class STTTSPipeline:
                 devices=devices,
                 save_intermediate=save_intermediate,
                 settings=modules_config["speaker_embeddings"],
-                force_compute=force_compute,
+                #force_compute=force_compute,
             )
             self.speaker_anonymization[level] = SpeakerAnonymization(
                 vectors_dir=vectors_dir,
@@ -76,9 +77,9 @@ class STTTSPipeline:
                 device=devices[0],
                 save_intermediate=save_intermediate,
                 settings=modules_config["prosody"],
-                force_compute=force_compute,
+                #force_compute=force_compute,
             )
-            if "anonymizer" in modules_config["prosody"]:
+            if "anonymizer_type" in modules_config["prosody"]:
                 self.prosody_anonymization = ProsodyAnonymization(
                     save_intermediate=save_intermediate,
                     settings=modules_config["prosody"],
@@ -122,10 +123,7 @@ class STTTSPipeline:
             logger.info("--- Speech recognition time: %f min ---" % (float(time.time() - start_time) / 60))
 
             start_time = time.time()
-            if dataset_name in self.modules_config["speaker_embeddings"]['anon_level_spk']:
-                anon_level = "spk"
-            if dataset_name in self.modules_config["speaker_embeddings"]['anon_level_utt']:
-                anon_level = "utt"
+            anon_level = get_anon_level_from_config(self.modules_config["speaker_embeddings"], dataset_name)
             spk_embeddings = self.speaker_extraction[anon_level].extract_speakers(dataset_path=dataset_path,
                                                                       dataset_name=dataset_name)
             logger.info(f"--- Speaker extraction anon_level ({anon_level}) time: {(float(time.time() - start_time) / 60)} min ---")
@@ -149,7 +147,7 @@ class STTTSPipeline:
 
             if self.prosody_anonymization:
                 start_time = time.time()
-                anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody)
+                anon_prosody = self.prosody_anonymization.anonymize_prosody(prosody=prosody, dataset_name=dataset_name)
                 logger.info("--- Prosody anonymization time: %f min ---" % (float(time.time() - start_time) / 60))
             else:
                 anon_prosody = prosody
@@ -177,7 +175,7 @@ class STTTSPipeline:
             spk2gender_anon = read_kaldi_format(anon_vectors_path / dataset_name / 'spk2gender')
             save_kaldi_format(spk2gender_anon, output_path / 'spk2gender')
             # Overwrite wav.scp with the paths to the anonymized wavs
-            save_kaldi_format(anon_wav_scps[dataset_name], output_path / 'wav.scp')
+            save_kaldi_format(wav_scp, output_path / 'wav.scp')
 
         logger.info("--- Total computation time: %f min ---" % (float(time.time() - self.total_start_time) / 60))
 

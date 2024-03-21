@@ -39,6 +39,9 @@ class ImsProsodyExtractor:
         (self.get_speech_timestamps, _, _, _, _) = utils
         torch.set_grad_enabled(True)  # finding this issue was very infuriating: silero sets
         # this to false globally during model loading rather than using inference mode or no_grad
+        self.parsel = Parselmouth(reduction_factor=1, fs=16000)
+        self.energy_calc = EnergyCalculator(reduction_factor=1, fs=16000)
+        self.dc = DurationCalculator(reduction_factor=1)
 
     def extract_prosody(self,
                         transcript,
@@ -47,10 +50,10 @@ class ImsProsodyExtractor:
                         input_is_phones=False):
         if self.on_line_fine_tune:
             self.acoustic_model.load_state_dict(self.aligner_weights)
-        parsel = Parselmouth(reduction_factor=1, fs=16000)
-        energy_calc = EnergyCalculator(reduction_factor=1, fs=16000)
-        dc = DurationCalculator(reduction_factor=1)
+
         wave, sr = sf.read(ref_audio_path)
+        if len(wave.shape) == 2:
+            wave = wave.squeeze(0)
         if self.tf.language != lang:
             self.tf = ArticulatoryCombinedTextFrontend(language=lang)
         if self.ap.sr != sr:
@@ -63,6 +66,8 @@ class ImsProsodyExtractor:
 
         with torch.inference_mode():
             speech_timestamps = self.get_speech_timestamps(norm_wave, self.silero_model, sampling_rate=16000)
+        if len(speech_timestamps) == 0:
+            speech_timestamps = [{'start': 0, 'end': len(norm_wave)}]
         start_silence = speech_timestamps[0]['start']
         end_silence = len(norm_wave) - speech_timestamps[-1]['end']
         norm_wave = norm_wave[speech_timestamps[0]['start']:speech_timestamps[-1]['end']]
@@ -88,13 +93,13 @@ class ImsProsodyExtractor:
             tokens = torch.LongTensor(tokens).squeeze().to(self.device)
             tokens_len = torch.LongTensor([len(tokens)]).to(self.device)
             mel = melspec.unsqueeze(0).to(self.device)
-            mel.requires_grad = True
+            #mel.requires_grad = True
             mel_len = torch.LongTensor([len(mel[0])]).to(self.device)
             # actual fine-tuning starts here
             optim_asr = SGD(self.acoustic_model.parameters(), lr=0.1)
             self.acoustic_model.train()
             for _ in list(range(steps)):
-                pred = self.acoustic_model(mel)
+                pred = self.acoustic_model(mel.clone())
                 loss = self.acoustic_model.ctc_loss(pred.transpose(0, 1).log_softmax(2), tokens, mel_len, tokens_len)
                 optim_asr.zero_grad()
                 loss.backward()
@@ -117,7 +122,7 @@ class ImsProsodyExtractor:
                                                   tokens=matrix_without_word_boundaries.to(self.device),
                                                   return_ctc=False)
 
-        duration = dc(torch.LongTensor(alignment_path), vis=None).cpu()
+        duration = self.dc(torch.LongTensor(alignment_path), vis=None).cpu()
 
         for index_of_word_boundary in indexes_of_word_boundaries:
             duration = torch.cat([duration[:index_of_word_boundary],
@@ -140,14 +145,14 @@ class ImsProsodyExtractor:
             last_vec = vec
 
         with torch.inference_mode():
-            energy = energy_calc(input_waves=norm_wave.unsqueeze(0),
+            energy = self.energy_calc(input_waves=norm_wave.unsqueeze(0),
                                  input_waves_lengths=norm_wave_length,
                                  feats_lengths=melspec_length,
                                  text=text,
                                  durations=duration.unsqueeze(0),
                                  durations_lengths=torch.LongTensor([len(duration)]))[0].squeeze(0).cpu()
 
-            pitch = parsel(input_waves=norm_wave.unsqueeze(0),
+            pitch = self.parsel(input_waves=norm_wave.unsqueeze(0),
                            input_waves_lengths=norm_wave_length,
                            feats_lengths=melspec_length,
                            text=text,

@@ -28,4 +28,5 @@ modules:
   winLengthinms: 20
   shiftLengthinms: 10
   seed: 0
-  anon_level_utt: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test, train-clean-360]
+  # anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
+  anon_level_utt: [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]

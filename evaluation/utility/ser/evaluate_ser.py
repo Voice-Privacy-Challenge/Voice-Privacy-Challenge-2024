@@ -85,16 +85,12 @@ def evaluate_ser(eval_datasets, eval_data_dir, models_path, anon_data_suffix, pa
             if len(test_set_info) == 1:
                 test_set_info.append("_")
             results.append({'dataset': test_set_info[0], 'split': test_set_info[1], 'fold': fold,
-                'ser': 'anon' if anon_data_suffix in test_set else 'original', 'UAR': score, **score_per_emo})
+                            'ser': 'anon' if anon_data_suffix in test_set else 'original', 'UAR': score, **score_per_emo})
             print(f'{test_set} fold: {fold} - UAR: {score}')
     results_df = pd.DataFrame(results)
     print(results_df)
     #result_mean = results_df.groupby(['dataset', 'split', 'ser'])['UAR'].agg(['mean', 'min', 'max'])
-    result_mean = results_df.groupby(['dataset', 'split', 'ser']).agg({'UAR': ['mean'],
-                                                      'ACC_sad': ['mean'],
-                                                      'ACC_ang': ['mean'],
-                                                      'ACC_hap': ['mean'],
-                                                      'ACC_neu': ['mean']})
+    result_mean = results_df.groupby(['dataset', 'split', 'ser']).agg({'UAR': ['mean'], **{k: ['mean'] for k in score_per_emo.keys()}})
     result_mean.reset_index(inplace=True)
     print(result_mean)
 

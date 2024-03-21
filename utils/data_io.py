@@ -4,12 +4,17 @@ import json
 import pandas as pd
 import logging
 
+import torchaudio
+import io
+import os
+import subprocess
+
 logger = logging.getLogger(__name__)
 
 def read_kaldi_format(filename, return_as_dict=True, values_as_string=False):
     key_list = []
     value_list = []
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
             splitted_line = line.split()
             if len(splitted_line) == 1:
@@ -28,6 +33,36 @@ def read_kaldi_format(filename, return_as_dict=True, values_as_string=False):
         return key_list, value_list
     return dict(zip(key_list, value_list))
 
+
+def load_wav_from_scp(wav, frame_offset: int = 0,  num_frames: int = -1):
+    """Reads a wav.scp entry like kaldi with embeded unix command
+    and returns a pytorch tensor like it was open with torchaudio.load()
+    (within some tolerance due to numerical precision))
+
+    Args:
+        wav: a list containing the scp entry
+
+    Returns:
+        out_feats: torch.tensor array dtype float32 (default)
+    """
+    if isinstance(wav, list):
+        wav = " ".join(str(x) for x in wav)
+    if wav.strip().endswith("|"):
+        devnull = open(os.devnull, "w")
+        try:
+            wav_read_process = subprocess.Popen(
+                wav.strip()[:-1], stdout=subprocess.PIPE, shell=True, stderr=devnull
+            )
+            sample, sr = torchaudio.backend.soundfile_backend.load(
+                io.BytesIO(wav_read_process.communicate()[0]),
+                frame_offset=frame_offset, num_frames=num_frames
+            )
+        except Exception as e:
+            raise IOError("Error processing wav file: {}\n{}".format(wav, e))
+    else:
+        sample, sr = torchaudio.backend.soundfile_backend.load(wav, frame_offset=frame_offset, num_frames=num_frames)
+
+    return sample, sr
 
 def read_table(filename, names, sep=' ', dtype=None):
     if isinstance(dtype, list):
@@ -85,7 +120,7 @@ def _transform_paths(yaml_dict):
     path_tags = {'_dir', '_file', '_path', '_folder'}
     for key, value in yaml_dict.items():
         if value is None:
-            continue 
+            continue
         if isinstance(value, dict):
             yaml_dict[key] = _transform_paths(value)
         elif any(tag in key for tag in path_tags) and value is not None:
