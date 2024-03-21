@@ -12,11 +12,10 @@ Participants are requested to register for the evaluation. Registration should b
 ---
 
 ## Install
-```bash
-git clone https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024.git
-cd Voice-Privacy-Challenge-2024
-./00_install.sh
-```
+
+1. `git clone https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024.git`
+2. `./00_install.sh`
+3. `source env.sh`
 
 ## Download data
 
