@@ -20,7 +20,6 @@ You have to modify the `iemocap_corpus` variable of `./01_download_data_model.sh
 > [!IMPORTANT]  
 > The [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus must be downloaded on your own by submitting a request at https://sail.usc.edu/iemocap/iemocap_release.htm. The waiting time may take up to 7-9 days.
 
----
 
 ## Anonymization and Evaluation
 There are two options:
@@ -45,21 +44,19 @@ There are two options:
         [`configs/anon_template.yaml`](configs/anon_template.yaml)  
     
       
-1. Run anonymization and evaluation separately in the two steps:
+2. Run anonymization and evaluation separately in two steps:
 
----------------------------------------------------------------------------
+
 
 #### Step 1: Anonymization
 ```sh
-python run_anonymization.py --config configs/anon_mcadams.yaml  # Compute time varies from 30 minutes to 10 hours, depending on the number of cores.
+python run_anonymization.py --config configs/anon_mcadams.yaml  #Computational time varies from 30 minutes to 10 hours, depending on the number of cores, for other methods it may be longer and depending on the available hardware. 
 
-# Or your own script..
 ```
-The names of the nine necessary anonymized datasets are the original names appended with a suffix corresponding to an anonymization pipeline, i.e. `$anon_data_suffix=_mcadams` (see [`configs/anon_mcadams.yaml`](configs/anon_mcadams.yaml)).  
+The anonymized audios will be saved in `$data_dir=data` into 9 folders corresponding to datasets.
+The names of the created dataset folders for anonymized audio files are appended with the suffix, i.e. `$anon_data_suffix=_mcadams`
 
-After anonymization, the directories/wavs produced should be the following:
 ```log
-anon_data_suffix=_mcadams
 data/libri_dev_enrolls${anon_data_suffix}/wav/*wav
 data/libri_dev_trials_m${anon_data_suffix}/wav/*wav
 data/libri_dev_trials_f${anon_data_suffix}/wav/*wav
@@ -74,13 +71,9 @@ data/IEMOCAP_test${anon_data_suffix}/wav/*wav
 data/train-clean-360${anon_data_suffix}/wav/*wav
 ```
 
-> [!IMPORTANT]  
-> You only have to replicate this directory/wav
-> structure when developing your own anonymization system.  
-> The evaluation script will take care of everything else. (Automatic creation
-> of wav.scp/spk2gender/...)  
->
-> Or for a more detailed example of an anonymization system, with original wav.scp
+For the next evaluation step, you should replicate the corresponding directory structure when developing your anonymization system.  
+
+> For a more detailed example of an anonymization system, with original wav.scp
 > loading and directory structure creation, please refer to:
 > - [configs/anon_template.yaml](./configs/anon_template.yaml)
 > - [anonymization/modules/template/anonymise_dir.py](./anonymization/modules/template/anonymise_dir.py)
@@ -94,24 +87,39 @@ Evaluation metrics include:
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
 
 
-To run evaluation separately for a pipeline, you need to:
-1. Have prepared the above-anonymized data directories with the correct `$anon_data_suffix`.
+To run evaluation for arbitrary anonymized data:
+1. prepare 9 anonymized folders each containing the anonymized wav files:
+```log
+data/libri_dev_enrolls${anon_data_suffix}/wav/*wav
+data/libri_dev_trials_m${anon_data_suffix}/wav/*wav
+data/libri_dev_trials_f${anon_data_suffix}/wav/*wav
+
+data/libri_test_enrolls${anon_data_suffix}/wav/*wav
+data/libri_test_trials_m${anon_data_suffix}/wav/*wav
+data/libri_test_trials_f${anon_data_suffix}/wav/*wav
+
+data/IEMOCAP_dev${anon_data_suffix}/wav/*wav
+data/IEMOCAP_test${anon_data_suffix}/wav/*wav
+
+data/train-clean-360${anon_data_suffix}/wav/*wav
+```
 2. perform evaluations
-    ```sh
-    python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
-    python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
-    ```
+   
+```sh
+python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
+python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
+```
 
-3. get the final relevant results for ranking
-    ```sh
-    results_summary_path_orig=exp/results_summary/eval_orig${anon_data_suffix}/results_orig.txt # the same value as $results_summary_path in configs/eval_pre.yaml
-    results_summary_path_anon=exp/results_summary/eval_anon${anon_data_suffix}/results_anon.txt # the same value as $results_summary_path in configs/eval_post.yaml
-    results_exp=exp/results_summary
-    { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_data_suffix}"
-    zip ${results_exp}/result_for_submission${anon_data_suffix}.zip -r exp/asr/*${anon_data_suffix} exp/asr/*${anon_data_suffix}.csv exp/ser/*${anon_data_suffix}.csv exp/results_summary/*${anon_data_suffix}* exp/asv_orig/*${anon_data_suffix} exp/asv_orig/*${anon_data_suffix}.csv exp/asv_anon${anon_data_suffix}
-    ```
+3. get the final results for ranking
+```sh
+results_summary_path_orig=exp/results_summary/eval_orig${anon_data_suffix}/results_orig.txt # the same value as $results_summary_path in configs/eval_pre.yaml
+results_summary_path_anon=exp/results_summary/eval_anon${anon_data_suffix}/results_anon.txt # the same value as $results_summary_path in configs/eval_post.yaml
+results_exp=exp/results_summary
+{ cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_data_suffix}"
+zip ${results_exp}/result_for_submission${anon_data_suffix}.zip -r exp/asr/*${anon_data_suffix} exp/asr/*${anon_data_suffix}.csv exp/ser/*${anon_data_suffix}.csv exp/results_summary/*${anon_data_suffix}* exp/asv_orig/*${anon_data_suffix} exp/asv_orig/*${anon_data_suffix}.csv exp/asv_anon${anon_data_suffix}
+```
 
-> (All of the above steps are automated in [02_run.sh](./02_run.sh)).
+> All of the above steps are automated in [02_run.sh](./02_run.sh).
 
 ## Results
 
@@ -121,7 +129,14 @@ The result file with all the metrics and all datasets for submission will be gen
 
 Please see the [RESULTS folder](./results) for the provided anonymization pipelines.
 
-### Some potential questions you may have and how to solve them:
+## General information
+
+For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v1.0.pdf)
+
+#### Registration
+Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
+
+## Some potential questions you may have and how to solve them:
 > 1. $ASV_{eval}^{anon}$ training is slow
 
 Training of the $ASV_{eval}^{anon}$ model may vary from about 2 up to 10 hours depending on the available hardware.
@@ -133,27 +148,14 @@ Reduce the $eval_bachsize in config/eval_pre.yaml
 
 > 3. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
 
-> 4. "Host key verification failed" when running `./01_download_data_model.sh`.
+> 4. Error on `utils.prepare_results_in_kaldi_format`
 
-To fix this, you can run: `ssh-keygen -R "voiceprivacychallenge.univ-avignon.fr"` before running the script `./01_download_data_model.sh`. 
-(Will be fixed in the next release).
-
-> 5. Error on `utils.prepare_results_in_kaldi_format` means something bad happened when running the anonymization pipeline.  
-Remove all `data/*$anon_data_suffix` directories and re-run anonymization+evaluation. (if `$anon_data_suffix=suff`, also remove the directories that share a matching suffix in the suffix like: `$anon_data_suffix=something_suff`).  
-Check that your anonymization pipeline produces a wav file for each dataset
-entry, every original wav should have its anonymized counterpart.  
-
-## General information
-
-For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v1.0.pdf)
-
-#### Registration
-Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
+means something bad happened when running the anonymization pipeline.  
+Remove all `data/*$anon_data_suffix` directories and re-run anonymization and evaluation steps (if `$anon_data_suffix=suff`, also remove the directories that share a matching suffix: `$anon_data_suffix=something_suff`). Check that your anonymization pipeline produces a wav file for each dataset entry, every original wav should have its anonymized counterpart.  
 
 
 
 ## Organizers (in alphabetical order)
-
 
 - Pierre Champion - Inria, France
 - Nicholas Evans - EURECOM, France
