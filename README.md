@@ -127,7 +127,14 @@ The result file with all the metrics and all datasets for submission will be gen
 * Summary results: `./exp/results_summary/result_for_rank$anon_data_suffix`
 * Additional information for submission: `./exp/results_summary/result_for_submission${anon_data_suffix}.zip`
 
-Please see the [RESULTS folder](./results) for the provided anonymization pipelines.
+Please see the [RESULTS folder](./results) for the provided anonymization baselines:
+
+* [Results B1](./results/result_for_rank_b1b)
+* [Results B2](./results/result_for_rank_mcadams)
+* [Results B3](./results/result_for_rank_sttts)
+* [Results B4](./results/result_for_rank_nac)
+* [Results B5](./results/result_for_rank_asrbn_hifigan_bn_tdnnf_wav2vec2_vq_48_v1)
+* [Results B6](./results/result_for_rank_asrbn_hifigan_bn_tdnnf_600h_vq_48_v1)
 
 ## General information
 
