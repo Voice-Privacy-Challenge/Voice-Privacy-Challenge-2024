@@ -138,7 +138,11 @@ Please see the [RESULTS folder](./results) for the provided anonymization baseli
 
 ## General information
 
+#### Evaluation plan
 For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v1.0.pdf)
+
+#### Training data
+[Final list of models and data](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Challenge_Final_list_of_models_and_data_for_training_anonymization_systems.pdf) for training anonymization systems.
 
 #### Registration
 Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
