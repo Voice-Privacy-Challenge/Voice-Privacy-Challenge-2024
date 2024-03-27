@@ -122,7 +122,7 @@ zip ${results_exp}/result_for_submission${anon_data_suffix}.zip -r exp/asr/*${an
 > All of the above steps are automated in [02_run.sh](./02_run.sh).
 
 ## Results
-
+### WARNING: Current WER results are reported on the **(trials+enrolls)** lists - this is not correct, they should be computed only on **trials** - will be corrected.
 The result file with all the metrics and all datasets for submission will be generated in:
 * Summary results: `./exp/results_summary/result_for_rank$anon_data_suffix`
 * Additional information for submission: `./exp/results_summary/result_for_submission${anon_data_suffix}.zip`
@@ -142,7 +142,7 @@ Please see the [RESULTS folder](./results) for the provided anonymization baseli
 For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v1.0.pdf)
 
 #### Training data
-[Final list of models and data](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Challenge_Final_list_of_models_and_data_for_training_anonymization_systems.pdf) for training anonymization systems.
+[Final list of models and data](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Challenge_Final_list_of_models_and_data_for_training_anonymization_systems_-_26.03.2024.pdf) for training anonymization systems.
 
 #### Registration
 Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
