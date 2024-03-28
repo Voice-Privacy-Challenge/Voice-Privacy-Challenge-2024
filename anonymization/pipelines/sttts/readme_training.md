@@ -40,7 +40,6 @@ Per default, the training will be performed for LibriTTS which will be downloade
 It will be stored to a *downloads* inside the recipe that needs to be created before execution.
 If you want to change this to a different location, or already have LibriTTS installed and skip to download it again, you need to change the *LibriTTS* value in [db.sh](../../modules/sttts/text/recognition/asr_training/asr/db.sh).
 
-
 # Speech Synthesis Models
 The speech synthesis module consists of two models: a TTS based on FastSpeech2 and a HiFiGAN vocoder. 
 These models need to be trained separately.
@@ -61,6 +60,20 @@ In the script, the original structure of LibriTTS or LibriSpeech (the separation
 If you use a different dataset or structure, you need to change the `build_path_to_transcript_dict_libritts_clean()` in `train_tts_model.py` and `get_file_list_libritts` in `train_vocoder_model.py` to match your data.
 Inspirations for that can be found in the [official IMS Toucan repository](https://github.com/DigitalPhonetics/IMS-Toucan/blob/ToucanTTS/Utility/path_to_transcript_dicts.py). 
 
+# Phone Alignment for Prosody Extraction
+Prosodic information in form of pitch and energy is extracted for each phone, together with the phone duration.
+For this, we need the alignment between the transcribed phones and the input waveform. 
+Thus, we train an aligner that provides us these alignments.
+The aligner is an ASR model, but much simpler and less accurate than the one we use for the phonetic transcriptions.
+Because it is more lightweight, we can finetune the model online for each utterance before generating the alignment which improves the quality of the phone alignment.
+More information about this method can be found [in this paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10022433).
+
+As for the speech synthesis model, the aligner is implemented in the IMS Toucan toolkit. 
+Pretraining of the aligner model is therefore similar to the training steps for both synthesis models.
+The [pretrain_aligner.py](../../modules/sttts/prosody/pretrain_aligner.py) script can be found in [anonymization/modules/sttts/prosody](../../modules/sttts/prosody) and run by:
+```angular2html
+python pretrain_aligner.py --train_data_path <path_to_train_data> --gpu_id <gpu_id>
+```
 
 # Speaker Embeddings GAN
 The model to generate artificial speaker embeddings for anonymization is a Wasserstein Generative Adversarial Network. 
