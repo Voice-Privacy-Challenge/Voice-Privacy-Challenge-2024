@@ -17,10 +17,10 @@
 
 ---- ASR results ----
   dataset split       asr    WER
-0   libri   dev  original  1.790
-4   libri   dev      anon  9.632
-1   libri  test  original  1.839
-5   libri  test      anon  9.334
+0   libri   dev  original  1.803
+4   libri   dev      anon  9.717
+1   libri  test  original  1.846
+5   libri  test      anon  8.986
 
 ---- Time: 21-03-24_06:13 ----
 
