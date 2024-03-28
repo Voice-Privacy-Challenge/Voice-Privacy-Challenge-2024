@@ -56,3 +56,5 @@ This pipeline can be run by specifying the [anon_sttts.yaml](../../../configs/an
 Please be aware that, depending on the size of your dataset, the anonymization can take some time.
 Intermediate representations of all modules are saved to disk.
 If the pipeline is run a second time, the intermediate representations will be loaded by default, and only recomputed if explicitly specified in order to reduce the run time.
+Because of the long run time of the full anonymization pipeline, we provide the intermediate representations for text transcriptions, prosody extraction and speaker embedding extraction for the LibriSpeech data. 
+When running the pipeline, these representations are automatically downloaded and their computation is skipped during anonymization.
