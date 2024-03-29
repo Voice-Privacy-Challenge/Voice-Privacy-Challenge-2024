@@ -1,4 +1,4 @@
----- Time: 29-03-24_06:11 ----
+---- Time: 29-03-24_11:24 ----
 
 ---- SER results ----
    dataset split       ser      UAR  ACC_sad  ACC_neu  ACC_ang  ACC_hap
@@ -18,9 +18,9 @@
 ---- ASR results ----
   dataset split       asr    WER
 0   libri   dev  original  1.807
-4   libri   dev      anon  9.710
+4   libri   dev      anon  9.693
 1   libri  test  original  1.844
-5   libri  test      anon  9.101
+5   libri  test      anon  9.092
 
 ---- Time: 29-03-24_08:11 ----
 
