@@ -190,9 +190,6 @@ if __name__ == '__main__':
                             continue
                         for suff in  ["", anon_suffix]:
                             splits_to_combine = []
-                            if 'enrolls' in d:
-                                splits_to_combine += list(map(lambda x: str(params['data_dir'])+"/"+d['data']+x+suff, d['enrolls']))
-                                combine_asr_data(splits_to_combine, str(params['data_dir'])+"/"+d['name']+"_asr"+suff)
                             if 'trials' in d:
                                 splits_to_combine += list(map(lambda x: str(params['data_dir'])+"/"+d['data']+x+suff, d['trials']))
                                 combine_asr_data(splits_to_combine, str(params['data_dir'])+"/"+d['name']+"_asr"+suff)

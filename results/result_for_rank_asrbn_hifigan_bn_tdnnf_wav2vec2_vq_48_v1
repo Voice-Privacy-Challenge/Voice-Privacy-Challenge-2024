@@ -1,12 +1,12 @@
----- Time: 17-03-24_12:42 ----
+---- Time: 29-03-24_12:01 ----
 
 ---- SER results ----
-   dataset split       ser      UAR  ACC_sad  ACC_ang  ACC_hap  ACC_neu
+   dataset split       ser      UAR  ACC_sad  ACC_neu  ACC_ang  ACC_hap
                                mean     mean     mean     mean     mean
-0  IEMOCAP   dev      anon  38.0006   6.0612  61.8554  36.9078  47.1784
-1  IEMOCAP   dev  original  69.0796  63.6292  79.7770  66.9476  65.9652
-2  IEMOCAP  test      anon  37.4242   4.5652  54.0314  34.9666  56.1354
-3  IEMOCAP  test  original  71.0618  72.5706  72.8246  67.1912  71.6618
+0  IEMOCAP   dev      anon  38.0806   7.5442  49.1112  62.0502  33.6172
+1  IEMOCAP   dev  original  69.0796  63.6292  65.9652  79.7770  66.9476
+2  IEMOCAP  test      anon  38.1660   5.0686  55.3002  56.1994  36.0962
+3  IEMOCAP  test  original  71.0618  72.5706  71.6618  72.8246  67.1912
 
 ---- ASV_eval results ----
   dataset split gender enrollment     trial     EER
@@ -17,16 +17,16 @@
 
 ---- ASR results ----
   dataset split       asr    WER
-0   libri   dev  original  1.790
-4   libri   dev      anon  4.723
-1   libri  test  original  1.837
-5   libri  test      anon  4.449
+0   libri   dev  original  1.807
+4   libri   dev      anon  4.731
+1   libri  test  original  1.844
+5   libri  test      anon  4.369
 
----- Time: 17-03-24_12:43 ----
+---- Time: 29-03-24_01:11 ----
 
 ---- ASV_eval^anon results ----
    dataset split gender enrollment trial     EER
-2    libri   dev      f       anon  anon  33.097
-5    libri   dev      m       anon  anon  31.235
-8    libri  test      f       anon  anon  32.994
-11   libri  test      m       anon  anon  31.404
+2    libri   dev      f       anon  anon  35.816
+5    libri   dev      m       anon  anon  32.918
+8    libri  test      f       anon  anon  33.946
+11   libri  test      m       anon  anon  34.729

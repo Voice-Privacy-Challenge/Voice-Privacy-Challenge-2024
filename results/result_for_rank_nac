@@ -15,10 +15,10 @@
 
 ---- ASR results ----
   dataset split       asr    WER
-0   libri   dev  original  1.790
-4   libri   dev      anon  6.228
-1   libri  test  original  1.839
-5   libri  test      anon  6.045
+0   libri   dev  original  1.805
+4   libri   dev      anon  6.146
+1   libri  test  original  1.846
+5   libri  test      anon  5.899
 
 
 ---- ASV_eval^anon results ----
