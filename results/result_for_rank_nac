@@ -23,7 +23,7 @@
 
 ---- ASV_eval^anon results ----
    dataset split gender enrollment trial     EER  
-2    libri   dev      f       anon  anon  41.932
-5    libri   dev      m       anon  anon  43.803
-8    libri  test      f       anon  anon  42.909
-11   libri  test      m       anon  anon  44.334
+2    libri   dev      f       anon  anon  34.378
+5    libri   dev      m       anon  anon  31.056
+8    libri  test      f       anon  anon  29.378
+11   libri  test      m       anon  anon  31.155
