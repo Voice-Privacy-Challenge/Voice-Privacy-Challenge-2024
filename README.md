@@ -38,11 +38,7 @@ There are two options:
     -  #### [Anonymization using ASR-BN with vector quantization (VQ)](https://arxiv.org/abs/2308.04455): **B5** and **B6** 
 
         [`configs/anon_asrbn.yaml`](configs/anon_asrbn.yaml) A fast system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations and  a HiFi-GAN speech synthesis model.
-  
- 
-    -   #### A template for using own anonymization system
-        [`configs/anon_template.yaml`](configs/anon_template.yaml)  
-    
+      
       
 2. Run anonymization and evaluation separately in two steps:
 
@@ -70,14 +66,7 @@ data/IEMOCAP_test${anon_data_suffix}/wav/*wav
 
 data/train-clean-360${anon_data_suffix}/wav/*wav
 ```
-
 For the next evaluation step, you should replicate the corresponding directory structure when developing your anonymization system.  
-
-> For a more detailed example of an anonymization system, with original wav.scp
-> loading and directory structure creation, please refer to:
-> - [configs/anon_template.yaml](./configs/anon_template.yaml)
-> - [anonymization/modules/template/anonymise_dir.py](./anonymization/modules/template/anonymise_dir.py)
-> - [anonymization/pipelines/template/template_pipeline.py](./anonymization/pipelines/template/template_pipeline.py)
 
 #### Step 2: Evaluation
 Evaluation metrics include:
@@ -122,7 +111,7 @@ zip ${results_exp}/result_for_submission${anon_data_suffix}.zip -r exp/asr/*${an
 > All of the above steps are automated in [02_run.sh](./02_run.sh).
 
 ## Results
-### WARNING: Current WER results are reported on the **(trials+enrolls)** lists - this is not correct, they should be computed only on **trials** - will be corrected.
+#### Note, that WER results are computed on the trials part
 The result file with all the metrics and all datasets for submission will be generated in:
 * Summary results: `./exp/results_summary/result_for_rank$anon_data_suffix`
 * Additional information for submission: `./exp/results_summary/result_for_submission${anon_data_suffix}.zip`
