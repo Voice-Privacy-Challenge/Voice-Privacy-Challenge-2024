@@ -128,7 +128,7 @@ Please see the [RESULTS folder](./results) for the provided anonymization baseli
 ## General information
 
 #### Evaluation plan
-For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v1.0.pdf)
+For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v2.0.pdf) - Updated on 1st April 2024
 
 #### Training data
 [Final list of models and data](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Challenge_Final_list_of_models_and_data_for_training_anonymization_systems_-_26.03.2024.pdf) for training anonymization systems.
