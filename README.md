@@ -96,7 +96,7 @@ data/train-clean-360${anon_data_suffix}/wav/*wav
    
 ```sh
 python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
-python run_evaluation.py --config configs/eval_pre.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
+python run_evaluation.py --config configs/eval_post.yaml --overwrite "{\"anon_data_suffix\": \"$anon_data_suffix\"}" --force_compute True
 ```
 
 3. get the final results for ranking
