@@ -187,3 +187,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+## Reference
+
+```
+@article{tomashenko2024voiceprivacy,
+      title={The {VoicePrivacy} 2024 Challenge Evaluation Plan}, 
+      author={Natalia Tomashenko and Xiaoxiao Miao and Pierre Champion and Sarina Meyer and Xin Wang and Emmanuel Vincent and Michele Panariello and Nicholas Evans and Junichi Yamagishi and Massimiliano Todisco},
+      year={2024},
+      eprint={2404.02677},
+      archivePrefix={arXiv},
+      primaryClass={eess.AS}
+}
+```
