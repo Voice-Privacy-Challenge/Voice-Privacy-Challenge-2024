@@ -38,6 +38,9 @@ There are two options:
     -  #### [Anonymization using ASR-BN with vector quantization (VQ)](https://arxiv.org/abs/2308.04455): **B5** and **B6** 
 
         [`configs/anon_asrbn.yaml`](configs/anon_asrbn.yaml) A fast system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations and  a HiFi-GAN speech synthesis model.
+
+      - #### ⚠ [Anonymization using x-vectors and a neural source-filter model](https://www.isca-archive.org/interspeech_2020/srivastava20_interspeech.pdf): **B1**
+        anonymization scripts from https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2022 can be used to obtain anonymized data for B1. To perform utterance-level  (in contrast to speaker-level) anonymization of the enrollment and trial data for B1, the corresponding parameters should be setup in  [https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2022/blob/master/baseline/config.sh](config.sh): `anon_level_trials=utt` and `anon_level_enroll=utt` (https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2022/blob/d72b50c44677aa9a1ba37b7f0c383c4fde13e05f/baseline/config.sh#L59-L60)
       
       
 2. Run anonymization and evaluation separately in two steps:
