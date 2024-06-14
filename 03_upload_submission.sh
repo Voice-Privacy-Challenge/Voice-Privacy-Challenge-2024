@@ -46,6 +46,7 @@ echo "OAUTH_REFRESH_TOKEN=$VPC_DROPBOX_REFRESHTOKEN" >> .vpc-dropbox_uploader
 
 if test "$anon_suffix" = "test"; then
   ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload LICENSE LICENSE.txt
+  ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader delete LICENSE.txt
   echo " -- Tested ended --"
   exit 0
 fi
