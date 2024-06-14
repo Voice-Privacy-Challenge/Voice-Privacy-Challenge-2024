@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.tar.gz
 .done-*
 .micromamba/
 .micromamba
@@ -149,3 +150,5 @@ subset_data_dir.sh
 .idea
 anonymization/modules/nac/coqui_tts/
 .install-hash*
+utils/dropbox_uploader.sh
+.vpc-dropbox_uploader

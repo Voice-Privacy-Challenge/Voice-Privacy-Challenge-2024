@@ -5,6 +5,7 @@
 # Fresh install with "rm .done-upload-tool"
 
 set -e
+nj=$(nproc)
 
 source ./env.sh
 
@@ -29,6 +30,7 @@ if [ ! -f $mark ]; then
   echo " == Installing tools to upload dataset =="
   curl -s "https://raw.githubusercontent.com/andreafabrizi/Dropbox-Uploader/master/dropbox_uploader.sh" -o ./utils/dropbox_uploader.sh
   chmod +x ./utils/dropbox_uploader.sh
+  micromamba install -y -c conda-forge pigz pv tar
   touch $mark
 fi
 
@@ -44,25 +46,25 @@ echo "OAUTH_REFRESH_TOKEN=$VPC_DROPBOX_REFRESHTOKEN" >> .vpc-dropbox_uploader
 
 if test "$anon_suffix" = "test"; then
   ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload LICENSE LICENSE.txt
-  echo "Tested ended"
+  echo " -- Tested ended --"
   exit 0
 fi
 
 if [[ "$anon_suffix" == *yaml ]]; then
-  echo "Config detected, reading 'anon_suffix'"
+  echo " -- Config detected, reading 'anon_suffix' --"
   anon_suffix=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('${anon_suffix}'); print(load_hyperpyyaml(f, None).get('anon_suffix', ''))")
 fi
 
-echo "Anon suffix used to upload the submission: $anon_suffix"
-sleep 1
+echo " -- Anon suffix used to upload the submission: '${anon_suffix}' --"
+
+stuff_to_zip=""
 
 results_exp=exp/results_summary
 file=${results_exp}/result_for_rank${anon_suffix}
 [ ! -f $file ] && echo "File $file does not exist." && exit 1
 file=${results_exp}/result_for_submission${anon_suffix}.zip
 [ ! -f $file ] && echo "File $file does not exist." && exit 1
-./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload ${results_exp}/result_for_rank${anon_suffix} results_summary${anon_suffix}/result_for_rank${anon_suffix}.txt
-./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload ${results_exp}/result_for_submission${anon_suffix}.zip results_summary${anon_suffix}/result_for_submission${anon_suffix}.zip
+stuff_to_zip="${stuff_to_zip} ${results_exp}/result_for_rank${anon_suffix} ${results_exp}/result_for_submission${anon_suffix}.zip"
 
 tuples=(
   # Data path                            Rough estimate of the data/wavs size (Should be higher)
@@ -86,11 +88,11 @@ for ((i=0; i<length; i+=2)); do
   if [ "$dir_size" -lt "$threshold" ]; then
     echo "Directory '$dir' size ($dir_size bytes) is not greater than $threshold bytes. The wavs must be in this folder for submission." && exit 1
   fi
+  stuff_to_zip="${stuff_to_zip} ${dir}"
 done
 
-for ((i=0; i<length; i+=2)); do
-  dir=${tuples[i]}
-  zip "$(basename $dir).zip" -r ${dir}
-  ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload "$(basename $dir).zip" "data${anon_suffix}/$(basename $dir).zip"
-  \rm "$(basename $dir).zip"
-done
+echo " -- Creating the submission archive before upload (using: $nj threads) --"
+tar --use-compress-program="pigz --best --processes $nj -f | pv -rb" -cf submission${anon_suffix}.tar.gz $stuff_to_zip
+
+echo " -- Uploading the archive ($(du -sbh submission${anon_suffix}.tar.gz | cut -f1)) --"
+./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload submission${anon_suffix}.tar.gz "submission${anon_suffix}_$(date +'%Y-%m-%d_%T').tar.gz"
