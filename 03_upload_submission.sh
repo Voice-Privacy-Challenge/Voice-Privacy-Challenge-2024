@@ -4,6 +4,9 @@
 
 # Fresh install with "rm .done-upload-tool"
 
+# Create the upload API keys for the many participents:
+# team_suff=name; ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader_team_$team_suff info && source .vpc-dropbox_uploader_team_$team_suff && VPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=$team_suff ./03_upload_submission.sh test && echo "\n\nAPI upload ready for team $team_suff:\n----\nVPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=$team_suff ./03_upload_submission.sh \$anon_data_suffix\n----"
+
 set -e
 nj=$(nproc)
 
@@ -45,8 +48,8 @@ echo "OAUTH_APP_SECRET=$VPC_DROPBOX_SECRET" >> .vpc-dropbox_uploader
 echo "OAUTH_REFRESH_TOKEN=$VPC_DROPBOX_REFRESHTOKEN" >> .vpc-dropbox_uploader
 
 if test "$anon_suffix" = "test"; then
-  ./utils/dropbox_uploader.sh -d -f .vpc-dropbox_uploader upload LICENSE LICENSE.txt 2> /dev/null || (cat /tmp/du_resp_debug && exit 1)
-  ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader delete LICENSE.txt
+  ./utils/dropbox_uploader.sh -d -f .vpc-dropbox_uploader upload LICENSE ${VPC_TEAM}_LICENSE.txt 2> /dev/null || (cat /tmp/du_resp_debug && exit 1)
+  ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader delete ${VPC_TEAM}_LICENSE.txt
   echo " -- Tested ended --"
   exit 0
 fi
