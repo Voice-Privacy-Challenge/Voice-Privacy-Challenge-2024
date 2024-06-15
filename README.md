@@ -2,6 +2,13 @@
 
 Please visit the [challenge website](https://www.voiceprivacychallenge.org/) for more information about the Challenge.
 
+## Data submission
+The anonymization and evaluation scripts should have generated the files and the directories with the explained format of `$anon_data_suffix` suffix.  
+For data submission, the following command submit everything given a `$anon_data_suffix` argument:
+```
+VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ VPC_TEAM=TEAM_NAME ./03_upload_submission.sh $anon_data_suffix
+```
+`VPC_DROPBOX_KEY`, `VPC_DROPBOX_SECRET`, `VPC_DROPBOX_REFRESHTOKEN`, and `VPC_TEAM=TEAM_NAME` are sent individually to each team upon receiving their system description.  
 
 ## Install
 
