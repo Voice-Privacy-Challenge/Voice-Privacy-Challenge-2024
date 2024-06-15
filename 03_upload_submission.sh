@@ -5,7 +5,7 @@
 # Fresh install with "rm .done-upload-tool"
 
 # Create the upload API keys for the many participents:
-# team_suff=name; ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader_team_$team_suff info && source .vpc-dropbox_uploader_team_$team_suff && VPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=$team_suff ./03_upload_submission.sh test && echo "\n\nAPI upload ready for team $team_suff:\n----\nVPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=$team_suff ./03_upload_submission.sh \$anon_data_suffix\n----"
+# team_suff="name"; ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader_team_$team_suff info && source .vpc-dropbox_uploader_team_$team_suff && VPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=$team_suff ./03_upload_submission.sh test && echo "\n\nAPI upload ready for team \"$team_suff\":\n----\nVPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=\"$team_suff\" ./03_upload_submission.sh \$anon_data_suffix\n----"
 
 set -e
 nj=$(nproc)
@@ -41,6 +41,7 @@ if [[ $VPC_DROPBOX_KEY = "" || $VPC_DROPBOX_SECRET = "" || $VPC_DROPBOX_REFRESHT
     echo -ne "Error loading VPC_* variables...\n"
     exit 1
 fi
+VPC_TEAM="${VPC_TEAM// /_}"
 
 echo "CONFIGFILE_VERSION=2.0" > .vpc-dropbox_uploader
 echo "OAUTH_APP_KEY=$VPC_DROPBOX_KEY" >> .vpc-dropbox_uploader
