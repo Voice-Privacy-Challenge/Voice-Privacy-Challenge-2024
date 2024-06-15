@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ ./03_upload_submission.sh $anon_data_suffix
+# Usage: VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ VPC_TEAM=TEAM_NAME ./03_upload_submission.sh $anon_data_suffix
 
 # Fresh install with "rm .done-upload-tool"
 
@@ -34,8 +34,8 @@ if [ ! -f $mark ]; then
   touch $mark
 fi
 
-if [[ $VPC_DROPBOX_KEY = "" || $VPC_DROPBOX_SECRET = "" || $VPC_DROPBOX_REFRESHTOKEN = "" ]]; then
-    echo -ne "Error loading VPC_DROPBOX_* variables...\n"
+if [[ $VPC_DROPBOX_KEY = "" || $VPC_DROPBOX_SECRET = "" || $VPC_DROPBOX_REFRESHTOKEN = "" || $VPC_TEAM = "" ]]; then
+    echo -ne "Error loading VPC_* variables...\n"
     exit 1
 fi
 
@@ -96,4 +96,4 @@ echo " -- Creating the submission archive before upload (using: $nj threads) --"
 tar --use-compress-program="pigz --best --processes $nj -f | pv -rb" -cf submission${anon_suffix}.tar.gz $stuff_to_zip
 
 echo " -- Uploading the archive ($(du -sbh submission${anon_suffix}.tar.gz | cut -f1)) --"
-./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload submission${anon_suffix}.tar.gz "submission${anon_suffix}_$(date +'%Y-%m-%d_%T').tar.gz"
+./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader upload submission${anon_suffix}.tar.gz "submission_${VPC_TEAM}${anon_suffix}_$(date +'%Y-%m-%d_%T').tar.gz"
