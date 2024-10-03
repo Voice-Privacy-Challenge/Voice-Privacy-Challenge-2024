@@ -4,7 +4,7 @@
 
 # Fresh install with "rm .done-upload-tool"
 
-# Create the upload API keys for the many participents:
+# Create the upload API keys for the many participants:
 # team_suff="name"; ./utils/dropbox_uploader.sh -f .vpc-dropbox_uploader_team_$team_suff info && source .vpc-dropbox_uploader_team_$team_suff && VPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=$team_suff ./03_upload_submission.sh test && echo "\n\nAPI upload ready for team \"$team_suff\":\n----\nVPC_DROPBOX_KEY=$OAUTH_APP_KEY VPC_DROPBOX_SECRET=$OAUTH_APP_SECRET VPC_DROPBOX_REFRESHTOKEN=$OAUTH_REFRESH_TOKEN VPC_TEAM=\"$team_suff\" ./03_upload_submission.sh \$anon_data_suffix\n----"
 
 set -e
