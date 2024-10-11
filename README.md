@@ -212,4 +212,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ## Acknowledgments
 
-Some parts of the code are based on [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) (Paper: https://ieeexplore.ieee.org/document/10365329)
+Some parts of the code and structure are based on [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) (Paper: https://ieeexplore.ieee.org/document/10365329)
