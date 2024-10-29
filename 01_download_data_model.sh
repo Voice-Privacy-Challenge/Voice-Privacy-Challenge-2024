@@ -14,10 +14,17 @@ for data_set in libri_dev libri_test; do
         if [ ! -f corpora/$data_set.tar.gz ]; then
             mkdir -p corpora
             cd corpora
-            # Removed sshpass and password prompt to download files
-            echo "Skipping download for $data_set.tar.gz, please manually place it in 'corpora/' if needed."
+            echo "Attempting to download $data_set.tar.gz. If it requires a password, download it manually or place it in 'corpora/'."
+            
+            # Replace this placeholder URL with the actual download URL for libri_dev and libri_test if available.
+            wget --no-check-certificate "https://example.com/path/to/$data_set.tar.gz" -O "$data_set.tar.gz" || { 
+                echo "Failed to download $data_set.tar.gz. Please download manually if it requires credentials."; 
+                cd -; 
+                continue; 
+            }
             cd -
         fi
+
         echo "  Unpacking $data_set data set..."
         tar -xf corpora/$data_set.tar.gz || exit 1
         [ ! -f $dir/text ] && echo "File $dir/text does not exist" && exit 1
@@ -50,7 +57,7 @@ if [ ! -d $check ]; then
     mkdir -p corpora
     cd corpora
     if [ ! -f train-clean-360.tar.gz ]; then
-        echo "Download train-clean-360..."
+        echo "Downloading train-clean-360..."
         wget --no-check-certificate https://www.openslr.org/resources/12/train-clean-360.tar.gz
     fi
     echo "Unpacking train-clean-360"
@@ -72,7 +79,7 @@ fi
 for model in asv_orig ser asr; do
     if [ ! -d "exp/$model" ]; then
         if [ ! -f .${model}.zip ]; then
-            echo "Download pretrained $model models pre-trained..."
+            echo "Download pretrained $model models..."
             wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/pre_model.zip/${model}.zip
             mv ${model}.zip .${model}.zip
         fi
