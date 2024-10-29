@@ -5,10 +5,6 @@ pipeline: mcadams
 anon_suffix: !ref _<pipeline>
 
 datasets:
-  - name: IEMOCAP_dev
-    data: IEMOCAP_dev
-  - name: IEMOCAP_test
-    data: IEMOCAP_test
   - name: libri_dev_clean
     data: libri_dev_clean
     enrolls: [_enrolls]
@@ -29,4 +25,4 @@ modules:
   shiftLengthinms: 10
   seed: 0
   # anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev_clean, libri_test_clean]
-  anon_level_utt: [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev_clean, libri_test_clean]
+  anon_level_utt: [train-clean-360, libri_dev_clean, libri_test_clean]
