@@ -9,12 +9,12 @@ datasets:
     data: IEMOCAP_dev
   - name: IEMOCAP_test
     data: IEMOCAP_test
-  - name: libri_dev
-    data: libri_dev
+  - name: libri_dev_clean
+    data: libri_dev_clean
     enrolls: [_enrolls]
     trials: [_trials_f, _trials_m]
-  - name: libri_test
-    data: libri_test
+  - name: libri_test_clean
+    data: libri_test_clean
     enrolls: [_enrolls]
     trials: [_trials_f, _trials_m]
   - name: train-clean-360
@@ -28,5 +28,5 @@ modules:
   winLengthinms: 20
   shiftLengthinms: 10
   seed: 0
-  # anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
-  anon_level_utt: [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev, libri_test]
+  # anon_level_spk: [IEMOCAP_test, IEMOCAP_dev, libri_dev_clean, libri_test_clean]
+  anon_level_utt: [train-clean-360, IEMOCAP_test, IEMOCAP_dev, libri_dev_clean, libri_test_clean]
