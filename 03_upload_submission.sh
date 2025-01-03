@@ -87,7 +87,7 @@ tuples=(
 length=${#tuples[@]}
 for ((i=0; i<length; i+=2)); do
   dir=${tuples[i]}
-  [ ! -d $dir ] && echo "Directory $file does not exist." && exit 1
+  [ ! -d $dir ] && echo "Directory $dir does not exist." && exit 1
   threshold=${tuples[i+1]}
   dir_size=$(du -sb "$dir" | cut -f1)
   if [ "$dir_size" -lt "$threshold" ]; then
