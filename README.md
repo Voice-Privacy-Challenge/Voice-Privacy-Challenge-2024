@@ -197,7 +197,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-## Reference
+## References
 
 ```
 @article{tomashenko2024voiceprivacy,
@@ -207,6 +207,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
       eprint={2404.02677},
       archivePrefix={arXiv},
       primaryClass={eess.AS}
+}
+```
+
+```
+@article{tomashenko2026thirdvoiceprivacy,
+      title        = {The Third {VoicePrivacy} Challenge: Preserving Emotional Expressiveness and Linguistic Content in Voice Anonymization},
+      author       = {Natalia Tomashenko and Xiaoxiao Miao and Pierre Champion and Sarina Meyer and Xin Wang and Emmanuel Vincent and Michele Panariello and Nicholas Evans and Junichi Yamagishi and Massimiliano Todisco},
+      year         = {2026},
+      eprint       = {2601.11846},
+      archivePrefix= {arXiv},
+      primaryClass = {eess.AS}
 }
 ```
 
