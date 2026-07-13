@@ -165,18 +165,19 @@ Remove all `data/*$anon_data_suffix` directories and re-run anonymization and ev
 
 
 
-## Organizers (in alphabetical order)
+## Organizers 
 
-- Pierre Champion - Inria, France
-- Nicholas Evans - EURECOM, France
-- Sarina Meyer - University of Stuttgart, Germany
+- Natalia Tomashenko - Université de Lorraine, CNRS, Inria, LORIA, F-54000 Nancy, France
 - Xiaoxiao Miao - Singapore Institute of Technology, Singapore
-- Michele Panariello - EURECOM, France
-- Massimiliano Todisco - EURECOM, France
-- Natalia Tomashenko - Inria, France
-- Emmanuel Vincent - Inria, France
+- Pierre Champion - Inria, France
+- Sarina Meyer - University of Stuttgart, Germany
 - Xin Wang - NII, Japan
+- Emmanuel Vincent - Université de Lorraine, CNRS, Inria, LORIA, F-54000 Nancy, France
+- Michele Panariello - EURECOM, France
+- Nicholas Evans - EURECOM, France
 - Junichi Yamagishi - NII, Japan
+- Massimiliano Todisco - EURECOM, France
+
 
 Contact: organisers@lists.voiceprivacychallenge.org
 
@@ -214,13 +215,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 @article{tomashenko2026thirdvoiceprivacy,
       title        = {The Third {VoicePrivacy} Challenge: Preserving Emotional Expressiveness and Linguistic Content in Voice Anonymization},
       author       = {Natalia Tomashenko and Xiaoxiao Miao and Pierre Champion and Sarina Meyer and Xin Wang and Emmanuel Vincent and Michele Panariello and Nicholas Evans and Junichi Yamagishi and Massimiliano Todisco},
-      year         = {2026},
-      eprint       = {2601.11846},
-      archivePrefix= {arXiv},
-      primaryClass = {eess.AS}
+      journal = {Computer Speech \& Language},
+      volume = {100},
+      pages = {101988},
+      year = {2026},
+      issn = {0885-2308},
+      doi = {https://doi.org/10.1016/j.csl.2026.101988},
+      url = {https://www.sciencedirect.com/science/article/pii/S0885230826000513},
 }
 ```
 
+
 ## Acknowledgments
 
-Some parts of the code and structure are based on [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) (Paper: https://ieeexplore.ieee.org/document/10365329)
+Some parts of the code and structure are based on [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) (Paper: https://ieeexplore.ieee.org/document/10365329).
+This work was supported by the French National Research Agency under the SpeechPrivacy project (https://anr.fr/Projet-ANR23-CE23-0022) and the IPoP project funded by the French Cybersecurity PEPR (https://www.pepr-cybersecurite.fr/projet/ipop/). This work was partially supported by JST, Japan, PRESTO Grant Number JPMJPR23P9, Japan. Experiments were carried out using the Grid’5000 testbed, supported by a scientific interest group hosted by Inria and including CNRS, RENATER and several Universities as well as other organizations (see https://www.grid5000.fr). The challenge organizers thank Ünal Ege Gaznepoğlu for his help with the code b
+
